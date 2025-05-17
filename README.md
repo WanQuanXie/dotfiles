@@ -44,7 +44,6 @@ $ ./bootstrap
 - [x] Setup Hostname `sudo scutil --set HostName david-macbook`
 - [x] Install softwares and fonts from [Brewfile](https://github.com/crispgm/dotfiles/blob/master/Brewfile) with `brew bundle`. HINT: Login to AppStore at first. Some of the applications from Mac App Store may need purchase.
 - [x] Install `zsh`, `oh-my-zsh` and setup `.zshrc`
-- [x] Setup Alacritty
 - [x] Setup tmux
 - [x] Setup Neovim
 

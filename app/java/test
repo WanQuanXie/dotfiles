@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+test -x "$(which jenv)"
+test -x "$(which java)"
+test -x "$(which mvn)"
+
+# 设置 JAVA_HOME
+eval "$(jenv init -)"
+jenv enable-plugin export
+jenv add "$(/usr/libexec/java_home)"
+jenv doctor
+
+java --version
+mvn --version

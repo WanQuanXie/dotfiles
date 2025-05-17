@@ -4,7 +4,7 @@ set -e
 
 echo "Test hostname"
 HOSTNAME=$(hostname)
-test "$HOSTNAME" = "david-macbook"
+test "$HOSTNAME" = "xiewq-macbook"
 
 echo "Test brews"
 test -x "$(which git)"

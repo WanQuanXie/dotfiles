@@ -3,6 +3,11 @@ alias bc='bc -q -l'
 alias nvimconf='nvim ~/.config/nvim/init.lua'
 alias zshconf='nvim ~/.zshrc'
 
+alias proxy="export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890"
+alias unproxy="unset https_proxy;unset http_proxy;unset all_proxy"
+
+alias chromeDebug="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=dev-debug-profile"
+
 alias -s md=nvim
 alias -s markdown=nvim
 alias -s bean=nvim

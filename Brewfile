@@ -144,4 +144,5 @@ else
   # 壁纸软件
   mas 'APTV', id: 1639052102
   mas 'Xcode', id: 497799835
+  mas 'iMazing Profile Editor', id: 1487860882
 end

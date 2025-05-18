@@ -2,11 +2,6 @@
 
 test -x "$(which fnm)"
 
-fnm completions --shell zsh > ~/.config/fnm/completions.zsh
-fnm env --node-dist-mirror https://registry.npmmirror.com --use-on-cd --shell zsh > ~/.config/fnm/env.zsh
-
-fnm install --lts --node-dist-mirror https://registry.npmmirror.com
-
 test -x "$(which pnpm)"
 pnpm --version
 

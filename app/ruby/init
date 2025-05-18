@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 
+export PATH="$(brew --prefix)/opt/ruby/bin:$PATH"
+export LDFLAGS="-L$(brew --prefix)/opt/ruby/lib"
+export CPPFLAGS="-I$(brew --prefix)/opt/ruby/include"
+
 gem install bundler
 bundle config mirror.https://rubygems.org https://gems.ruby-china.com

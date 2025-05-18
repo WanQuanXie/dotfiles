@@ -4,15 +4,15 @@ set -e
 
 echo "Test hostname"
 HOSTNAME=$(hostname)
-test "$HOSTNAME" = "xiewq-macbook"
+test "$HOSTNAME" = "xiewq-macbookpro"
 
 echo "Test brews"
 test -x "$(which git)"
 test -x "$(which nvim)"
 
 echo "Test folders"
-test -d ~/dev
-test -d ~/work
+test -d ~/workspace/dev
+test -d ~/workspace/work
 
 echo "Test RCM symlinks"
 test -s ~/.zshrc

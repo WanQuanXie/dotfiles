@@ -1,6 +1,8 @@
 # primitives
 brew 'git'
 brew 'rcm'
+# lua 包管理器, 安装 vim 的 lua 插件模块需要
+brew 'luarocks'
 brew 'neovim'
 brew 'zsh'
 brew 'zsh-completions'
@@ -11,6 +13,7 @@ brew 'fzf'
 
 # [brew] dev
 brew 'ruby'
+brew 'go'
 brew 'shellcheck' # for CI checks
 # dev: CI testing
 if ENV.key? 'CI'
@@ -19,9 +22,8 @@ else
   # [brew] dev
   brew 'cmake'
   brew 'pnpm'
-  brew 'bun'
-  # Node 版本管理
-  brew 'fnm'
+  tap 'oven-sh/bun'
+  brew 'oven-sh/bun/bun'
   # JDK 版本管理
   brew 'jenv'
   brew 'maven'
@@ -144,5 +146,5 @@ else
   # 壁纸软件
   mas 'APTV', id: 1639052102
   mas 'iMazing Profile Editor', id: 1487860882
-  mas 'Xcode', id: 497799835
+  # mas 'Xcode', id: 497799835
 end

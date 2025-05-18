@@ -18,8 +18,8 @@ brew bundle
 set -e
 
 echo "Setup workspace"
-mkdir -p ~/dev
-mkdir -p ~/work
+mkdir -p ~/workspace/dev
+mkdir -p ~/workspace/work
 
 echo "Install dotfiles"
 rcup -d ./rc -f

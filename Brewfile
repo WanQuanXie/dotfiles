@@ -51,8 +51,6 @@ else
   # brew 'pandoc'
   # 密码管理工具命令行
   brew 'bitwarden-cli'
-  # 窗口管理工具
-  brew 'loop'
 
   # [brew] for AI&AIGC
   brew 'ollama'
@@ -64,7 +62,7 @@ else
   cask 'font-monaspace'
   cask 'font-jetbrains-mono-nerd-font'
   cask 'font-fira-code-nerd-font'
-  cask 'font-fira-mono-nerd-font '
+  cask 'font-fira-mono-nerd-font'
   cask 'font-fira-code'
 
   # [cask] dev
@@ -112,6 +110,8 @@ else
   cask 'marta'
   # 客制化键盘键盘映射编辑器
   cask 'via'
+  # 窗口管理工具
+  cask 'loop'
 
   # [cask] AI & AIGC
   cask 'cherry-studio'
@@ -143,6 +143,6 @@ else
   mas 'PDFgear', id: 6469021132
   # 壁纸软件
   mas 'APTV', id: 1639052102
-  mas 'Xcode', id: 497799835
   mas 'iMazing Profile Editor', id: 1487860882
+  mas 'Xcode', id: 497799835
 end

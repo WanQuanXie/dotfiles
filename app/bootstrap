@@ -7,7 +7,7 @@ set +e
     # Optional: bash
 # else
     # declare -a apps=("git" "ruby" "rust")
-fi
+# fi
 
 for app in "${apps[@]}"; do
     if [[ -f "./app/$app/init" ]]; then

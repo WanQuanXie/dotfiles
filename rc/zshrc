@@ -117,9 +117,9 @@ source ~/.zsh_alias
 [ -f ~/.config/fnm/env.zsh ] && source ~/.config/fnm/env.zsh
 
 # curl
-export PATH="/opt/homebrew/opt/curl/bin:$PATH"
-export LDFLAGS="-L/opt/homebrew/opt/curl/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/curl/include"
+export PATH="$(brew --prefix)/opt/curl/bin:$PATH"
+export LDFLAGS="-L$(brew --prefix)/opt/curl/lib"
+export CPPFLAGS="-I$(brew --prefix)/opt/curl/include"
 
 # zoxide
 eval "$(zoxide init zsh)"
@@ -128,10 +128,10 @@ eval "$(zoxide init zsh)"
 export BAT_THEME=Nord
 
 # zsh-syntax-highlighting
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # zsh-autosuggestions
-#source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+#source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # zsh-completions 
 if type brew &>/dev/null; then
@@ -166,16 +166,13 @@ export PATH="/Users/xiewq/Workspace/tools/flutter/bin:$PATH"
 export NO_PROXY=localhost,127.0.0.1,::1
 
 # ruby
-export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
-export LDFLAGS="-L/opt/homebrew/opt/ruby/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/ruby/include"
+export PATH="$(brew --prefix)/opt/ruby/bin:$PATH"
+export LDFLAGS="-L$(brew --prefix)/opt/ruby/lib"
+export CPPFLAGS="-I$(brew --prefix)/opt/ruby/include"
 export GEM_HOME=$HOME/.gem
 export PATH=$GEM_HOME/bin:$PATH
 
-# android
-export ANDROID_HOME=~/Library/Android/sdk
-export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
-
+# Global NPM
 export NPM_BIN=$HOME/npmbin/node_modules/.bin
 export PATH=$NPM_BIN:$PATH
 

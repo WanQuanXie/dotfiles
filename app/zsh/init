@@ -8,3 +8,13 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/mas
 cp ./app/zsh/crispy.zsh-theme ~/.oh-my-zsh/custom/themes/
 
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
+# Solving ZSH compinit's "Insecure Files" Warning
+for file in $(compaudit 2>/dev/null || echo ""); do
+  if [[ -n "$file" ]]; then
+    # 先修改目录权限
+    chmod go-w "$(dirname "$file")"
+    # 再修改文件权限
+    chmod go-w "$file"
+  fi
+done

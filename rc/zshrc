@@ -1,5 +1,5 @@
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -112,10 +112,6 @@ source ~/.zsh_alias
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# fnm
-[ -f ~/.config/fnm/completions.zsh ] && source ~/.config/fnm/completions.zsh
-[ -f ~/.config/fnm/env.zsh ] && source ~/.config/fnm/env.zsh
-
 # curl
 export PATH="$(brew --prefix)/opt/curl/bin:$PATH"
 export LDFLAGS="-L$(brew --prefix)/opt/curl/lib"
@@ -189,3 +185,4 @@ eval "$(jenv init -)"
 # Cargo
 export CARGO_HOME=~/.cargo/bin
 export PATH=$CARGO_HOME:$PATH
+

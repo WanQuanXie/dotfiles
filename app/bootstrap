@@ -3,7 +3,7 @@
 set +e
 
 # if [[ -z "${CI}" ]]; then
-    declare -a apps=("fzf" "git" "go" "java" "node" "nvim" "ruby" "rust" "tmux" "vim" "VSCode" "zsh")
+    declare -a apps=("zsh" "fzf" "git" "go" "java" "node" "nvim" "ruby" "rust" "tmux" "vim" "VSCode")
     # Optional: bash
 # else
     # declare -a apps=("git" "ruby" "rust")

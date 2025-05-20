@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+
+# 设置错误处理
+set -e
+
+# 颜色定义
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# 日志文件
+LOG_DIR="$HOME/.dotfiles_logs"
+mkdir -p "$LOG_DIR"
+INTEGRATION_LOG="$LOG_DIR/integration_test_$(date +%Y%m%d_%H%M%S).log"
+
+# 显示测试组
+show_group() {
+    echo -e "\n${BLUE}===== 测试组: $1 =====${NC}" | tee -a "$INTEGRATION_LOG"
+}
+
+# 显示测试项目
+show_test() {
+    echo -e "${BLUE}测试: $1${NC}" | tee -a "$INTEGRATION_LOG"
+}
+
+# 显示成功消息
+show_success() {
+    echo -e "${GREEN}✓ $1${NC}" | tee -a "$INTEGRATION_LOG"
+}
+
+# 显示错误消息
+show_error() {
+    echo -e "${RED}✗ $1${NC}" | tee -a "$INTEGRATION_LOG"
+    echo "详细日志: $INTEGRATION_LOG"
+    exit 1
+}
+
+# 运行单个应用测试
+run_app_test() {
+    local app=$1
+    
+    if [ -f "./app/$app/test" ]; then
+        show_test "运行 $app 测试"
+        if bash "./app/$app/test" >> "$INTEGRATION_LOG" 2>&1; then
+            show_success "$app 测试通过"
+        else
+            show_error "$app 测试失败"
+        fi
+    else
+        echo -e "${YELLOW}! $app 没有测试脚本${NC}" | tee -a "$INTEGRATION_LOG"
+    fi
+}
+
+# 主系统测试
+show_group "系统配置测试"
+bash ./test >> "$INTEGRATION_LOG" 2>&1 || show_error "系统配置测试失败"
+show_success "系统配置测试通过"
+
+# 应用测试
+show_group "应用测试"
+
+# 第1组：基础工具
+echo -e "${BLUE}基础工具测试${NC}" | tee -a "$INTEGRATION_LOG"
+for app in zsh git ssh gpg; do
+    run_app_test "$app"
+done
+
+# 第2组：语言环境
+echo -e "${BLUE}语言环境测试${NC}" | tee -a "$INTEGRATION_LOG"
+for app in go rust ruby java node; do
+    run_app_test "$app"
+done
+
+# 第3组：开发工具
+echo -e "${BLUE}开发工具测试${NC}" | tee -a "$INTEGRATION_LOG"
+for app in vim nvim tmux fzf VSCode; do
+    run_app_test "$app"
+done
+
+# 生成测试报告
+show_group "测试报告"
+echo "测试完成时间: $(date)" | tee -a "$INTEGRATION_LOG"
+echo "测试日志: $INTEGRATION_LOG" | tee -a "$INTEGRATION_LOG"
+
+# 统计测试结果
+TOTAL_APPS=15
+TESTED_APPS=$(grep -c "测试通过" "$INTEGRATION_LOG")
+echo "应用测试覆盖率: $TESTED_APPS/$TOTAL_APPS" | tee -a "$INTEGRATION_LOG"
+
+show_success "集成测试完成"

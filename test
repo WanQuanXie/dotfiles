@@ -1,19 +1,76 @@
 #!/usr/bin/env bash
 
+# 设置错误处理
 set -e
 
-echo "Test hostname"
+# 颜色定义
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# 显示测试项目
+show_test() {
+    echo -e "${BLUE}测试: $1${NC}"
+}
+
+# 显示成功消息
+show_success() {
+    echo -e "${GREEN}✓ $1${NC}"
+}
+
+# 显示错误消息
+show_error() {
+    echo -e "${RED}✗ $1${NC}"
+    exit 1
+}
+
+show_test "主机名"
 HOSTNAME=$(hostname)
-test "$HOSTNAME" = "xiewq-macbookpro"
+if [ "$HOSTNAME" = "xiewq-macbookpro" ]; then
+    show_success "主机名设置正确"
+else
+    show_error "主机名设置错误: 期望 'xiewq-macbookpro', 实际为 '$HOSTNAME'"
+fi
 
-echo "Test brews"
-test -x "$(which git)"
-test -x "$(which nvim)"
+show_test "必要软件包"
+if [ -x "$(which git)" ]; then
+    show_success "git 已安装"
+else
+    show_error "git 未安装"
+fi
 
-echo "Test folders"
-test -d ~/workspace/dev
-test -d ~/workspace/work
+if [ -x "$(which nvim)" ]; then
+    show_success "nvim 已安装"
+else
+    show_error "nvim 未安装"
+fi
 
-echo "Test RCM symlinks"
-test -s ~/.zshrc
-test -s ~/.gitconfig
+show_test "工作目录"
+if [ -d ~/workspace/dev ]; then
+    show_success "开发工作目录已创建"
+else
+    show_error "开发工作目录未创建"
+fi
+
+if [ -d ~/workspace/work ]; then
+    show_success "工作目录已创建"
+else
+    show_error "工作目录未创建"
+fi
+
+show_test "RCM 符号链接"
+if [ -s ~/.zshrc ]; then
+    show_success "zshrc 符号链接已创建"
+else
+    show_error "zshrc 符号链接未创建"
+fi
+
+if [ -s ~/.gitconfig ]; then
+    show_success "gitconfig 符号链接已创建"
+else
+    show_error "gitconfig 符号链接未创建"
+fi
+
+show_success "所有测试通过！"

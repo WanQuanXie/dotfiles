@@ -1,31 +1,119 @@
 #!/usr/bin/env bash
 
+# 设置错误处理
 set -e
 
-echo "Install Homebrew"
-if test ! "$(which brew)"; then
-    echo "Installing homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# 颜色定义
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# 进度计数器
+TOTAL_STEPS=8  # 增加了配置验证步骤
+CURRENT_STEP=0
+
+# 显示进度
+show_progress() {
+    CURRENT_STEP=$((CURRENT_STEP + 1))
+    echo -e "${BLUE}[${CURRENT_STEP}/${TOTAL_STEPS}] $1${NC}"
+}
+
+# 显示成功消息
+show_success() {
+    echo -e "${GREEN}✓ $1${NC}"
+}
+
+# 显示错误消息
+show_error() {
+    echo -e "${RED}✗ $1${NC}"
+    exit 1
+}
+
+# 显示警告消息
+show_warning() {
+    echo -e "${YELLOW}! $1${NC}"
+}
+
+# 设置基础环境变量
+show_progress "正在设置基础环境变量"
+# 检测 macOS 芯片类型并设置 Homebrew 路径
+if [[ $(uname -m) == "arm64" ]]; then
+    # Apple Silicon
+    BREW_PREFIX="/opt/homebrew"
+else
+    # Intel
+    BREW_PREFIX="/usr/local"
 fi
 
-echo "Setup hostname"
-sudo scutil --set HostName xiewq-macbookpro
+# 导出环境变量
+export PATH="$BREW_PREFIX/bin:$BREW_PREFIX/sbin:$PATH"
+export HOMEBREW_PREFIX="$BREW_PREFIX"
+show_success "基础环境变量设置完成"
 
-echo "Install with Brew Bundle"
+show_progress "正在安装 Homebrew"
+if test ! "$(which brew)"; then
+    echo "正在安装 Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || show_error "Homebrew 安装失败"
+    show_success "Homebrew 安装完成"
+else
+    show_success "Homebrew 已安装"
+fi
+
+show_progress "正在设置主机名"
+sudo scutil --set HostName xiewq-macbookpro || show_error "设置主机名失败"
+show_success "主机名设置完成"
+
+show_progress "正在使用 Brew Bundle 安装软件包"
 set +e
-export PATH=$PATH:/opt/homebrew/bin
 brew bundle
+if [ $? -ne 0 ]; then
+    show_warning "部分软件包安装可能失败，请检查日志"
+else
+    show_success "软件包安装完成"
+fi
 set -e
 
-echo "Setup workspace"
+show_progress "正在创建工作目录"
 mkdir -p ~/workspace/dev
 mkdir -p ~/workspace/work
+show_success "工作目录创建完成"
 
-echo "Install dotfiles"
-rcup -d ./rc -f
+# 创建必要的配置目录
+show_progress "正在准备配置目录"
+mkdir -p ~/.config/nvim
+mkdir -p ~/.oh-my-zsh/custom/themes
+mkdir -p ~/.tmux/plugins
+show_success "配置目录准备完成"
 
-echo "Application bootstrap"
-./app/bootstrap
+show_progress "正在安装 dotfiles"
+rcup -d ./rc -f || show_error "dotfiles 安装失败"
 
-echo "Final testing"
-./test
+# 验证关键配置文件
+echo "验证配置文件..."
+declare -a config_files=(
+    "~/.zshrc"
+    "~/.gitconfig"
+    "~/.tmux.conf"
+    "~/.config/nvim/init.lua"
+    "~/.gemrc"
+)
+
+for config in "${config_files[@]}"; do
+    if [ -s $(eval echo "$config") ]; then
+        echo "  - $(eval echo "$config") 已链接"
+    else
+        show_warning "  - $(eval echo "$config") 未正确链接"
+    fi
+done
+
+show_success "dotfiles 安装完成"
+
+show_progress "正在配置应用程序"
+./app/bootstrap || show_error "应用程序配置失败"
+show_success "应用程序配置完成"
+
+echo -e "${GREEN}正在进行最终测试${NC}"
+./test || show_error "测试失败"
+show_success "所有配置已完成！系统设置已就绪。"

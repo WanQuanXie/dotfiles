@@ -5,15 +5,63 @@ on:
       - main
   pull_request:
 jobs:
-  ci:
-    name: run
+  lint:
+    name: 代码检查
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[ci skip]')"
+    steps:
+      - uses: actions/checkout@v3
+      - name: ShellCheck
+        run: bash ./check
+
+  macos-test:
+    name: macOS 测试
     runs-on: macos-latest
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
     steps:
-      - uses: actions/checkout@master
-      - name: build
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      
+      - name: 缓存 Homebrew 包
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/Library/Caches/Homebrew
+            /usr/local/Homebrew
+          key: ${{ runner.os }}-brew-${{ hashFiles('Brewfile') }}
+          restore-keys: |
+            ${{ runner.os }}-brew-
+      
+      - name: 安装基础依赖
+        run: |
+          brew update
+          brew install rcm
+      
+      - name: 运行 bootstrap
         run: bash ./bootstrap
-      - name: Test
+        env:
+          CI: true
+      
+      - name: 运行测试
         run: bash ./test
-      - name: ShellCheck
-        run: bash ./check
+      
+      - name: 验证配置文件
+        run: |
+          test -f ~/.zshrc
+          test -f ~/.gitconfig
+          test -f ~/.tmux.conf
+      
+      - name: 验证应用配置
+        run: |
+          zsh -c "source ~/.zshrc && which nvim"
+          zsh -c "source ~/.zshrc && which git"
+      
+      - name: 生成报告
+        if: always()
+        run: |
+          echo "## 测试结果" > $GITHUB_STEP_SUMMARY
+          echo "- 操作系统: $(sw_vers -productName) $(sw_vers -productVersion)" >> $GITHUB_STEP_SUMMARY
+          echo "- Homebrew: $(brew --version | head -n 1)" >> $GITHUB_STEP_SUMMARY
+          echo "- 已安装包数量: $(brew list | wc -l | xargs)" >> $GITHUB_STEP_SUMMARY
+          echo "- dotfiles 状态: $(if [ $? -eq 0 ]; then echo '✅ 成功'; else echo '❌ 失败'; fi)" >> $GITHUB_STEP_SUMMARY

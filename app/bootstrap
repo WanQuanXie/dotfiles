@@ -1,21 +1,248 @@
 #!/usr/bin/env bash
 
-set +e
+# 设置错误处理
+set -e
 
-# if [[ -z "${CI}" ]]; then
-    declare -a apps=("zsh" "fzf" "git" "go" "java" "node" "nvim" "ruby" "rust" "tmux" "vim" "VSCode" "ssh" "gpg")
-    # Optional: bash
-# else
-    # declare -a apps=("git" "ruby" "rust")
-# fi
+# 颜色定义
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-for app in "${apps[@]}"; do
+# 日志文件
+LOG_DIR="$HOME/.dotfiles_logs"
+mkdir -p "$LOG_DIR"
+MAIN_LOG="$LOG_DIR/bootstrap_$(date +%Y%m%d_%H%M%S).log"
+
+# 显示成功消息
+show_success() {
+    echo -e "${GREEN}✓ $1${NC}" | tee -a "$MAIN_LOG"
+}
+
+# 显示错误消息
+show_error() {
+    echo -e "${RED}✗ $1${NC}" | tee -a "$MAIN_LOG"
+}
+
+# 显示警告消息
+show_warning() {
+    echo -e "${YELLOW}! $1${NC}" | tee -a "$MAIN_LOG"
+}
+
+# 显示信息消息
+show_info() {
+    echo -e "${BLUE}i $1${NC}" | tee -a "$MAIN_LOG"
+}
+
+# 错误处理函数
+handle_error() {
+    local app=$1
+    local error_msg=$2
+    local exit_code=${3:-1}
+    
+    show_error "配置 $app 时发生错误: $error_msg (错误代码: $exit_code)"
+    echo "详细日志请查看: $LOG_DIR/${app}_error.log"
+    
+    # 询问是否继续
+    if [ -z "$CI" ]; then  # 非 CI 环境下询问
+        read -p "是否继续安装其他应用? (y/n) " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            show_error "安装中止"
+            exit 1
+        fi
+    else
+        # CI 环境下继续执行
+        show_warning "CI 环境中，继续执行后续步骤"
+    fi
+}
+
+# 应用分组 - 按依赖关系和安装时间分组
+# 第1组：基础工具（快速安装）
+declare -a group1=("zsh" "git" "ssh" "gpg")
+# 第2组：语言环境（耗时较长，可并行）
+declare -a group2=("go" "rust" "ruby" "java" "node")
+# 第3组：开发工具（依赖前两组）
+declare -a group3=("vim" "nvim" "tmux" "fzf" "VSCode")
+
+# 计算总步骤数
+TOTAL_GROUPS=3
+CURRENT_GROUP=0
+
+echo -e "${BLUE}开始配置应用程序 (共 ${TOTAL_GROUPS} 组)${NC}" | tee -a "$MAIN_LOG"
+echo "详细日志将保存在: $LOG_DIR" | tee -a "$MAIN_LOG"
+
+# 检查应用是否已配置的函数
+is_app_configured() {
+    local app=$1
+    local marker_file="$HOME/.dotfiles_configured_$app"
+    
+    if [[ -f "$marker_file" ]]; then
+        return 0  # 已配置
+    else
+        return 1  # 未配置
+    fi
+}
+
+# 标记应用已配置的函数
+mark_app_configured() {
+    local app=$1
+    local marker_file="$HOME/.dotfiles_configured_$app"
+    touch "$marker_file"
+}
+
+# 检查依赖是否已安装
+check_dependency() {
+    local cmd=$1
+    local package=$2
+    
+    if ! command -v "$cmd" &> /dev/null; then
+        show_warning "未找到命令: $cmd，尝试安装 $package..."
+        if brew install "$package"; then
+            show_success "$package 安装成功"
+            return 0
+        else
+            show_error "$package 安装失败"
+            return 1
+        fi
+    fi
+    return 0
+}
+
+# 处理单个应用的函数
+process_app() {
+    local app=$1
+    local app_log="$LOG_DIR/${app}_$(date +%Y%m%d_%H%M%S).log"
+    
+    if is_app_configured "$app"; then
+        show_warning "$app 已配置，跳过"
+        return 0
+    fi
+    
+    # 检查应用特定依赖
+    case "$app" in
+        "nvim")
+            check_dependency "node" "node" || return 1
+            ;;
+        "ruby")
+            check_dependency "brew" "homebrew" || return 1
+            ;;
+        "rust")
+            check_dependency "curl" "curl" || return 1
+            ;;
+    esac
+    
     if [[ -f "./app/$app/init" ]]; then
-        echo "Initializing $app"
-        bash "./app/$app/init"
+        show_info "正在初始化 $app..."
+        if bash "./app/$app/init" > "$app_log" 2>&1; then
+            show_success "$app 初始化成功"
+        else
+            local exit_code=$?
+            handle_error "$app" "初始化失败" "$exit_code"
+            cat "./app/$app/init" > "$LOG_DIR/${app}_error.log"
+            cat "$app_log" >> "$LOG_DIR/${app}_error.log"
+            return 1
+        fi
     fi
+    
     if [[ -f "./app/$app/test" ]]; then
-        echo "Testing $app"
-        bash "./app/$app/test"
+        show_info "正在测试 $app..."
+        if bash "./app/$app/test" > "$app_log" 2>&1; then
+            show_success "$app 测试通过"
+            mark_app_configured "$app"
+            return 0
+        else
+            local exit_code=$?
+            handle_error "$app" "测试失败" "$exit_code"
+            cat "./app/$app/test" > "$LOG_DIR/${app}_error.log"
+            cat "$app_log" >> "$LOG_DIR/${app}_error.log"
+            return 1
+        fi
+    elif [[ -f "./app/$app/init" ]]; then
+        # 如果没有测试脚本但有初始化脚本，也标记为已配置
+        mark_app_configured "$app"
+        return 0
     fi
-done
+    
+    return 0
+}
+
+# 处理应用组的函数
+process_group() {
+    local -n group=$1
+    local group_name=$2
+    
+    CURRENT_GROUP=$((CURRENT_GROUP + 1))
+    echo -e "${BLUE}[${CURRENT_GROUP}/${TOTAL_GROUPS}] 处理应用组: $group_name${NC}" | tee -a "$MAIN_LOG"
+    
+    local success_count=0
+    local total_count=${#group[@]}
+    
+    for app in "${group[@]}"; do
+        echo -e "${BLUE}处理应用: $app${NC}" | tee -a "$MAIN_LOG"
+        if process_app "$app"; then
+            success_count=$((success_count + 1))
+        fi
+    done
+    
+    show_info "$group_name 组完成: $success_count/$total_count 个应用配置成功"
+}
+
+# 创建回滚脚本
+create_rollback_script() {
+    local rollback_script="$HOME/.dotfiles_rollback.sh"
+    
+    cat > "$rollback_script" << 'EOF'
+#!/usr/bin/env bash
+# 回滚脚本 - 用于清理失败的安装
+
+echo "开始回滚 dotfiles 安装..."
+
+# 删除配置标记文件
+rm -f $HOME/.dotfiles_configured_*
+
+# 恢复原始配置文件（如果有备份）
+if [ -d "$HOME/.dotfiles_backup" ]; then
+    echo "恢复备份的配置文件..."
+    cp -r $HOME/.dotfiles_backup/* $HOME/
+fi
+
+echo "回滚完成。您可能需要重新启动系统以完全清理环境。"
+EOF
+
+    chmod +x "$rollback_script"
+    show_info "已创建回滚脚本: $rollback_script"
+}
+
+# 备份现有配置
+backup_configs() {
+    local backup_dir="$HOME/.dotfiles_backup"
+    mkdir -p "$backup_dir"
+    
+    # 备份关键配置文件
+    for file in .zshrc .bashrc .gitconfig .vimrc .tmux.conf; do
+        if [ -f "$HOME/$file" ]; then
+            cp "$HOME/$file" "$backup_dir/"
+        fi
+    done
+    
+    show_info "已备份现有配置到: $backup_dir"
+}
+
+# 主执行流程
+trap 'show_error "安装中断"; exit 1' INT TERM
+
+# 备份现有配置
+backup_configs
+
+# 创建回滚脚本
+create_rollback_script
+
+# 按组处理应用
+process_group group1 "基础工具"
+process_group group2 "语言环境"
+process_group group3 "开发工具"
+
+show_success "所有应用程序配置完成"
+echo "详细日志已保存在: $LOG_DIR"

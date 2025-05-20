@@ -1,11 +1,33 @@
 #!/usr/bin/env bash
 
-echo "Setup Zsh"
-ZSH_PATH="$(brew --prefix)/bin/zsh"
-sudo sh -c "echo $ZSH_PATH >> /etc/shells"
-sudo chsh -s "$ZSH_PATH"
+# 颜色定义
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-# Solving ZSH compinit's "Insecure Files" Warning
+echo -e "${BLUE}正在设置 Zsh${NC}"
+ZSH_PATH="$(brew --prefix)/bin/zsh"
+
+# 检查 zsh 是否已在 shells 列表中
+if grep -q "$ZSH_PATH" /etc/shells; then
+    echo -e "${YELLOW}Zsh 已在 shells 列表中，跳过添加${NC}"
+else
+    echo "将 Zsh 添加到 shells 列表..."
+    sudo sh -c "echo $ZSH_PATH >> /etc/shells"
+fi
+
+# 检查当前 shell 是否已经是 zsh
+if [ "$SHELL" = "$ZSH_PATH" ]; then
+    echo -e "${YELLOW}当前 shell 已经是 Zsh，跳过切换${NC}"
+else
+    echo "切换默认 shell 为 Zsh..."
+    sudo chsh -s "$ZSH_PATH" "$USER"
+fi
+
+# 解决 ZSH compinit 的 "Insecure Files" 警告
+echo "修复 compinit 权限问题..."
 for file in $(compaudit 2>/dev/null || echo ""); do
   if [[ -n "$file" ]]; then
     # 先修改目录权限
@@ -15,9 +37,26 @@ for file in $(compaudit 2>/dev/null || echo ""); do
   fi
 done
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+# 检查 oh-my-zsh 是否已安装
+if [ -d "$HOME/.oh-my-zsh" ]; then
+    echo -e "${YELLOW}oh-my-zsh 已安装，跳过安装${NC}"
+else
+    echo "安装 oh-my-zsh..."
+    # 使用 -y 参数自动确认安装
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
+fi
 
+# 复制自定义主题
+echo "安装自定义主题..."
 cp ./app/zsh/crispy.zsh-theme ~/.oh-my-zsh/custom/themes/
 
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+# 检查语法高亮插件是否已安装
+if [ -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ]; then
+    echo -e "${YELLOW}zsh-syntax-highlighting 已安装，跳过安装${NC}"
+else
+    echo "安装 zsh-syntax-highlighting 插件..."
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+fi
+
+echo -e "${GREEN}Zsh 设置完成${NC}"
 

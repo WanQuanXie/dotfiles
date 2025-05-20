@@ -1,19 +1,66 @@
 #!/usr/bin/env bash
 
-# check yourself at first
+# 设置错误处理
+set -e
+
+# 颜色定义
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# 显示检查项目
+show_check() {
+    echo -e "${BLUE}检查: $1${NC}"
+}
+
+# 显示成功消息
+show_success() {
+    echo -e "${GREEN}✓ $1${NC}"
+}
+
+# 显示错误消息
+show_error() {
+    echo -e "${RED}✗ $1${NC}"
+    exit 1
+}
+
+# 检查 shellcheck 是否安装
+if ! command -v shellcheck &> /dev/null; then
+    show_error "未找到 shellcheck，请先安装: brew install shellcheck"
+fi
+
+# 首先检查自身
+show_check "检查 check 脚本"
 shellcheck check
+show_success "check 脚本检查通过"
 
+# 检查主要脚本
+show_check "检查 bootstrap 脚本"
 shellcheck bootstrap
-shellcheck test
-shellcheck app/bootstrap
+show_success "bootstrap 脚本检查通过"
 
+show_check "检查 test 脚本"
+shellcheck test
+show_success "test 脚本检查通过"
+
+show_check "检查 app/bootstrap 脚本"
+shellcheck app/bootstrap
+show_success "app/bootstrap 脚本检查通过"
+
+# 检查所有应用脚本
 apps=()
 while IFS='' read -r line; do apps+=("$line"); done < <(ls -d app/*)
 for app in "${apps[@]}"; do
     if [[ -f "./$app/init" ]]; then
+        show_check "检查 $app/init 脚本"
         shellcheck "./$app/init"
+        show_success "$app/init 脚本检查通过"
     fi
     if [[ -f "./$app/test" ]]; then
+        show_check "检查 $app/test 脚本"
         shellcheck "./$app/test"
+        show_success "$app/test 脚本检查通过"
     fi
 done

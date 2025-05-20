@@ -52,8 +52,9 @@ echo "正在配置 Git 使用 GPG 签名..."
 # 设置 Git 使用的 GPG 密钥
 git config --global user.signingkey $KEY_ID
 
-# 启用 Git 提交签名
+# 启用 Git 提交和标记签名
 git config --global commit.gpgsign true
+git config --global tag.gpgSign true
 
 # 设置 GPG 程序路径（针对不同操作系统）
 if [[ "$OSTYPE" == "darwin"* ]]; then

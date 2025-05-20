@@ -15,9 +15,11 @@ jobs:
         run: bash ./check
 
   macos-test:
-    name: macOS 测试
-    runs-on: macos-latest
-    if: "!contains(github.event.head_commit.message, '[ci skip]')"
+    name: macOS ${{ matrix.os }} 测试
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, macos-12, macos-11]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -60,8 +62,23 @@ jobs:
       - name: 生成报告
         if: always()
         run: |
-          echo "## 测试结果" > $GITHUB_STEP_SUMMARY
+          echo "## 测试结果 - macOS $(sw_vers -productVersion)" > $GITHUB_STEP_SUMMARY
           echo "- 操作系统: $(sw_vers -productName) $(sw_vers -productVersion)" >> $GITHUB_STEP_SUMMARY
           echo "- Homebrew: $(brew --version | head -n 1)" >> $GITHUB_STEP_SUMMARY
           echo "- 已安装包数量: $(brew list | wc -l | xargs)" >> $GITHUB_STEP_SUMMARY
+          
+          # 添加详细测试结果
+          echo "### 应用测试结果" >> $GITHUB_STEP_SUMMARY
+          for app in zsh git ssh gpg go rust ruby java node vim nvim tmux fzf VSCode; do
+            if [ -f "./app/$app/test" ]; then
+              if bash "./app/$app/test" &>/dev/null; then
+                echo "- $app: ✅" >> $GITHUB_STEP_SUMMARY
+              else
+                echo "- $app: ❌" >> $GITHUB_STEP_SUMMARY
+              fi
+            else
+              echo "- $app: ⚠️ (无测试)" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+          
           echo "- dotfiles 状态: $(if [ $? -eq 0 ]; then echo '✅ 成功'; else echo '❌ 失败'; fi)" >> $GITHUB_STEP_SUMMARY

@@ -49,22 +49,3 @@ test_command() {
         return 1
     fi
 }
-
-# 设置错误处理
-set -e
-
-# 检查 nvim 是否安装
-test -x "$(which nvim)"
-
-# 检查配置文件
-test -d ~/.config/nvim
-test -f ~/.config/nvim/init.lua
-
-# 检查插件管理器
-test -d ~/.local/share/nvim/lazy
-
-# 验证插件安装
-nvim --headless "+lua print(#vim.tbl_keys(require('lazy').plugins()))" +qa 2>&1 | grep -q "[1-9]"
-
-# 检查语言服务器
-nvim --headless "+lua print(#vim.tbl_keys(require('mason-registry').get_installed_packages()))" +qa 2>&1 | grep -q "[1-9]"

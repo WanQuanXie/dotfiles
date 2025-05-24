@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # 导入测试工具函数
-# shellcheck source=../test_utils.sh
+# shellcheck source=./app/test_utils.sh
 source "$(dirname "$0")/../test_utils.sh"
 
 # 设置错误处理
@@ -78,14 +78,14 @@ if [[ -f ~/.tmux.conf ]]; then
     else
         show_warning "配置文件中未找到 TPM 设置"
     fi
-    
+
     # 检查插件列表
     if grep -q "tmux-plugins" ~/.tmux.conf; then
         show_success "配置文件包含插件配置"
     else
         show_warning "配置文件中未找到插件配置"
     fi
-    
+
     # 检查主题配置
     if grep -q "nord" ~/.tmux.conf; then
         show_success "配置文件包含 Nord 主题配置"
@@ -103,7 +103,7 @@ test_command "tmux new-session -d -s test_session 'echo test'" "测试创建 tmu
 # 检查会话是否创建成功
 if tmux has-session -t test_session 2>/dev/null; then
     show_success "tmux 会话创建成功"
-    
+
     # 清理测试会话
     tmux kill-session -t test_session 2>/dev/null || true
     show_success "测试会话已清理"
@@ -134,7 +134,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     elif [[ "$ARCH" == "x86_64" ]]; then
         show_success "Intel 架构下的 tmux 运行正常"
     fi
-    
+
     # 测试与 macOS 剪贴板的集成
     if command -v pbcopy >/dev/null 2>&1 && command -v pbpaste >/dev/null 2>&1; then
         # 检查配置文件中是否有剪贴板配置
@@ -164,14 +164,14 @@ show_test "测试配置重载功能"
 # 创建临时会话测试配置重载
 if tmux new-session -d -s config_test 'sleep 10'; then
     show_success "创建配置测试会话"
-    
+
     # 尝试重载配置
     if tmux source-file ~/.tmux.conf 2>/dev/null; then
         show_success "配置重载成功"
     else
         show_warning "配置重载失败，可能存在配置错误"
     fi
-    
+
     # 清理测试会话
     tmux kill-session -t config_test 2>/dev/null || true
 else

@@ -1,41 +1,14 @@
 #!/usr/bin/env bash
 
-# 设置错误处理
-set -e
+# 集成测试脚本 - 使用共享库重构
+# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
 
-# 颜色定义
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# 加载共享库
+# shellcheck source=./lib/common.sh
+source "./lib/common.sh"
 
-# 日志文件
-LOG_DIR="$HOME/.dotfiles_logs"
-mkdir -p "$LOG_DIR"
-INTEGRATION_LOG="$LOG_DIR/integration_test_$(date +%Y%m%d_%H%M%S).log"
-
-# 显示测试组
-show_group() {
-    echo -e "\n${BLUE}===== 测试组: $1 =====${NC}" | tee -a "$INTEGRATION_LOG"
-}
-
-# 显示测试项目
-show_test() {
-    echo -e "${BLUE}测试: $1${NC}" | tee -a "$INTEGRATION_LOG"
-}
-
-# 显示成功消息
-show_success() {
-    echo -e "${GREEN}✓ $1${NC}" | tee -a "$INTEGRATION_LOG"
-}
-
-# 显示错误消息
-show_error() {
-    echo -e "${RED}✗ $1${NC}" | tee -a "$INTEGRATION_LOG"
-    echo "详细日志: $INTEGRATION_LOG"
-    exit 1
-}
+# 初始化测试环境
+init_test_env "integration_test"
 
 # 运行单个应用测试
 run_app_test() {
@@ -43,103 +16,54 @@ run_app_test() {
 
     if [ -f "./app/$app/test" ]; then
         show_test "运行 $app 测试"
-        if bash "./app/$app/test" >> "$INTEGRATION_LOG" 2>&1; then
+        if bash "./app/$app/test"; then
             show_success "$app 测试通过"
         else
             show_error "$app 测试失败"
         fi
     else
-        echo -e "${YELLOW}! $app 没有测试脚本${NC}" | tee -a "$INTEGRATION_LOG"
+        show_warning "$app 没有测试脚本"
     fi
 }
 
 # 主系统测试
 show_group "系统配置测试"
-bash ./test >> "$INTEGRATION_LOG" 2>&1 || show_error "系统配置测试失败"
+bash ./test || show_error "系统配置测试失败"
 show_success "系统配置测试通过"
 
 # 应用测试
 show_group "应用测试"
 
 # 第1组：基础工具
-echo -e "${BLUE}基础工具测试${NC}" | tee -a "$INTEGRATION_LOG"
+show_info "基础工具测试"
 for app in zsh git ssh gpg; do
     run_app_test "$app"
 done
 
 # 第2组：语言环境
-echo -e "${BLUE}语言环境测试${NC}" | tee -a "$INTEGRATION_LOG"
+show_info "语言环境测试"
 for app in go rust ruby java node; do
     run_app_test "$app"
 done
 
 # 第3组：开发工具
-echo -e "${BLUE}开发工具测试${NC}" | tee -a "$INTEGRATION_LOG"
+show_info "开发工具测试"
 for app in vim nvim tmux fzf VSCode; do
     run_app_test "$app"
 done
 
 # 生成测试报告
 show_group "测试报告"
-echo "测试完成时间: $(date)" | tee -a "$INTEGRATION_LOG"
-echo "测试日志: $INTEGRATION_LOG" | tee -a "$INTEGRATION_LOG"
+show_info "测试完成时间: $(date)"
 
 # 系统兼容性测试
 show_group "系统兼容性测试"
 
-# macOS 版本兼容性
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    MACOS_VERSION=$(sw_vers -productVersion)
-    MACOS_MAJOR=$(echo "$MACOS_VERSION" | cut -d. -f1)
-    MACOS_MINOR=$(echo "$MACOS_VERSION" | cut -d. -f2)
-
-    echo "macOS 版本: $MACOS_VERSION" | tee -a "$INTEGRATION_LOG"
-
-    if [[ "$MACOS_MAJOR" -gt 10 ]] || [[ "$MACOS_MAJOR" -eq 10 && "$MACOS_MINOR" -ge 15 ]]; then
-        show_success "macOS 版本兼容性检查通过"
-    else
-        echo -e "${YELLOW}! macOS 版本可能过低，建议升级到 10.15+${NC}" | tee -a "$INTEGRATION_LOG"
-    fi
-
-    # 架构兼容性
-    ARCH=$(uname -m)
-    echo "系统架构: $ARCH" | tee -a "$INTEGRATION_LOG"
-
-    if [[ "$ARCH" == "arm64" ]]; then
-        show_success "Apple Silicon 架构兼容性检查通过"
-    elif [[ "$ARCH" == "x86_64" ]]; then
-        show_success "Intel 架构兼容性检查通过"
-    else
-        echo -e "${YELLOW}! 未知架构: $ARCH${NC}" | tee -a "$INTEGRATION_LOG"
-    fi
-fi
+# 运行系统兼容性测试
+run_macos_compatibility_tests "integration_test"
 
 # Shell 兼容性测试
-show_test "Shell 兼容性测试"
-
-# 检查 bash 版本
-if command -v bash >/dev/null 2>&1; then
-    BASH_VERSION=$(bash --version | head -n1 | sed 's/.*version \([0-9]\).*/\1/')
-    echo "Bash 版本: $BASH_VERSION" | tee -a "$INTEGRATION_LOG"
-
-    if [[ "$BASH_VERSION" -ge 4 ]]; then
-        show_success "Bash 版本兼容性检查通过"
-    else
-        echo -e "${YELLOW}! Bash 版本过低，需要 4.0+${NC}" | tee -a "$INTEGRATION_LOG"
-    fi
-fi
-
-# 检查 zsh 版本
-if command -v zsh >/dev/null 2>&1; then
-    ZSH_VERSION=$(zsh --version | sed 's/zsh \([0-9]\.[0-9]\).*/\1/')
-    echo "Zsh 版本: $ZSH_VERSION" | tee -a "$INTEGRATION_LOG"
-
-    if [[ $(echo "$ZSH_VERSION >= 5.0" | bc -l 2>/dev/null || echo "1") -eq 1 ]]; then
-        show_success "Zsh 版本兼容性检查通过"
-    else
-        echo -e "${YELLOW}! Zsh 版本可能过低，建议 5.0+${NC}" | tee -a "$INTEGRATION_LOG"
-    fi
-fi
+run_posix_compatibility_tests "integration_test"
 
 # 集成功能测试
 show_group "集成功能测试"
@@ -152,13 +76,13 @@ if command -v git >/dev/null 2>&1 && command -v gpg >/dev/null 2>&1; then
         if gpg --list-secret-keys "$GPG_KEY" >/dev/null 2>&1; then
             show_success "Git 和 GPG 集成正常"
         else
-            echo -e "${YELLOW}! GPG 密钥配置但不可用${NC}" | tee -a "$INTEGRATION_LOG"
+            show_warning "GPG 密钥配置但不可用"
         fi
     else
-        echo -e "${YELLOW}! Git GPG 签名未配置${NC}" | tee -a "$INTEGRATION_LOG"
+        show_warning "Git GPG 签名未配置"
     fi
 else
-    echo -e "${YELLOW}! Git 或 GPG 未安装${NC}" | tee -a "$INTEGRATION_LOG"
+    show_warning "Git 或 GPG 未安装"
 fi
 
 # Shell 和工具集成测试
@@ -185,33 +109,15 @@ if command -v zsh >/dev/null 2>&1; then
     timeout 10 zsh -i -c exit 2>/dev/null || true
     END_TIME=$(date +%s%N)
     STARTUP_TIME=$(( (END_TIME - START_TIME) / 1000000 ))
-    echo "Zsh 启动时间: ${STARTUP_TIME}ms" | tee -a "$INTEGRATION_LOG"
+    show_info "Zsh 启动时间: ${STARTUP_TIME}ms"
 
     if [[ $STARTUP_TIME -lt 1000 ]]; then
         show_success "Shell 启动性能良好"
     elif [[ $STARTUP_TIME -lt 2000 ]]; then
-        echo -e "${YELLOW}! Shell 启动稍慢 (${STARTUP_TIME}ms)${NC}" | tee -a "$INTEGRATION_LOG"
+        show_warning "Shell 启动稍慢 (${STARTUP_TIME}ms)"
     else
-        echo -e "${YELLOW}! Shell 启动较慢 (${STARTUP_TIME}ms)，建议优化${NC}" | tee -a "$INTEGRATION_LOG"
+        show_warning "Shell 启动较慢 (${STARTUP_TIME}ms)，建议优化"
     fi
-fi
-
-# 统计测试结果
-TOTAL_APPS=18  # 更新总数，包括新增的测试脚本
-TESTED_APPS=$(grep -c "测试通过" "$INTEGRATION_LOG" || echo "0")
-FAILED_APPS=$(grep -c "测试失败" "$INTEGRATION_LOG" || echo "0")
-WARNING_COUNT=$(grep -c "!" "$INTEGRATION_LOG" || echo "0")
-
-echo "" | tee -a "$INTEGRATION_LOG"
-echo "===== 测试统计 =====" | tee -a "$INTEGRATION_LOG"
-echo "应用测试覆盖率: $TESTED_APPS/$TOTAL_APPS" | tee -a "$INTEGRATION_LOG"
-echo "测试失败数: $FAILED_APPS" | tee -a "$INTEGRATION_LOG"
-echo "警告数: $WARNING_COUNT" | tee -a "$INTEGRATION_LOG"
-
-if [[ $FAILED_APPS -eq 0 ]]; then
-    show_success "所有测试通过！"
-else
-    echo -e "${YELLOW}! 有 $FAILED_APPS 个测试失败，请检查日志${NC}" | tee -a "$INTEGRATION_LOG"
 fi
 
 show_success "集成测试完成"

@@ -44,9 +44,7 @@ fi
 # 显示密钥详情
 echo ""
 echo "将删除以下 GPG 密钥："
-gpg --list-secret-keys --keyid-format=long "$KEY_ID" 2>/dev/null
-
-if [ $? -ne 0 ]; then
+if ! gpg --list-secret-keys --keyid-format=long "$KEY_ID" 2>/dev/null; then
     echo "错误：无法找到指定的 GPG 密钥 $KEY_ID"
     exit 1
 fi
@@ -223,8 +221,7 @@ fi
 
 # 2. 移除 Git 全局配置中的 user.signingkey 设置
 echo "2. 移除 Git 全局配置中的 user.signingkey 设置..."
-git config --global --unset user.signingkey
-if [ $? -eq 0 ]; then
+if git config --global --unset user.signingkey; then
     echo "✅ Git user.signingkey 设置已移除"
 else
     echo "❌ Git user.signingkey 设置移除失败"
@@ -232,8 +229,7 @@ fi
 
 # 3. 将 Git 全局配置中的 commit.gpgsign 设置为 false
 echo "3. 将 Git 全局配置中的 commit.gpgsign 设置为 false..."
-git config --global commit.gpgsign false
-if [ $? -eq 0 ]; then
+if git config --global commit.gpgsign false; then
     echo "✅ Git commit.gpgsign 已设置为 false"
 else
     echo "❌ Git commit.gpgsign 设置失败"
@@ -241,8 +237,7 @@ fi
 
 # 4. 移除 Git 全局配置中的 gpg.program 设置
 echo "4. 移除 Git 全局配置中的 gpg.program 设置..."
-git config --global --unset gpg.program
-if [ $? -eq 0 ]; then
+if git config --global --unset gpg.program; then
     echo "✅ Git gpg.program 设置已移除"
 else
     echo "❌ Git gpg.program 设置移除失败"

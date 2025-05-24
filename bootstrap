@@ -67,8 +67,7 @@ show_success "主机名设置完成"
 
 show_progress "正在使用 Brew Bundle 安装软件包"
 set +e
-brew bundle
-if [ $? -ne 0 ]; then
+if ! brew bundle; then
     show_warning "部分软件包安装可能失败，请检查日志"
 else
     show_success "软件包安装完成"
@@ -93,18 +92,18 @@ rcup -d ./rc -f || show_error "dotfiles 安装失败"
 # 验证关键配置文件
 echo "验证配置文件..."
 declare -a config_files=(
-    "~/.zshrc"
-    "~/.gitconfig"
-    "~/.tmux.conf"
-    "~/.config/nvim/init.lua"
-    "~/.gemrc"
+    "$HOME/.zshrc"
+    "$HOME/.gitconfig"
+    "$HOME/.tmux.conf"
+    "$HOME/.config/nvim/init.lua"
+    "$HOME/.gemrc"
 )
 
 for config in "${config_files[@]}"; do
-    if [ -s $(eval echo "$config") ]; then
-        echo "  - $(eval echo "$config") 已链接"
+    if [ -s "$config" ]; then
+        echo "  - $config 已链接"
     else
-        show_warning "  - $(eval echo "$config") 未正确链接"
+        show_warning "  - $config 未正确链接"
     fi
 done
 

@@ -1,4 +1,0 @@
-tap 'homebrew/cask'
-
-cask 'feishu'
-cask 'tencent-meeting'

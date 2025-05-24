@@ -1,4 +1,6 @@
-# https://github.com/mathiasbynens/dotfiles/blob/master/.macos
+#!/usr/bin/env bash
+# macOS 系统设置脚本
+# 基于: https://github.com/mathiasbynens/dotfiles/blob/master/.macos
 
 sudo -v
 

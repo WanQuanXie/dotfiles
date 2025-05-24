@@ -1,9 +1,16 @@
+#!/usr/bin/env bash
+# bash_profile - bash 配置文件
+
 export CLICOLOR=1
 export LSCOLORS=gxfxaxdxcxegedabagacad
 
 gitPS1() {
-    gitps1=$(git branch 2>/dev/null | grep '*') gitps1="${gitps1:+ (${gitps1/#\* /})}"
+    local gitps1
+    gitps1=$(git branch 2>/dev/null | grep '\*')
+    gitps1="${gitps1:+ (${gitps1/#\* /})}"
     echo "$gitps1"
 }
 
-export PS1="\033[1;34m\w$(gitPS1) $ \033[0m"
+# 设置 PS1 提示符，使用 \[ \] 包围转义序列以防止换行问题
+PS1="\[\033[1;34m\]\w\$(gitPS1) $ \[\033[0m\]"
+export PS1

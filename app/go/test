@@ -4,8 +4,8 @@
 # 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
 
 # 导入测试工具函数
-# shellcheck source=./app/test_utils.sh
-source "$(dirname "$0")/../test_utils.sh"
+# shellcheck source=../../test_utils.sh
+source "../../test_utils.sh"
 
 show_test "Go 配置测试开始"
 

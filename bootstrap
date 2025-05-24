@@ -1,58 +1,32 @@
 #!/usr/bin/env bash
 
-# 设置错误处理
-set -e
+# 主引导脚本 - 使用共享库重构
+# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
 
-# 颜色定义
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# 加载共享库
+# shellcheck source=./lib/common.sh
+source "$(dirname "$0")/lib/common.sh"
+
+# 初始化环境
+init_dotfiles_env
 
 # 进度计数器
 TOTAL_STEPS=8  # 增加了配置验证步骤
 CURRENT_STEP=0
 
-# 显示进度
-show_progress() {
+# 显示进度（使用共享库的 show_progress 函数）
+show_bootstrap_progress() {
     CURRENT_STEP=$((CURRENT_STEP + 1))
-    echo -e "${BLUE}[${CURRENT_STEP}/${TOTAL_STEPS}] $1${NC}"
-}
-
-# 显示成功消息
-show_success() {
-    echo -e "${GREEN}✓ $1${NC}"
-}
-
-# 显示错误消息
-show_error() {
-    echo -e "${RED}✗ $1${NC}"
-    exit 1
-}
-
-# 显示警告消息
-show_warning() {
-    echo -e "${YELLOW}! $1${NC}"
+    show_progress "$1" "$CURRENT_STEP" "$TOTAL_STEPS"
 }
 
 # 设置基础环境变量
-show_progress "正在设置基础环境变量"
-# 检测 macOS 芯片类型并设置 Homebrew 路径
-if [[ $(uname -m) == "arm64" ]]; then
-    # Apple Silicon
-    BREW_PREFIX="/opt/homebrew"
-else
-    # Intel
-    BREW_PREFIX="/usr/local"
-fi
-
-# 导出环境变量
-export PATH="$BREW_PREFIX/bin:$BREW_PREFIX/sbin:$PATH"
-export HOMEBREW_PREFIX="$BREW_PREFIX"
+show_bootstrap_progress "正在设置基础环境变量"
+# 使用共享库的系统检测功能
+setup_base_environment
 show_success "基础环境变量设置完成"
 
-show_progress "正在安装 Homebrew"
+show_bootstrap_progress "正在安装 Homebrew"
 if test ! "$(which brew)"; then
     echo "正在安装 Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || show_error "Homebrew 安装失败"
@@ -61,11 +35,11 @@ else
     show_success "Homebrew 已安装"
 fi
 
-show_progress "正在设置主机名"
+show_bootstrap_progress "正在设置主机名"
 sudo scutil --set HostName xiewq-macbookpro || show_error "设置主机名失败"
 show_success "主机名设置完成"
 
-show_progress "正在使用 Brew Bundle 安装软件包"
+show_bootstrap_progress "正在使用 Brew Bundle 安装软件包"
 set +e
 if ! brew bundle; then
     show_warning "部分软件包安装可能失败，请检查日志"
@@ -74,19 +48,19 @@ else
 fi
 set -e
 
-show_progress "正在创建工作目录"
+show_bootstrap_progress "正在创建工作目录"
 mkdir -p ~/workspace/dev
 mkdir -p ~/workspace/work
 show_success "工作目录创建完成"
 
 # 创建必要的配置目录
-show_progress "正在准备配置目录"
+show_bootstrap_progress "正在准备配置目录"
 mkdir -p ~/.config/nvim
 mkdir -p ~/.oh-my-zsh/custom/themes
 mkdir -p ~/.tmux/plugins
 show_success "配置目录准备完成"
 
-show_progress "正在安装 dotfiles"
+show_bootstrap_progress "正在安装 dotfiles"
 rcup -d ./rc -f || show_error "dotfiles 安装失败"
 
 # 验证关键配置文件
@@ -109,7 +83,7 @@ done
 
 show_success "dotfiles 安装完成"
 
-show_progress "正在配置应用程序"
+show_bootstrap_progress "正在配置应用程序"
 ./app/bootstrap || show_error "应用程序配置失败"
 show_success "应用程序配置完成"
 

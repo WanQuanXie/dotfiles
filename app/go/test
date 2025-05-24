@@ -1,4 +1,27 @@
 #!/usr/bin/env bash
 
-test -x "$(which go)"
-test -d ~/go
+# Go 配置测试 - 使用共享库重构
+# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+
+# 导入测试工具函数
+# shellcheck source=../test_utils.sh
+source "$(dirname "$0")/../test_utils.sh"
+
+show_test "Go 配置测试开始"
+
+# 检查 Go 工具链
+check_executable "go" "检查 Go 编译器"
+
+# 检查 Go 工作目录
+check_directory "~/go" "检查 Go 工作目录"
+
+# 检查版本信息
+check_version "go" "version" "检查 Go 版本"
+
+# 运行 POSIX 兼容性测试
+run_posix_compatibility_tests "go"
+
+# 运行 macOS 兼容性测试
+run_macos_compatibility_tests "go"
+
+test_summary "Go 配置测试"

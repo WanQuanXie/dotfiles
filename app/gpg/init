@@ -43,14 +43,14 @@ gpg --list-secret-keys --keyid-format=long
 echo ""
 echo "GPG 公钥（添加到 GitHub）："
 echo ""
-gpg --armor --export $KEY_ID
+gpg --armor --export "$KEY_ID"
 
 # 配置 Git 使用生成的 GPG 密钥
 echo ""
 echo "正在配置 Git 使用 GPG 签名..."
 
 # 设置 Git 使用的 GPG 密钥
-git config --global user.signingkey $KEY_ID
+git config --global user.signingkey "$KEY_ID"
 
 # 启用 Git 提交和标记签名
 git config --global commit.gpgsign true

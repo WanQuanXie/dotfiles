@@ -20,6 +20,11 @@ show_success() {
     echo -e "${GREEN}✓ $1${NC}"
 }
 
+# 显示警告消息
+show_warning() {
+    echo -e "${YELLOW}! $1${NC}"
+}
+
 # 显示错误消息
 show_error() {
     echo -e "${RED}✗ $1${NC}"

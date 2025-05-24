@@ -5,7 +5,7 @@
 
 # 加载共享库
 # shellcheck source=./lib/common.sh
-source "$(dirname "$0")/lib/common.sh"
+source "./lib/common.sh"
 
 # 初始化测试环境
 init_test_env "main_system"

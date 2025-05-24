@@ -174,20 +174,29 @@ process_app() {
 
 # 处理应用组的函数
 process_group() {
-    local -n group=$1
+    # 使用 POSIX 兼容的间接变量访问替代 nameref (bash 4.3+ 特性)
+    # 这样可以确保在 bash 4+/zsh 5+ 和 macOS 10.15+ 上都能正常工作
+    local group_var_name=$1
     local group_name=$2
 
     CURRENT_GROUP=$((CURRENT_GROUP + 1))
     echo -e "${BLUE}[${CURRENT_GROUP}/${TOTAL_GROUPS}] 处理应用组: $group_name${NC}" | tee -a "$MAIN_LOG"
 
     local success_count=0
-    local total_count=${#group[@]}
+    # 使用 eval 进行间接变量访问获取数组长度
+    local total_count
+    eval "total_count=\${#${group_var_name}[@]}"
 
-    for app in "${group[@]}"; do
+    # 使用 eval 进行间接变量访问遍历数组元素
+    local i=0
+    while [ $i -lt "$total_count" ]; do
+        local app
+        eval "app=\${${group_var_name}[$i]}"
         echo -e "${BLUE}处理应用: $app${NC}" | tee -a "$MAIN_LOG"
         if process_app "$app"; then
             success_count=$((success_count + 1))
         fi
+        i=$((i + 1))
     done
 
     show_info "$group_name 组完成: $success_count/$total_count 个应用配置成功"

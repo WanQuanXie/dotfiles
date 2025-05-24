@@ -114,6 +114,8 @@ else
   cask 'via'
   # 窗口管理工具
   cask 'loop'
+  cask 'feishu'
+  cask 'tencent-meeting'
 
   # [cask] AI & AIGC
   cask 'cherry-studio'

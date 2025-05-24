@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # 导入测试工具函数
-# shellcheck source=../test_utils.sh
+# shellcheck source=./app/test_utils.sh
 source "$(dirname "$0")/../test_utils.sh"
 
 # 设置错误处理

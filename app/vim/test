@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # 导入测试工具函数
-# shellcheck source=../test_utils.sh
+# shellcheck source=./app/test_utils.sh
 source "$(dirname "$0")/../test_utils.sh"
 
 # 设置错误处理
@@ -56,18 +56,18 @@ if [[ -f ~/.vimrc ]]; then
     else
         show_warning "配置文件中未找到 vim-plug 设置"
     fi
-    
+
     # 检查基本设置
     if grep -q "syntax\|set" ~/.vimrc; then
         show_success "配置文件包含基本设置"
     else
         show_warning "配置文件中未找到基本设置"
     fi
-    
+
     # 检查插件配置
     if grep -q "Plug\s" ~/.vimrc; then
         show_success "配置文件包含插件配置"
-        
+
         # 统计插件数量
         PLUGIN_COUNT=$(grep -c "^Plug\s" ~/.vimrc || echo "0")
         echo "配置的插件数量: $PLUGIN_COUNT" | tee -a "$TEST_LOG"
@@ -81,12 +81,12 @@ show_test "检查插件安装状态"
 
 if [[ -d ~/.vim/plugged ]]; then
     show_success "插件目录存在"
-    
+
     # 统计已安装的插件
     INSTALLED_PLUGINS=$(find ~/.vim/plugged -maxdepth 1 -type d | wc -l)
     INSTALLED_PLUGINS=$((INSTALLED_PLUGINS - 1))  # 减去父目录
     echo "已安装插件数量: $INSTALLED_PLUGINS" | tee -a "$TEST_LOG"
-    
+
     if [[ $INSTALLED_PLUGINS -gt 0 ]]; then
         show_success "发现已安装的插件"
     else
@@ -165,14 +165,14 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     elif [[ "$ARCH" == "x86_64" ]]; then
         show_success "Intel 架构下的 vim 运行正常"
     fi
-    
+
     # 测试与 macOS 剪贴板的集成
     if echo "$VIM_FEATURES" | grep -q "+clipboard"; then
         show_success "vim 支持 macOS 剪贴板集成"
     else
         show_warning "vim 不支持 macOS 剪贴板集成"
     fi
-    
+
     # 检查是否使用 Homebrew 安装的 vim
     VIM_PATH=$(which vim)
     if [[ "$VIM_PATH" == *"/opt/homebrew/"* ]] || [[ "$VIM_PATH" == *"/usr/local/"* ]]; then
@@ -189,7 +189,7 @@ show_test "检查与 neovim 的关系"
 
 if command -v nvim >/dev/null 2>&1; then
     show_success "系统中同时安装了 neovim"
-    
+
     # 检查是否有 neovim 配置
     if [[ -f ~/.config/nvim/init.lua ]] || [[ -f ~/.config/nvim/init.vim ]]; then
         show_success "发现 neovim 配置文件"

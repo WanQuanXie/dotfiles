@@ -4,7 +4,7 @@
 # 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
 
 # 导入测试工具函数
-# shellcheck source=../test_utils.sh
+# shellcheck source=./app/test_utils.sh
 source "$(dirname "$0")/../test_utils.sh"
 
 show_test "Bash 配置测试开始"
@@ -23,11 +23,11 @@ if [[ -f ~/.bash_profile ]]; then
     show_test "检查 bash_profile 配置"
 
     # 检查基本环境变量设置
-    check_file_contains "~/.bash_profile" "CLICOLOR" "检查 CLICOLOR 环境变量设置"
-    check_file_contains "~/.bash_profile" "LSCOLORS" "检查 LSCOLORS 环境变量设置"
+    check_file_contains "$HOME/.bash_profile" "CLICOLOR" "检查 CLICOLOR 环境变量设置"
+    check_file_contains "$HOME/.bash_profile" "LSCOLORS" "检查 LSCOLORS 环境变量设置"
 
     # 检查 PS1 提示符设置
-    check_file_contains "~/.bash_profile" "PS1" "检查 PS1 提示符设置"
+    check_file_contains "$HOME/.bash_profile" "PS1" "检查 PS1 提示符设置"
 
     show_success "bash_profile 配置检查通过"
 else

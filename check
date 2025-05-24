@@ -17,24 +17,24 @@ fi
 
 # 首先检查自身
 show_check "检查 check 脚本"
-shellcheck check
+shellcheck -x check
 show_success "check 脚本检查通过"
 
 # 检查主要脚本
 show_check "检查 bootstrap 脚本"
-shellcheck bootstrap
+shellcheck -x bootstrap
 show_success "bootstrap 脚本检查通过"
 
 show_check "检查 test 脚本"
-shellcheck test
+shellcheck -x test
 show_success "test 脚本检查通过"
 
 show_check "检查 app/bootstrap 脚本"
-shellcheck app/bootstrap
+shellcheck -x app/bootstrap
 show_success "app/bootstrap 脚本检查通过"
 
 show_check "检查 app/test_utils.sh 脚本"
-shellcheck app/test_utils.sh
+shellcheck -x app/test_utils.sh
 show_success "app/test_utils.sh 脚本检查通过"
 
 # 检查所有应用脚本
@@ -56,11 +56,12 @@ for app in "${apps[@]}"; do
     if [[ -f "./$app/init" ]]; then
         show_check "检查 $app/init 脚本"
         total_scripts=$((total_scripts + 1))
-        if shellcheck -e SC1091 "./$app/init"; then
+        if shellcheck -x "./$app/init"; then
             show_success "$app/init 脚本检查通过"
             checked_scripts=$((checked_scripts + 1))
         else
             show_error "$app/init 脚本检查失败"
+            failed_scripts=$((failed_scripts + 1))
         fi
     fi
 
@@ -68,11 +69,12 @@ for app in "${apps[@]}"; do
     if [[ -f "./$app/test" ]]; then
         show_check "检查 $app/test 脚本"
         total_scripts=$((total_scripts + 1))
-        if shellcheck -e SC1091 "./$app/test"; then
+        if shellcheck -x "./$app/test"; then
             show_success "$app/test 脚本检查通过"
             checked_scripts=$((checked_scripts + 1))
         else
             show_error "$app/test 脚本检查失败"
+            failed_scripts=$((failed_scripts + 1))
         fi
     else
         show_warning "$app/test 脚本不存在"
@@ -82,11 +84,12 @@ for app in "${apps[@]}"; do
     if [[ -f "./$app/cleanup" ]]; then
         show_check "检查 $app/cleanup 脚本"
         total_scripts=$((total_scripts + 1))
-        if shellcheck -e SC1091 "./$app/cleanup"; then
+        if shellcheck -x "./$app/cleanup"; then
             show_success "$app/cleanup 脚本检查通过"
             checked_scripts=$((checked_scripts + 1))
         else
             show_error "$app/cleanup 脚本检查失败"
+            failed_scripts=$((failed_scripts + 1))
         fi
     fi
 done
@@ -105,7 +108,7 @@ echo -e "${BLUE}检查其他 shell 脚本:${NC}"
 # 检查 rc 目录中的 shell 脚本
 if [[ -f "rc/bash_profile" ]]; then
     show_check "检查 rc/bash_profile"
-    if shellcheck "rc/bash_profile"; then
+    if shellcheck -x "rc/bash_profile"; then
         show_success "rc/bash_profile 检查通过"
     else
         show_warning "rc/bash_profile 检查有警告"
@@ -115,7 +118,7 @@ fi
 # 检查 macOS 设置脚本
 if [[ -f "macOS/settings" ]]; then
     show_check "检查 macOS/settings"
-    if shellcheck "macOS/settings"; then
+    if shellcheck -x "macOS/settings"; then
         show_success "macOS/settings 检查通过"
     else
         show_warning "macOS/settings 检查有警告"
@@ -126,7 +129,7 @@ fi
 if [[ -d "macOS" ]]; then
     find macOS -name "*.sh" -type f | while read -r script; do
         show_check "检查 $script"
-        if shellcheck "$script"; then
+        if shellcheck -x "$script"; then
             show_success "$script 检查通过"
         else
             show_warning "$script 检查有警告"

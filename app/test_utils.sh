@@ -4,7 +4,7 @@
 # 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
 
 # 加载共享库
-# shellcheck source=../lib/common.sh
+# shellcheck source=./lib/common.sh
 source "$(dirname "$0")/../lib/common.sh"
 
 # 初始化测试环境

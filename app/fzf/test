@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # 导入测试工具函数
-# shellcheck source=../test_utils.sh
+# shellcheck source=./app/test_utils.sh
 source "$(dirname "$0")/../test_utils.sh"
 
 # 设置错误处理
@@ -61,7 +61,7 @@ show_test "检查用户配置文件"
 # 检查 .fzf.bash
 if [[ -f ~/.fzf.bash ]]; then
     show_success ".fzf.bash 配置文件存在"
-    
+
     # 检查配置文件内容
     test_command "grep -q 'completion.bash' ~/.fzf.bash" "检查 bash 补全配置"
     test_command "grep -q 'key-bindings.bash' ~/.fzf.bash" "检查 bash 键绑定配置"
@@ -72,7 +72,7 @@ fi
 # 检查 .fzf.zsh
 if [[ -f ~/.fzf.zsh ]]; then
     show_success ".fzf.zsh 配置文件存在"
-    
+
     # 检查配置文件内容
     test_command "grep -q 'completion.zsh' ~/.fzf.zsh" "检查 zsh 补全配置"
     test_command "grep -q 'key-bindings.zsh' ~/.fzf.zsh" "检查 zsh 键绑定配置"
@@ -83,7 +83,7 @@ fi
 # 测试 zshrc 集成
 if [[ -f ~/.zshrc ]]; then
     show_test "检查 zshrc 中的 fzf 集成"
-    
+
     if grep -q "fzf.zsh" ~/.zshrc; then
         show_success "zshrc 中包含 fzf 配置"
     else
@@ -125,7 +125,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     elif [[ "$ARCH" == "x86_64" ]]; then
         show_success "Intel 架构下的 fzf 运行正常"
     fi
-    
+
     # 测试与 macOS 特定工具的集成
     if command -v pbcopy >/dev/null 2>&1; then
         test_command "echo 'test' | fzf --filter='test' | pbcopy && pbpaste | grep -q 'test'" "测试与 pbcopy/pbpaste 的集成"

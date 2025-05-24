@@ -4,7 +4,7 @@
 # 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
 
 # 导入测试工具函数
-# shellcheck source=../test_utils.sh
+# shellcheck source=./app/test_utils.sh
 source "$(dirname "$0")/../test_utils.sh"
 
 show_test "Zsh 配置测试开始"
@@ -13,19 +13,19 @@ show_test "Zsh 配置测试开始"
 check_executable "zsh" "检查 Zsh shell"
 
 # 检查 oh-my-zsh 安装
-check_directory "~/.oh-my-zsh" "检查 oh-my-zsh 目录"
+check_directory "$HOME/.oh-my-zsh" "检查 oh-my-zsh 目录"
 
 # 检查版本信息
 check_version "zsh" "--version" "检查 Zsh 版本"
 
 # 检查配置文件
-check_file "~/.zshrc" "检查 zshrc 配置文件"
+check_file "$HOME/.zshrc" "检查 zshrc 配置文件"
 
 # 检查自定义主题
-check_file "~/.oh-my-zsh/custom/themes/crispy.zsh-theme" "检查自定义主题"
+check_file "$HOME/.oh-my-zsh/custom/themes/crispy.zsh-theme" "检查自定义主题"
 
 # 检查语法高亮插件
-check_directory "~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" "检查语法高亮插件"
+check_directory "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" "检查语法高亮插件"
 
 # 运行 POSIX 兼容性测试
 run_posix_compatibility_tests "zsh"

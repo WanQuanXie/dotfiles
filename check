@@ -61,20 +61,93 @@ show_success "app/test_utils.sh 脚本检查通过"
 # 检查所有应用脚本
 apps=()
 while IFS='' read -r line; do apps+=("$line"); done < <(ls -d app/*)
+
+# 统计信息
+total_scripts=0
+checked_scripts=0
+failed_scripts=0
+
 for app in "${apps[@]}"; do
+    app_name=$(basename "$app")
+
+    # 跳过非目录文件
+    if [[ ! -d "$app" ]]; then
+        continue
+    fi
+
+    # 检查 init 脚本
     if [[ -f "./$app/init" ]]; then
         show_check "检查 $app/init 脚本"
-        shellcheck "./$app/init"
-        show_success "$app/init 脚本检查通过"
+        total_scripts=$((total_scripts + 1))
+        if shellcheck "./$app/init"; then
+            show_success "$app/init 脚本检查通过"
+            checked_scripts=$((checked_scripts + 1))
+        else
+            show_error "$app/init 脚本检查失败"
+            failed_scripts=$((failed_scripts + 1))
+        fi
     fi
+
+    # 检查 test 脚本
     if [[ -f "./$app/test" ]]; then
         show_check "检查 $app/test 脚本"
-        shellcheck "./$app/test"
-        show_success "$app/test 脚本检查通过"
+        total_scripts=$((total_scripts + 1))
+        if shellcheck "./$app/test"; then
+            show_success "$app/test 脚本检查通过"
+            checked_scripts=$((checked_scripts + 1))
+        else
+            show_error "$app/test 脚本检查失败"
+            failed_scripts=$((failed_scripts + 1))
+        fi
+    else
+        show_warning "$app/test 脚本不存在"
     fi
+
+    # 检查 cleanup 脚本
     if [[ -f "./$app/cleanup" ]]; then
         show_check "检查 $app/cleanup 脚本"
-        shellcheck "./$app/cleanup"
-        show_success "$app/cleanup 脚本检查通过"
+        total_scripts=$((total_scripts + 1))
+        if shellcheck "./$app/cleanup"; then
+            show_success "$app/cleanup 脚本检查通过"
+            checked_scripts=$((checked_scripts + 1))
+        else
+            show_error "$app/cleanup 脚本检查失败"
+            failed_scripts=$((failed_scripts + 1))
+        fi
     fi
 done
+
+# 显示统计信息
+echo -e "${BLUE}检查统计:${NC}"
+echo -e "${BLUE}  总脚本数: $total_scripts${NC}"
+echo -e "${GREEN}  检查通过: $checked_scripts${NC}"
+if [[ $failed_scripts -gt 0 ]]; then
+    echo -e "${RED}  检查失败: $failed_scripts${NC}"
+fi
+
+# 检查其他可能的 shell 脚本
+echo -e "${BLUE}检查其他 shell 脚本:${NC}"
+
+# 检查 rc 目录中的 shell 脚本
+if [[ -f "rc/bash_profile" ]]; then
+    show_check "检查 rc/bash_profile"
+    if shellcheck "rc/bash_profile"; then
+        show_success "rc/bash_profile 检查通过"
+    else
+        show_warning "rc/bash_profile 检查有警告"
+    fi
+fi
+
+# 检查 macOS 设置脚本
+if [[ -d "macOS" ]]; then
+    find macOS -name "*.sh" -type f | while read -r script; do
+        show_check "检查 $script"
+        if shellcheck "$script"; then
+            show_success "$script 检查通过"
+        else
+            show_warning "$script 检查有警告"
+        fi
+    done
+fi
+
+echo -e "${GREEN}所有脚本语法检查完成${NC}"

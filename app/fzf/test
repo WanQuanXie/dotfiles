@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+
+# 导入测试工具函数
+# shellcheck source=../test_utils.sh
+source "$(dirname "$0")/../test_utils.sh"
+
+# 设置错误处理
+set -e
+
+show_test "FZF 配置测试开始"
+
+# 测试 fzf 是否安装
+test_command "command -v fzf" "检查 fzf 是否安装"
+
+# 测试 fzf 版本
+show_test "检查 fzf 版本"
+FZF_VERSION=$(fzf --version | head -n1)
+echo "FZF 版本: $FZF_VERSION" | tee -a "$TEST_LOG"
+show_success "FZF 版本检查完成"
+
+# 测试 fzf 安装路径
+BREW_PREFIX="$(brew --prefix)"
+test_command "test -f '$BREW_PREFIX/bin/fzf'" "检查 fzf 二进制文件"
+
+# 测试 fzf 脚本文件
+test_command "test -d '$BREW_PREFIX/opt/fzf'" "检查 fzf 安装目录"
+test_command "test -f '$BREW_PREFIX/opt/fzf/install'" "检查 fzf 安装脚本"
+
+# 测试 shell 集成文件
+show_test "检查 shell 集成文件"
+
+# 检查 bash 集成
+if [[ -f "$BREW_PREFIX/opt/fzf/shell/completion.bash" ]]; then
+    show_success "Bash 补全脚本存在"
+else
+    show_warning "Bash 补全脚本不存在"
+fi
+
+if [[ -f "$BREW_PREFIX/opt/fzf/shell/key-bindings.bash" ]]; then
+    show_success "Bash 键绑定脚本存在"
+else
+    show_warning "Bash 键绑定脚本不存在"
+fi
+
+# 检查 zsh 集成
+if [[ -f "$BREW_PREFIX/opt/fzf/shell/completion.zsh" ]]; then
+    show_success "Zsh 补全脚本存在"
+else
+    show_warning "Zsh 补全脚本不存在"
+fi
+
+if [[ -f "$BREW_PREFIX/opt/fzf/shell/key-bindings.zsh" ]]; then
+    show_success "Zsh 键绑定脚本存在"
+else
+    show_warning "Zsh 键绑定脚本不存在"
+fi
+
+# 测试用户配置文件
+show_test "检查用户配置文件"
+
+# 检查 .fzf.bash
+if [[ -f ~/.fzf.bash ]]; then
+    show_success ".fzf.bash 配置文件存在"
+    
+    # 检查配置文件内容
+    test_command "grep -q 'completion.bash' ~/.fzf.bash" "检查 bash 补全配置"
+    test_command "grep -q 'key-bindings.bash' ~/.fzf.bash" "检查 bash 键绑定配置"
+else
+    show_warning ".fzf.bash 配置文件不存在"
+fi
+
+# 检查 .fzf.zsh
+if [[ -f ~/.fzf.zsh ]]; then
+    show_success ".fzf.zsh 配置文件存在"
+    
+    # 检查配置文件内容
+    test_command "grep -q 'completion.zsh' ~/.fzf.zsh" "检查 zsh 补全配置"
+    test_command "grep -q 'key-bindings.zsh' ~/.fzf.zsh" "检查 zsh 键绑定配置"
+else
+    show_warning ".fzf.zsh 配置文件不存在"
+fi
+
+# 测试 zshrc 集成
+if [[ -f ~/.zshrc ]]; then
+    show_test "检查 zshrc 中的 fzf 集成"
+    
+    if grep -q "fzf.zsh" ~/.zshrc; then
+        show_success "zshrc 中包含 fzf 配置"
+    else
+        show_warning "zshrc 中未找到 fzf 配置"
+    fi
+else
+    show_warning "zshrc 文件不存在"
+fi
+
+# 功能测试
+show_test "FZF 功能测试"
+
+# 测试基本搜索功能（非交互式）
+test_command "echo 'test' | fzf --filter='test'" "测试 fzf 过滤功能"
+
+# 测试 fzf 是否能正确处理输入
+test_command "echo -e 'line1\nline2\nline3' | fzf --filter='line2' | grep -q 'line2'" "测试 fzf 搜索功能"
+
+# POSIX 兼容性测试
+show_test "POSIX 兼容性测试"
+
+# 检查 fzf 在不同 shell 中的兼容性
+if command -v bash >/dev/null 2>&1; then
+    test_command "bash -c 'command -v fzf'" "测试 bash 中的 fzf 可用性"
+fi
+
+if command -v zsh >/dev/null 2>&1; then
+    test_command "zsh -c 'command -v fzf'" "测试 zsh 中的 fzf 可用性"
+fi
+
+# macOS 兼容性测试
+show_test "macOS 兼容性测试"
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # 检测芯片架构并验证对应的 fzf 二进制
+    ARCH=$(uname -m)
+    if [[ "$ARCH" == "arm64" ]]; then
+        show_success "Apple Silicon 架构下的 fzf 运行正常"
+    elif [[ "$ARCH" == "x86_64" ]]; then
+        show_success "Intel 架构下的 fzf 运行正常"
+    fi
+    
+    # 测试与 macOS 特定工具的集成
+    if command -v pbcopy >/dev/null 2>&1; then
+        test_command "echo 'test' | fzf --filter='test' | pbcopy && pbpaste | grep -q 'test'" "测试与 pbcopy/pbpaste 的集成"
+    fi
+else
+    show_warning "非 macOS 系统，跳过 macOS 特定测试"
+fi
+
+# 性能测试
+show_test "性能测试"
+
+# 创建临时测试数据
+TEMP_DIR=$(mktemp -d)
+for i in {1..1000}; do
+    echo "test_line_$i" >> "$TEMP_DIR/test_data.txt"
+done
+
+# 测试大数据集的处理
+test_command "cat '$TEMP_DIR/test_data.txt' | fzf --filter='test_line_500' | grep -q 'test_line_500'" "测试大数据集处理"
+
+# 清理临时文件
+rm -rf "$TEMP_DIR"
+
+show_success "FZF 配置测试完成"

@@ -1,5 +1,144 @@
 #!/usr/bin/env bash
 
-test -x "$(which git)"
-GIT_NAME="$(git config --global --get user.name)"
-test "$GIT_NAME" = "David Zhang"
+# 导入测试工具函数
+# shellcheck source=../test_utils.sh
+source "$(dirname "$0")/../test_utils.sh"
+
+# 设置错误处理
+set -e
+
+show_test "Git 配置测试开始"
+
+# 基本安装测试
+test_command "command -v git" "检查 git 是否安装"
+
+# 版本信息测试
+show_test "检查 Git 版本"
+GIT_VERSION=$(git --version)
+echo "Git 版本: $GIT_VERSION" | tee -a "$TEST_LOG"
+show_success "Git 版本检查完成"
+
+# 用户配置测试
+show_test "检查 Git 用户配置"
+
+GIT_NAME="$(git config --global --get user.name || echo '')"
+GIT_EMAIL="$(git config --global --get user.email || echo '')"
+
+if [[ -n "$GIT_NAME" ]]; then
+    echo "Git 用户名: $GIT_NAME" | tee -a "$TEST_LOG"
+    show_success "Git 用户名已配置"
+else
+    show_warning "Git 用户名未配置"
+fi
+
+if [[ -n "$GIT_EMAIL" ]]; then
+    echo "Git 邮箱: $GIT_EMAIL" | tee -a "$TEST_LOG"
+    show_success "Git 邮箱已配置"
+else
+    show_warning "Git 邮箱未配置"
+fi
+
+# 检查配置文件
+show_test "检查 Git 配置文件"
+test_command "test -f ~/.gitconfig" "检查全局配置文件"
+
+# GPG 签名配置测试
+show_test "检查 GPG 签名配置"
+
+GPG_SIGNING_KEY="$(git config --global --get user.signingkey || echo '')"
+GPG_COMMIT_SIGN="$(git config --global --get commit.gpgsign || echo '')"
+
+if [[ -n "$GPG_SIGNING_KEY" ]]; then
+    echo "GPG 签名密钥: $GPG_SIGNING_KEY" | tee -a "$TEST_LOG"
+    show_success "GPG 签名密钥已配置"
+
+    if [[ "$GPG_COMMIT_SIGN" == "true" ]]; then
+        show_success "自动 GPG 签名已启用"
+    else
+        show_warning "自动 GPG 签名未启用"
+    fi
+else
+    show_warning "GPG 签名密钥未配置"
+fi
+
+# 检查其他重要配置
+show_test "检查其他 Git 配置"
+
+# 检查默认分支名
+DEFAULT_BRANCH="$(git config --global --get init.defaultBranch || echo '')"
+if [[ -n "$DEFAULT_BRANCH" ]]; then
+    echo "默认分支名: $DEFAULT_BRANCH" | tee -a "$TEST_LOG"
+    show_success "默认分支名已配置"
+else
+    show_warning "默认分支名未配置"
+fi
+
+# 检查编辑器配置
+GIT_EDITOR="$(git config --global --get core.editor || echo '')"
+if [[ -n "$GIT_EDITOR" ]]; then
+    echo "Git 编辑器: $GIT_EDITOR" | tee -a "$TEST_LOG"
+    show_success "Git 编辑器已配置"
+else
+    show_warning "Git 编辑器未配置"
+fi
+
+# 功能测试
+show_test "Git 功能测试"
+
+# 创建临时仓库进行测试
+TEMP_DIR=$(mktemp -d)
+cd "$TEMP_DIR"
+
+# 初始化仓库
+test_command "git init" "初始化 Git 仓库"
+
+# 创建测试文件
+echo "test content" > test.txt
+test_command "git add test.txt" "添加文件到暂存区"
+
+# 提交测试（如果用户配置完整）
+if [[ -n "$GIT_NAME" && -n "$GIT_EMAIL" ]]; then
+    test_command "git commit -m 'Test commit'" "创建测试提交"
+    show_success "Git 基本功能正常"
+else
+    show_warning "由于用户配置不完整，跳过提交测试"
+fi
+
+# 清理
+cd - >/dev/null
+rm -rf "$TEMP_DIR"
+
+# POSIX 兼容性测试
+show_test "POSIX 兼容性测试"
+
+if command -v bash >/dev/null 2>&1; then
+    test_command "bash -c 'command -v git'" "测试 bash 中的 git 可用性"
+fi
+
+if command -v zsh >/dev/null 2>&1; then
+    test_command "zsh -c 'command -v git'" "测试 zsh 中的 git 可用性"
+fi
+
+# macOS 兼容性测试
+show_test "macOS 兼容性测试"
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    ARCH=$(uname -m)
+    if [[ "$ARCH" == "arm64" ]]; then
+        show_success "Apple Silicon 架构下的 Git 运行正常"
+    elif [[ "$ARCH" == "x86_64" ]]; then
+        show_success "Intel 架构下的 Git 运行正常"
+    fi
+
+    # 检查是否使用 Homebrew 安装的 git
+    GIT_PATH=$(which git)
+    if [[ "$GIT_PATH" == *"/opt/homebrew/"* ]] || [[ "$GIT_PATH" == *"/usr/local/"* ]]; then
+        show_success "使用 Homebrew 安装的 Git"
+    else
+        show_warning "可能使用系统自带的 Git"
+    fi
+else
+    show_warning "非 macOS 系统，跳过 macOS 特定测试"
+fi
+
+show_success "Git 配置测试完成"

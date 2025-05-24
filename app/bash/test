@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+# 导入测试工具函数
+# shellcheck source=../test_utils.sh
+source "$(dirname "$0")/../test_utils.sh"
+
+# 设置错误处理
+set -e
+
+show_test "Bash 配置测试开始"
+
+# 测试 bash 是否可用
+test_command "command -v bash" "检查 bash 是否安装"
+
+# 测试 motd 文件是否存在
+test_command "test -f /etc/motd" "检查 motd 文件是否存在"
+
+# 测试 motd 文件权限
+test_command "test -r /etc/motd" "检查 motd 文件是否可读"
+
+# 测试 bash_profile 配置
+if [[ -f ~/.bash_profile ]]; then
+    show_test "检查 bash_profile 配置"
+    
+    # 检查基本环境变量设置
+    test_command "grep -q 'CLICOLOR' ~/.bash_profile" "检查 CLICOLOR 环境变量设置"
+    test_command "grep -q 'LSCOLORS' ~/.bash_profile" "检查 LSCOLORS 环境变量设置"
+    
+    # 检查 PS1 提示符设置
+    test_command "grep -q 'PS1' ~/.bash_profile" "检查 PS1 提示符设置"
+    
+    show_success "bash_profile 配置检查通过"
+else
+    show_warning "bash_profile 文件不存在，这可能是正常的（如果主要使用 zsh）"
+fi
+
+# 测试 POSIX 兼容性
+show_test "POSIX 兼容性测试"
+
+# 检查 bash 版本是否满足要求 (bash 4+)
+BASH_VERSION_MAJOR=$(bash --version | head -n1 | sed 's/.*version \([0-9]\).*/\1/')
+if [[ "$BASH_VERSION_MAJOR" -ge 4 ]]; then
+    show_success "Bash 版本满足要求 (版本 $BASH_VERSION_MAJOR)"
+else
+    show_error "Bash 版本过低 (版本 $BASH_VERSION_MAJOR)，需要 4 或更高版本"
+fi
+
+# macOS 兼容性测试
+show_test "macOS 兼容性测试"
+
+# 检测 macOS 版本
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    MACOS_VERSION=$(sw_vers -productVersion)
+    MACOS_MAJOR=$(echo "$MACOS_VERSION" | cut -d. -f1)
+    MACOS_MINOR=$(echo "$MACOS_VERSION" | cut -d. -f2)
+    
+    # 检查是否为 macOS 10.15+ (Catalina 或更新)
+    if [[ "$MACOS_MAJOR" -gt 10 ]] || [[ "$MACOS_MAJOR" -eq 10 && "$MACOS_MINOR" -ge 15 ]]; then
+        show_success "macOS 版本满足要求 ($MACOS_VERSION)"
+    else
+        show_warning "macOS 版本可能过低 ($MACOS_VERSION)，建议使用 10.15 或更高版本"
+    fi
+    
+    # 检测芯片架构
+    ARCH=$(uname -m)
+    if [[ "$ARCH" == "arm64" ]]; then
+        show_success "检测到 Apple Silicon (M1/M2) 架构"
+    elif [[ "$ARCH" == "x86_64" ]]; then
+        show_success "检测到 Intel 架构"
+    else
+        show_warning "未知架构: $ARCH"
+    fi
+else
+    show_warning "非 macOS 系统，跳过 macOS 特定测试"
+fi
+
+# 测试 motd 内容显示
+show_test "测试 motd 内容"
+if [[ -f /etc/motd ]]; then
+    # 检查 motd 文件是否有内容
+    if [[ -s /etc/motd ]]; then
+        show_success "motd 文件包含内容"
+        
+        # 显示 motd 内容的前几行作为验证
+        echo "motd 内容预览:"
+        head -n 3 /etc/motd | sed 's/^/  /'
+    else
+        show_warning "motd 文件为空"
+    fi
+else
+    show_warning "motd 文件不存在"
+fi
+
+show_success "Bash 配置测试完成"

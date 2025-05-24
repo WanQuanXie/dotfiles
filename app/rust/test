@@ -1,5 +1,142 @@
 #!/usr/bin/env bash
 
-test -x "$(which rustc)"
-test -x "$(which rustfmt)"
-test -d ~/.cargo
+# 导入测试工具函数
+# shellcheck source=../test_utils.sh
+source "$(dirname "$0")/../test_utils.sh"
+
+# 设置错误处理
+set -e
+
+show_test "Rust 配置测试开始"
+
+# 基本安装测试
+test_command "command -v rustc" "检查 rustc 编译器"
+test_command "command -v rustfmt" "检查 rustfmt 格式化工具"
+test_command "command -v cargo" "检查 cargo 包管理器"
+test_command "test -d ~/.cargo" "检查 cargo 目录"
+
+# 版本信息测试
+show_test "检查 Rust 工具链版本"
+RUSTC_VERSION=$(rustc --version)
+CARGO_VERSION=$(cargo --version)
+echo "Rustc 版本: $RUSTC_VERSION" | tee -a "$TEST_LOG"
+echo "Cargo 版本: $CARGO_VERSION" | tee -a "$TEST_LOG"
+show_success "Rust 版本检查完成"
+
+# 测试 Rust 工具链
+show_test "检查 Rust 工具链组件"
+
+# 检查 rustup
+if command -v rustup >/dev/null 2>&1; then
+    show_success "rustup 工具链管理器可用"
+
+    # 检查默认工具链
+    DEFAULT_TOOLCHAIN=$(rustup default)
+    echo "默认工具链: $DEFAULT_TOOLCHAIN" | tee -a "$TEST_LOG"
+
+    # 检查已安装的组件
+    INSTALLED_COMPONENTS=$(rustup component list --installed | wc -l)
+    echo "已安装组件数量: $INSTALLED_COMPONENTS" | tee -a "$TEST_LOG"
+else
+    show_warning "rustup 不可用"
+fi
+
+# 检查其他 Rust 工具
+if command -v clippy >/dev/null 2>&1; then
+    show_success "clippy 代码检查工具可用"
+else
+    show_warning "clippy 不可用"
+fi
+
+# 测试 cargo 配置
+show_test "检查 cargo 配置"
+
+test_command "test -f ~/.cargo/config.toml || test -f ~/.cargo/config" "检查 cargo 配置文件"
+
+if [[ -f ~/.cargo/config.toml ]]; then
+    show_success "发现 cargo 配置文件 (TOML 格式)"
+elif [[ -f ~/.cargo/config ]]; then
+    show_success "发现 cargo 配置文件 (旧格式)"
+fi
+
+# 检查环境变量
+show_test "检查 Rust 环境变量"
+
+if [[ -n "$CARGO_HOME" ]]; then
+    echo "CARGO_HOME: $CARGO_HOME" | tee -a "$TEST_LOG"
+    show_success "CARGO_HOME 环境变量已设置"
+else
+    show_warning "CARGO_HOME 环境变量未设置"
+fi
+
+if [[ -n "$RUSTUP_HOME" ]]; then
+    echo "RUSTUP_HOME: $RUSTUP_HOME" | tee -a "$TEST_LOG"
+    show_success "RUSTUP_HOME 环境变量已设置"
+else
+    show_warning "RUSTUP_HOME 环境变量未设置"
+fi
+
+# 功能测试
+show_test "Rust 功能测试"
+
+# 创建临时项目进行测试
+TEMP_DIR=$(mktemp -d)
+cd "$TEMP_DIR"
+
+# 创建简单的 Rust 项目
+test_command "cargo init --name rust_test_project" "创建测试项目"
+
+# 编译测试
+test_command "cargo check" "检查项目编译"
+test_command "cargo build" "构建项目"
+
+# 运行测试
+test_command "cargo test" "运行项目测试"
+
+# 格式化测试
+test_command "cargo fmt --check" "检查代码格式"
+
+# 清理
+cd - >/dev/null
+rm -rf "$TEMP_DIR"
+
+# POSIX 兼容性测试
+show_test "POSIX 兼容性测试"
+
+if command -v bash >/dev/null 2>&1; then
+    test_command "bash -c 'command -v rustc'" "测试 bash 中的 rustc 可用性"
+fi
+
+if command -v zsh >/dev/null 2>&1; then
+    test_command "zsh -c 'command -v rustc'" "测试 zsh 中的 rustc 可用性"
+fi
+
+# macOS 兼容性测试
+show_test "macOS 兼容性测试"
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    ARCH=$(uname -m)
+    if [[ "$ARCH" == "arm64" ]]; then
+        show_success "Apple Silicon 架构下的 Rust 运行正常"
+
+        # 检查是否支持 ARM64 目标
+        if rustup target list --installed | grep -q "aarch64-apple-darwin"; then
+            show_success "支持 ARM64 目标平台"
+        else
+            show_warning "未安装 ARM64 目标平台"
+        fi
+    elif [[ "$ARCH" == "x86_64" ]]; then
+        show_success "Intel 架构下的 Rust 运行正常"
+
+        # 检查是否支持 x86_64 目标
+        if rustup target list --installed | grep -q "x86_64-apple-darwin"; then
+            show_success "支持 x86_64 目标平台"
+        else
+            show_warning "未安装 x86_64 目标平台"
+        fi
+    fi
+else
+    show_warning "非 macOS 系统，跳过 macOS 特定测试"
+fi
+
+show_success "Rust 配置测试完成"

@@ -1,26 +1,29 @@
 #!/usr/bin/env bash
 
-# 颜色定义
-GREEN='\033[0;32m'
-# RED='\033[0;31m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Neovim 初始化脚本 - 使用共享库重构
+# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
 
-echo -e "${BLUE}正在设置 Neovim${NC}"
+# 加载共享库
+# shellcheck source=../../lib/common.sh
+source "$(dirname "$0")/../../lib/common.sh"
+
+# 初始化环境
+init_dotfiles_env
+
+show_info "正在设置 Neovim"
 
 # 检查 Lazy.nvim 是否已安装
 LAZY_PATH="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy/lazy.nvim"
 if [ -d "$LAZY_PATH" ]; then
-    echo -e "${YELLOW}Lazy.nvim 已安装，跳过插件安装${NC}"
+    show_warning "Lazy.nvim 已安装，跳过插件安装"
 else
-    echo "安装 Neovim 插件..."
+    show_info "安装 Neovim 插件..."
     # 运行 nvim 触发插件安装
-    nvim --headless "+Lazy! sync" +qa
+    run_with_log "nvim --headless '+Lazy! sync' +qa" "安装 Neovim 插件"
 fi
 
-echo "安装格式化工具和 linters..."
+show_info "安装格式化工具和 linters..."
 # 安装格式化工具和 linters（语言服务器由 mason-lspconfig 确保）
-nvim --headless '+MasonInstall luacheck markdownlint revive stylua shfmt yamllint' +qa
+run_with_log "nvim --headless '+MasonInstall luacheck markdownlint revive stylua shfmt yamllint' +qa" "安装格式化工具和 linters"
 
-echo -e "${GREEN}Neovim 设置完成${NC}"
+show_success "Neovim 设置完成"

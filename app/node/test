@@ -1,13 +1,30 @@
 #!/usr/bin/env bash
 
-test -x "$(which fnm)"
+# Node.js 配置测试 - 使用共享库重构
+# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
 
-test -x "$(which pnpm)"
-pnpm --version
+# 导入测试工具函数
+# shellcheck source=../test_utils.sh
+source "$(dirname "$0")/../test_utils.sh"
 
-test -x "$(which node)"
-node --version
+show_test "Node.js 配置测试开始"
 
-test -x "$(which npm)"
-npm --version
+# 检查 Node.js 工具链
+check_executable "fnm" "检查 fnm 版本管理器"
+check_executable "pnpm" "检查 pnpm 包管理器"
+check_executable "node" "检查 Node.js"
+check_executable "npm" "检查 npm 包管理器"
+
+# 检查版本信息
+check_version "pnpm" "--version" "检查 pnpm 版本"
+check_version "node" "--version" "检查 Node.js 版本"
+check_version "npm" "--version" "检查 npm 版本"
+
+# 运行 POSIX 兼容性测试
+run_posix_compatibility_tests "node"
+
+# 运行 macOS 兼容性测试
+run_macos_compatibility_tests "node"
+
+test_summary "Node.js 配置测试"
 

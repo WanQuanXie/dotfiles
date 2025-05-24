@@ -1,35 +1,14 @@
 #!/usr/bin/env bash
 
-# 设置错误处理
-set -e
+# 主测试脚本 - 使用共享库重构
+# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
 
-# 颜色定义
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# 加载共享库
+# shellcheck source=./lib/common.sh
+source "$(dirname "$0")/lib/common.sh"
 
-# 显示测试项目
-show_test() {
-    echo -e "${BLUE}测试: $1${NC}"
-}
-
-# 显示成功消息
-show_success() {
-    echo -e "${GREEN}✓ $1${NC}"
-}
-
-# 显示警告消息
-show_warning() {
-    echo -e "${YELLOW}! $1${NC}"
-}
-
-# 显示错误消息
-show_error() {
-    echo -e "${RED}✗ $1${NC}"
-    exit 1
-}
+# 初始化测试环境
+init_test_env "main_system"
 
 show_test "主机名"
 HOSTNAME=$(hostname)

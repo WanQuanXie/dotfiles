@@ -7,55 +7,53 @@
 # shellcheck source=./display.sh
 source "$(dirname "${BASH_SOURCE[0]}")/display.sh"
 
-# 测试配置
-TEST_LOG_DIR="${TEST_LOG_DIR:-$HOME/.dotfiles_logs}"
-TEST_LOG_FILE=""
+# 测试配置（控制台输出）
+TEST_LOG_FILE=""  # 保留变量以兼容现有代码
 
 # 初始化测试环境
 init_test_env() {
     local test_name="${1:-$(basename "$(dirname "$0")")}"
-    
-    mkdir -p "$TEST_LOG_DIR"
-    TEST_LOG_FILE="$TEST_LOG_DIR/test_${test_name}_$(date +%Y%m%d_%H%M%S).log"
-    
+
+    # 不再创建日志文件，使用控制台输出
+    TEST_LOG_FILE="/dev/null"  # 兼容性设置
+
     # 设置错误处理
     set -e
-    
+
     write_log "测试环境初始化完成: $test_name" "TEST_INIT"
 }
 
-# 测试命令并提供反馈
+# 测试命令并提供反馈（控制台输出）
 test_command() {
     local cmd="$1"
     local msg="$2"
     local err_msg="${3:-$msg 失败}"
-    local log_to_file="${4:-true}"
-    
+    local show_output="${4:-false}"  # 是否显示命令输出
+
     show_test "$msg"
-    
+
     local result=0
-    if [[ "$log_to_file" == "true" && -n "$TEST_LOG_FILE" ]]; then
-        if eval "$cmd" >> "$TEST_LOG_FILE" 2>&1; then
+    if [[ "$show_output" == "true" ]]; then
+        # 显示命令输出
+        if eval "$cmd"; then
             result=0
         else
             result=$?
         fi
     else
+        # 隐藏命令输出
         if eval "$cmd" >/dev/null 2>&1; then
             result=0
         else
             result=$?
         fi
     fi
-    
+
     if [[ $result -eq 0 ]]; then
         show_success "$msg 通过"
         return 0
     else
         show_error "$err_msg (错误代码: $result)" 0
-        if [[ -n "$TEST_LOG_FILE" ]]; then
-            echo "详细日志: $TEST_LOG_FILE"
-        fi
         exit 1
     fi
 }
@@ -65,39 +63,57 @@ check_command() {
     local cmd="$1"
     local package="${2:-$cmd}"
     local msg="${3:-检查 $cmd 是否安装}"
-    
+
     test_command "command -v '$cmd'" "$msg"
 }
 
 # 检查可执行文件
 check_executable() {
     local cmd="$1"
-    local msg="${2:-检查 $cmd 是否可执行}"
-    
-    test_command "test -x \"\$(which '$cmd')\"" "$msg"
-}
+    local msg="${2:-检查 $cmd 可执行文件}"
 
-# 检查文件是否存在
-check_file() {
-    local file="$1"
-    local msg="${2:-检查文件 $file 是否存在}"
-    
-    test_command "test -f '$file'" "$msg"
+    test_command "command -v '$cmd'" "$msg"
 }
 
 # 检查目录是否存在
 check_directory() {
     local dir="$1"
-    local msg="${2:-检查目录 $dir 是否存在}"
-    
+    local msg="${2:-检查目录 $dir}"
+
     test_command "test -d '$dir'" "$msg"
+}
+
+# 检查文件是否存在
+check_file() {
+    local file="$1"
+    local msg="${2:-检查文件 $file}"
+
+    test_command "test -f '$file'" "$msg"
+}
+
+# 检查版本信息
+check_version() {
+    local cmd="$1"
+    local version_flag="${2:---version}"
+    local msg="${3:-检查 $cmd 版本}"
+
+    show_test "$msg"
+    if command -v "$cmd" >/dev/null 2>&1; then
+        local version_output
+        version_output=$($cmd $version_flag 2>&1 || echo "版本信息获取失败")
+        show_info "$cmd 版本: $version_output"
+        show_success "$msg 完成"
+    else
+        show_error "$cmd 未安装" 0
+        exit 1
+    fi
 }
 
 # 检查文件是否可读
 check_readable() {
     local file="$1"
     local msg="${2:-检查文件 $file 是否可读}"
-    
+
     test_command "test -r '$file'" "$msg"
 }
 
@@ -105,7 +121,7 @@ check_readable() {
 check_writable() {
     local file="$1"
     local msg="${2:-检查文件 $file 是否可写}"
-    
+
     test_command "test -w '$file'" "$msg"
 }
 
@@ -114,7 +130,7 @@ check_file_contains() {
     local file="$1"
     local pattern="$2"
     local msg="${3:-检查文件 $file 包含 $pattern}"
-    
+
     test_command "grep -q '$pattern' '$file'" "$msg"
 }
 
@@ -123,28 +139,11 @@ check_env_var() {
     local var_name="$1"
     local expected_value="${2:-}"
     local msg="${3:-检查环境变量 $var_name}"
-    
+
     if [[ -n "$expected_value" ]]; then
         test_command "test \"\${$var_name}\" = '$expected_value'" "$msg"
     else
         test_command "test -n \"\${$var_name}\"" "$msg"
-    fi
-}
-
-# 版本检查辅助函数
-check_version() {
-    local cmd="$1"
-    local version_flag="${2:---version}"
-    local msg="${3:-检查 $cmd 版本}"
-    
-    show_test "$msg"
-    local version_output
-    if version_output=$($cmd $version_flag 2>&1); then
-        echo "$cmd 版本: $version_output" | head -n1 | tee -a "$TEST_LOG_FILE"
-        show_success "$msg 完成"
-    else
-        show_error "$msg 失败" 0
-        exit 1
     fi
 }
 
@@ -167,9 +166,7 @@ cleanup_temp_test_env() {
 test_summary() {
     local test_name="${1:-测试}"
     show_success "$test_name 完成"
-    if [[ -n "$TEST_LOG_FILE" ]]; then
-        write_log "测试完成: $test_name" "TEST_COMPLETE"
-    fi
+    write_log "测试完成: $test_name" "TEST_COMPLETE"
 }
 
 # 导出测试相关变量

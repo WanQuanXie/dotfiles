@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 
+# Git 配置测试 - 使用共享库重构
+# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+
+# 获取脚本目录的绝对路径
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+APP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 # 导入测试工具函数
-# shellcheck source=../../test_utils.sh
-source "../../test_utils.sh"
+# shellcheck source=../test_utils.sh
+source "$APP_DIR/test_utils.sh"
 
 # 设置错误处理
 set -e
@@ -13,10 +20,7 @@ show_test "Git 配置测试开始"
 test_command "command -v git" "检查 git 是否安装"
 
 # 版本信息测试
-show_test "检查 Git 版本"
-GIT_VERSION=$(git --version)
-echo "Git 版本: $GIT_VERSION" | tee -a "$TEST_LOG"
-show_success "Git 版本检查完成"
+check_version "git" "--version" "检查 Git 版本"
 
 # 用户配置测试
 show_test "检查 Git 用户配置"
@@ -25,14 +29,14 @@ GIT_NAME="$(git config --global --get user.name || echo '')"
 GIT_EMAIL="$(git config --global --get user.email || echo '')"
 
 if [[ -n "$GIT_NAME" ]]; then
-    echo "Git 用户名: $GIT_NAME" | tee -a "$TEST_LOG"
+    show_info "Git 用户名: $GIT_NAME"
     show_success "Git 用户名已配置"
 else
     show_warning "Git 用户名未配置"
 fi
 
 if [[ -n "$GIT_EMAIL" ]]; then
-    echo "Git 邮箱: $GIT_EMAIL" | tee -a "$TEST_LOG"
+    show_info "Git 邮箱: $GIT_EMAIL"
     show_success "Git 邮箱已配置"
 else
     show_warning "Git 邮箱未配置"
@@ -49,7 +53,7 @@ GPG_SIGNING_KEY="$(git config --global --get user.signingkey || echo '')"
 GPG_COMMIT_SIGN="$(git config --global --get commit.gpgsign || echo '')"
 
 if [[ -n "$GPG_SIGNING_KEY" ]]; then
-    echo "GPG 签名密钥: $GPG_SIGNING_KEY" | tee -a "$TEST_LOG"
+    show_info "GPG 签名密钥: $GPG_SIGNING_KEY"
     show_success "GPG 签名密钥已配置"
 
     if [[ "$GPG_COMMIT_SIGN" == "true" ]]; then
@@ -67,7 +71,7 @@ show_test "检查其他 Git 配置"
 # 检查默认分支名
 DEFAULT_BRANCH="$(git config --global --get init.defaultBranch || echo '')"
 if [[ -n "$DEFAULT_BRANCH" ]]; then
-    echo "默认分支名: $DEFAULT_BRANCH" | tee -a "$TEST_LOG"
+    show_info "默认分支名: $DEFAULT_BRANCH"
     show_success "默认分支名已配置"
 else
     show_warning "默认分支名未配置"
@@ -76,7 +80,7 @@ fi
 # 检查编辑器配置
 GIT_EDITOR="$(git config --global --get core.editor || echo '')"
 if [[ -n "$GIT_EDITOR" ]]; then
-    echo "Git 编辑器: $GIT_EDITOR" | tee -a "$TEST_LOG"
+    show_info "Git 编辑器: $GIT_EDITOR"
     show_success "Git 编辑器已配置"
 else
     show_warning "Git 编辑器未配置"
@@ -141,4 +145,8 @@ else
     show_warning "非 macOS 系统，跳过 macOS 特定测试"
 fi
 
-show_success "Git 配置测试完成"
+# 运行兼容性测试
+run_posix_compatibility_tests "git"
+run_macos_compatibility_tests "git"
+
+test_summary "Git 配置测试"

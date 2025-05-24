@@ -15,7 +15,7 @@ fi
 # shellcheck source=./colors.sh
 source "$LIB_DIR/colors.sh"
 
-# shellcheck source=./display.sh  
+# shellcheck source=./display.sh
 source "$LIB_DIR/display.sh"
 
 # shellcheck source=./system.sh
@@ -34,10 +34,10 @@ check_and_install_dependency() {
     local cmd="$1"
     local package="${2:-$cmd}"
     local installer="${3:-brew}"
-    
+
     if ! command -v "$cmd" &> /dev/null; then
         show_warning "未找到命令: $cmd，尝试安装 $package..."
-        
+
         case "$installer" in
             brew)
                 if command -v brew >/dev/null 2>&1; then
@@ -66,7 +66,7 @@ check_and_install_dependency() {
 ensure_directory() {
     local dir="$1"
     local msg="${2:-创建目录 $dir}"
-    
+
     if [[ ! -d "$dir" ]]; then
         show_info "$msg"
         if mkdir -p "$dir"; then
@@ -83,7 +83,7 @@ ensure_directory() {
 backup_file() {
     local file="$1"
     local backup_dir="${2:-$HOME/.dotfiles_backup}"
-    
+
     if [[ -f "$file" ]]; then
         ensure_directory "$backup_dir"
         local backup_file="$backup_dir/$(basename "$file").$(date +%Y%m%d_%H%M%S)"
@@ -103,13 +103,13 @@ safe_symlink() {
     local source="$1"
     local target="$2"
     local backup="${3:-true}"
-    
+
     # 检查源文件是否存在
     if [[ ! -e "$source" ]]; then
         show_error "源文件不存在: $source" 0
         return 1
     fi
-    
+
     # 如果目标已存在，先备份
     if [[ -e "$target" || -L "$target" ]]; then
         if [[ "$backup" == "true" ]]; then
@@ -117,10 +117,10 @@ safe_symlink() {
         fi
         rm -f "$target"
     fi
-    
+
     # 确保目标目录存在
     ensure_directory "$(dirname "$target")"
-    
+
     # 创建符号链接
     if ln -s "$source" "$target"; then
         show_success "符号链接创建成功: $target -> $source"
@@ -135,7 +135,7 @@ safe_symlink() {
 is_app_configured() {
     local app="$1"
     local marker_file="$HOME/.dotfiles_configured_$app"
-    
+
     if [[ -f "$marker_file" ]]; then
         return 0  # 已配置
     else
@@ -161,21 +161,37 @@ clear_app_configured() {
     fi
 }
 
-# 运行命令并记录日志
+# 运行命令并记录日志（控制台输出）
 run_with_log() {
     local cmd="$1"
     local description="$2"
-    local log_file="${3:-$LOG_DIR/command.log}"
-    
+    local show_output="${3:-false}"  # 是否显示命令输出
+
     show_info "正在执行: $description"
     write_log "开始执行命令: $cmd" "COMMAND"
-    
-    if eval "$cmd" >> "$log_file" 2>&1; then
+
+    local exit_code=0
+    if [[ "$show_output" == "true" ]]; then
+        # 显示命令输出
+        if eval "$cmd"; then
+            exit_code=0
+        else
+            exit_code=$?
+        fi
+    else
+        # 隐藏命令输出
+        if eval "$cmd" >/dev/null 2>&1; then
+            exit_code=0
+        else
+            exit_code=$?
+        fi
+    fi
+
+    if [[ $exit_code -eq 0 ]]; then
         show_success "$description 完成"
         write_log "命令执行成功: $cmd" "COMMAND"
         return 0
     else
-        local exit_code=$?
         show_error "$description 失败 (退出代码: $exit_code)" 0
         write_log "命令执行失败: $cmd (退出代码: $exit_code)" "COMMAND"
         return $exit_code
@@ -186,13 +202,13 @@ run_with_log() {
 init_dotfiles_env() {
     # 设置基础环境
     setup_base_environment
-    
+
     # 初始化日志
     init_logging
-    
+
     # 设置错误处理
     set -e
-    
+
     write_log "dotfiles 环境初始化完成" "INIT"
 }
 

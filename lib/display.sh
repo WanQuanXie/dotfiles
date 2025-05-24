@@ -7,15 +7,16 @@
 # shellcheck source=./colors.sh
 source "$(dirname "${BASH_SOURCE[0]}")/colors.sh"
 
-# 全局日志配置
-LOG_DIR="${LOG_DIR:-$HOME/.dotfiles_logs}"
+# 全局日志配置 - 统一控制台输出格式
 LOG_ENABLED="${LOG_ENABLED:-true}"
+LOG_SHOW_TIMESTAMP="${LOG_SHOW_TIMESTAMP:-true}"
+LOG_SHOW_LEVEL="${LOG_SHOW_LEVEL:-true}"
+LOG_SHOW_CALLER="${LOG_SHOW_CALLER:-false}"
 
-# 确保日志目录存在
+# 初始化日志系统（控制台输出，不再创建文件）
 init_logging() {
-    if [[ "$LOG_ENABLED" == "true" ]]; then
-        mkdir -p "$LOG_DIR"
-    fi
+    # 日志系统已改为纯控制台输出，无需创建目录
+    return 0
 }
 
 # 获取调用者信息用于日志
@@ -25,17 +26,43 @@ get_caller_info() {
     echo "$script_name"
 }
 
-# 写入日志文件
+# 格式化日志前缀
+format_log_prefix() {
+    local level="$1"
+    local prefix=""
+
+    if [[ "$LOG_SHOW_TIMESTAMP" == "true" ]]; then
+        local timestamp
+        timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
+        prefix="[$timestamp]"
+    fi
+
+    if [[ "$LOG_SHOW_LEVEL" == "true" ]]; then
+        prefix="$prefix [$level]"
+    fi
+
+    if [[ "$LOG_SHOW_CALLER" == "true" ]]; then
+        local caller
+        caller="$(get_caller_info)"
+        prefix="$prefix [$caller]"
+    fi
+
+    echo "$prefix"
+}
+
+# 写入日志（现在输出到控制台而不是文件）
 write_log() {
     local message="$1"
     local level="${2:-INFO}"
-    
+
     if [[ "$LOG_ENABLED" == "true" ]]; then
-        local timestamp
-        timestamp="$(date '+%Y-%m-%d %H:%M:%S')"
-        local caller
-        caller="$(get_caller_info)"
-        echo "[$timestamp] [$level] [$caller] $message" >> "$LOG_DIR/dotfiles.log"
+        local prefix
+        prefix="$(format_log_prefix "$level")"
+        if [[ -n "$prefix" ]]; then
+            echo "$prefix $message" >&2
+        else
+            echo "$message" >&2
+        fi
     fi
 }
 
@@ -43,13 +70,13 @@ write_log() {
 show_success() {
     local message="$1"
     local log_message="${2:-$message}"
-    
+
     if is_color_supported; then
         echo -e "${GREEN}✓ $message${NC}"
     else
         echo "✓ $message"
     fi
-    
+
     write_log "$log_message" "SUCCESS"
 }
 
@@ -58,15 +85,15 @@ show_error() {
     local message="$1"
     local exit_code="${2:-1}"
     local log_message="${3:-$message}"
-    
+
     if is_color_supported; then
         echo -e "${RED}✗ $message${NC}" >&2
     else
         echo "✗ $message" >&2
     fi
-    
+
     write_log "$log_message" "ERROR"
-    
+
     # 如果提供了退出代码，则退出
     if [[ "$exit_code" != "0" ]]; then
         exit "$exit_code"
@@ -77,13 +104,13 @@ show_error() {
 show_warning() {
     local message="$1"
     local log_message="${2:-$message}"
-    
+
     if is_color_supported; then
         echo -e "${YELLOW}! $message${NC}"
     else
         echo "! $message"
     fi
-    
+
     write_log "$log_message" "WARNING"
 }
 
@@ -91,13 +118,13 @@ show_warning() {
 show_info() {
     local message="$1"
     local log_message="${2:-$message}"
-    
+
     if is_color_supported; then
         echo -e "${BLUE}$message${NC}"
     else
         echo "$message"
     fi
-    
+
     write_log "$log_message" "INFO"
 }
 
@@ -105,13 +132,13 @@ show_info() {
 show_test() {
     local message="$1"
     local log_message="${2:-测试: $message}"
-    
+
     if is_color_supported; then
         echo -e "${BLUE}测试: $message${NC}"
     else
         echo "测试: $message"
     fi
-    
+
     write_log "$log_message" "TEST"
 }
 
@@ -119,13 +146,13 @@ show_test() {
 show_check() {
     local message="$1"
     local log_message="${2:-检查: $message}"
-    
+
     if is_color_supported; then
         echo -e "${BLUE}检查: $message${NC}"
     else
         echo "检查: $message"
     fi
-    
+
     write_log "$log_message" "CHECK"
 }
 
@@ -135,18 +162,18 @@ show_progress() {
     local current="${2:-}"
     local total="${3:-}"
     local log_message="${4:-$message}"
-    
+
     local progress_text="$message"
     if [[ -n "$current" && -n "$total" ]]; then
         progress_text="[$current/$total] $message"
     fi
-    
+
     if is_color_supported; then
         echo -e "${BLUE}$progress_text${NC}"
     else
         echo "$progress_text"
     fi
-    
+
     write_log "$log_message" "PROGRESS"
 }
 
@@ -154,13 +181,13 @@ show_progress() {
 show_group() {
     local title="$1"
     local log_message="${2:-分组: $title}"
-    
+
     if is_color_supported; then
         echo -e "\n${BOLD_BLUE}=== $title ===${NC}"
     else
         echo -e "\n=== $title ==="
     fi
-    
+
     write_log "$log_message" "GROUP"
 }
 

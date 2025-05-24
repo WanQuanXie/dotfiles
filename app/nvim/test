@@ -1,38 +1,11 @@
 #!/usr/bin/env bash
 
-# 颜色定义
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Neovim 配置测试 - 使用共享库重构
+# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
 
-# 日志目录
-LOG_DIR="$HOME/.dotfiles_logs"
-mkdir -p "$LOG_DIR"
-TEST_LOG="$LOG_DIR/test_$(basename "$(dirname "$0")")_$(date +%Y%m%d_%H%M%S).log"
-
-# 显示测试项目
-show_test() {
-    echo -e "${BLUE}测试: $1${NC}" | tee -a "$TEST_LOG"
-}
-
-# 显示成功消息
-show_success() {
-    echo -e "${GREEN}✓ $1${NC}" | tee -a "$TEST_LOG"
-}
-
-# 显示错误消息
-show_error() {
-    echo -e "${RED}✗ $1${NC}" | tee -a "$TEST_LOG"
-    echo "详细日志: $TEST_LOG"
-    exit 1
-}
-
-# 显示警告消息
-show_warning() {
-    echo -e "${YELLOW}! $1${NC}" | tee -a "$TEST_LOG"
-}
+# 导入测试工具函数
+# shellcheck source=../test_utils.sh
+source "../test_utils.sh"
 
 # 测试命令并提供反馈
 test_command() {

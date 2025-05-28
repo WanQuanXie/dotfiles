@@ -7,6 +7,8 @@ brew 'neovim'
 brew 'zsh'
 brew 'zsh-completions'
 brew 'zsh-syntax-highlighting'
+# 终端主题
+brew 'starship'
 brew 'tmux'
 # 命令行版的 finder
 brew 'fzf'
@@ -66,6 +68,8 @@ else
   cask 'font-fira-code-nerd-font'
   cask 'font-fira-mono-nerd-font'
   cask 'font-fira-code'
+  cask 'font-maple-mono-nf-cn'
+  cask 'font-maple-mono-normal-nf-cn'
 
   # [cask] dev
   cask 'iterm2'
@@ -137,6 +141,7 @@ else
   mas 'WPS', id: 1443749478
   mas 'WeChat', id: 836500024
   mas 'QQ', id: 451108668
+  mas '剪映专业版', id: 1529999940
   # 局域网文件传输
   mas 'LocalSend', id: 1661733229
   # 密码管理工具

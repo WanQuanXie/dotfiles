@@ -137,6 +137,9 @@ if type brew &>/dev/null; then
   compinit
 fi
 
+# 配置终端 starship 主题
+eval "$(starship init zsh)"
+
 # Electron
 #export ELECTRON_GET_USE_PROXY="http://127.0.0.1:7890"
 export ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"

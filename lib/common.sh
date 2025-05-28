@@ -203,9 +203,6 @@ init_dotfiles_env() {
     # 设置基础环境
     setup_base_environment
 
-    # 初始化日志
-    init_logging
-
     # 设置错误处理
     set -e
 

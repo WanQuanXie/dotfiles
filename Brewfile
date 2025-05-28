@@ -18,9 +18,9 @@ brew 'ruby'
 brew 'go'
 brew 'shellcheck' # for CI checks
 # dev: CI testing
-if ENV.key? 'CI'
-  puts 'In CI mode, skip non-primitive brews'
-else
+# if ENV.key? 'CI'
+#   puts 'In CI mode, skip non-primitive brews'
+# else
   # [brew] dev
   brew 'cmake'
   brew 'pnpm'
@@ -154,4 +154,4 @@ else
   mas 'APTV', id: 1639052102
   mas 'iMazing Profile Editor', id: 1487860882
   # mas 'Xcode', id: 497799835
-end
+# end

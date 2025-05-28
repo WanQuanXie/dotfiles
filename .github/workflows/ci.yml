@@ -9,6 +9,8 @@ jobs:
     name: 代码检查
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
+    env:
+      CI: true
     steps:
       - uses: actions/checkout@v3
       - name: ShellCheck
@@ -17,6 +19,8 @@ jobs:
   macos-test:
     name: macOS 测试
     runs-on: macos-latest
+    env:
+      CI: true
     steps:
       - uses: actions/checkout@v3
         with:
@@ -29,8 +33,6 @@ jobs:
       
       - name: 运行 bootstrap
         run: bash ./bootstrap
-        env:
-          CI: true
       
       - name: 运行测试
         run: bash ./test

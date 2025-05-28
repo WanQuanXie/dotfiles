@@ -18,8 +18,8 @@ test_command "test -d ~/.cargo" "检查 cargo 目录"
 show_test "检查 Rust 工具链版本"
 RUSTC_VERSION=$(rustc --version)
 CARGO_VERSION=$(cargo --version)
-echo "Rustc 版本: $RUSTC_VERSION" | tee -a "$TEST_LOG"
-echo "Cargo 版本: $CARGO_VERSION" | tee -a "$TEST_LOG"
+echo "Rustc 版本: $RUSTC_VERSION"
+echo "Cargo 版本: $CARGO_VERSION"
 show_success "Rust 版本检查完成"
 
 # 测试 Rust 工具链
@@ -31,11 +31,11 @@ if command -v rustup >/dev/null 2>&1; then
 
     # 检查默认工具链
     DEFAULT_TOOLCHAIN=$(rustup default)
-    echo "默认工具链: $DEFAULT_TOOLCHAIN" | tee -a "$TEST_LOG"
+    echo "默认工具链: $DEFAULT_TOOLCHAIN"
 
     # 检查已安装的组件
     INSTALLED_COMPONENTS=$(rustup component list --installed | wc -l)
-    echo "已安装组件数量: $INSTALLED_COMPONENTS" | tee -a "$TEST_LOG"
+    echo "已安装组件数量: $INSTALLED_COMPONENTS"
 else
     show_warning "rustup 不可用"
 fi
@@ -62,14 +62,14 @@ fi
 show_test "检查 Rust 环境变量"
 
 if [[ -n "$CARGO_HOME" ]]; then
-    echo "CARGO_HOME: $CARGO_HOME" | tee -a "$TEST_LOG"
+    echo "CARGO_HOME: $CARGO_HOME"
     show_success "CARGO_HOME 环境变量已设置"
 else
     show_warning "CARGO_HOME 环境变量未设置"
 fi
 
 if [[ -n "$RUSTUP_HOME" ]]; then
-    echo "RUSTUP_HOME: $RUSTUP_HOME" | tee -a "$TEST_LOG"
+    echo "RUSTUP_HOME: $RUSTUP_HOME"
     show_success "RUSTUP_HOME 环境变量已设置"
 else
     show_warning "RUSTUP_HOME 环境变量未设置"

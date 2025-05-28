@@ -14,7 +14,7 @@ test_command "command -v vim" "检查 vim 是否安装"
 # 测试 vim 版本
 show_test "检查 vim 版本"
 VIM_VERSION=$(vim --version | head -n1)
-echo "Vim 版本: $VIM_VERSION" | tee -a "$TEST_LOG"
+echo "Vim 版本: $VIM_VERSION"
 show_success "Vim 版本检查完成"
 
 # 测试配置文件
@@ -69,7 +69,7 @@ if [[ -f ~/.vimrc ]]; then
 
         # 统计插件数量
         PLUGIN_COUNT=$(grep -c "^Plug\s" ~/.vimrc || echo "0")
-        echo "配置的插件数量: $PLUGIN_COUNT" | tee -a "$TEST_LOG"
+        echo "配置的插件数量: $PLUGIN_COUNT"
     else
         show_warning "配置文件中未找到插件配置"
     fi
@@ -84,7 +84,7 @@ if [[ -d ~/.vim/plugged ]]; then
     # 统计已安装的插件
     INSTALLED_PLUGINS=$(find ~/.vim/plugged -maxdepth 1 -type d | wc -l)
     INSTALLED_PLUGINS=$((INSTALLED_PLUGINS - 1))  # 减去父目录
-    echo "已安装插件数量: $INSTALLED_PLUGINS" | tee -a "$TEST_LOG"
+    echo "已安装插件数量: $INSTALLED_PLUGINS"
 
     if [[ $INSTALLED_PLUGINS -gt 0 ]]; then
         show_success "发现已安装的插件"

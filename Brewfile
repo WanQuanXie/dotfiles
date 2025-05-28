@@ -12,25 +12,35 @@ brew 'starship'
 brew 'tmux'
 # 命令行版的 finder
 brew 'fzf'
+# 带语法高亮的 cat 指令
+brew 'bat'
+# 带语法高亮的 ls 指令
+brew 'eza'
+# 高级版 cd 指令，会记住你最常使用的目录
+brew 'zoxide'
+brew 'htop'
 
 # [brew] dev
 brew 'ruby'
 brew 'go'
 brew 'shellcheck' # for CI checks
+brew 'cmake'
+brew 'pnpm'
+tap 'oven-sh/bun'
+brew 'oven-sh/bun/bun'
+# JDK 版本管理
+brew 'jenv'
+brew 'maven'
+brew 'watchman'
+brew 'nginx'
+
+cask 'oracle-jdk@17'
+
 # dev: CI testing
-# if ENV.key? 'CI'
-#   puts 'In CI mode, skip non-primitive brews'
-# else
+if ENV.key? 'CI'
+  puts 'In CI mode, skip non-primitive brews'
+else
   # [brew] dev
-  brew 'cmake'
-  brew 'pnpm'
-  tap 'oven-sh/bun'
-  brew 'oven-sh/bun/bun'
-  # JDK 版本管理
-  brew 'jenv'
-  brew 'maven'
-  brew 'watchman'
-  brew 'nginx'
   # brew 'mysql'
   # brew 'sqlite'
   # brew 'postgresql'
@@ -40,16 +50,9 @@ brew 'shellcheck' # for CI checks
   # brew 'tokei'
 
   # [brew] productivity
+  brew 'mas'
   # brew 'wget'
   # brew 'p7zip'
-  brew 'mas'
-  # 带语法高亮的 cat 指令
-  brew 'bat'
-  # 带语法高亮的 ls 指令
-  brew 'eza'
-  # 高级版 cd 指令，会记住你最常使用的目录
-  brew 'zoxide'
-  brew 'htop'
   # Terminal JSON viewer & processor
   # brew 'fx'
   # brew 'pandoc'
@@ -75,8 +78,6 @@ brew 'shellcheck' # for CI checks
   cask 'iterm2'
   cask 'visual-studio-code'
   cask 'cursor'
-  cask 'oracle-jdk@17'
-  # 命令行智能提示
   cask 'amazon-q'
   # HTTP 请求调试工具
   cask 'charles'
@@ -154,4 +155,4 @@ brew 'shellcheck' # for CI checks
   mas 'APTV', id: 1639052102
   mas 'iMazing Profile Editor', id: 1487860882
   # mas 'Xcode', id: 497799835
-# end
+end

@@ -60,5 +60,8 @@ export GREEN RED YELLOW BLUE PURPLE CYAN WHITE NC
 export BOLD_GREEN BOLD_RED BOLD_YELLOW BOLD_BLUE BOLD_PURPLE BOLD_CYAN BOLD_WHITE
 export BG_RED BG_GREEN BG_YELLOW BG_BLUE
 
+# 导出所有函数供其他脚本使用
+export -f is_color_supported safe_color safe_color
+
 # 标记库已加载
 export DOTFILES_COLORS_LOADED=1

@@ -201,8 +201,6 @@ show_success "Git 配置完成"
 #### 测试脚本模板
 ```bash
 #!/usr/bin/env bash
-source "../test_utils.sh"
-
 show_test "Git 配置测试开始"
 
 check_executable "git" "检查 Git 是否安装"

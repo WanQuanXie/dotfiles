@@ -7,15 +7,9 @@
 # shellcheck source=./display.sh
 source "$(dirname "${BASH_SOURCE[0]}")/display.sh"
 
-# 测试配置（控制台输出）
-TEST_LOG_FILE=""  # 保留变量以兼容现有代码
-
 # 初始化测试环境
 init_test_env() {
     local test_name="${1:-$(basename "$(dirname "$0")")}"
-
-    # 不再创建日志文件，使用控制台输出
-    TEST_LOG_FILE="/dev/null"  # 兼容性设置
 
     # 设置错误处理
     set -e
@@ -169,5 +163,5 @@ test_summary() {
     write_log "测试完成: $test_name" "TEST_COMPLETE"
 }
 
-# 导出测试相关变量
-export TEST_LOG_DIR TEST_LOG_FILE
+# 导出所有函数供其他脚本使用
+export -f init_test_env test_command check_command check_executable check_directory check_file check_version check_readable check_writable check_file_contains check_env_var create_temp_test_env cleanup_temp_test_env test_summary

@@ -17,7 +17,6 @@ dotfiles/
 │   └── integration_test (集成测试)
 ├── 应用层脚本
 │   ├── app/bootstrap (应用配置入口)
-│   ├── app/test_utils.sh (测试工具)
 │   └── app/*/init|test|cleanup (各应用脚本)
 ├── 共享库 (lib/)
 │   ├── common.sh (主库，加载所有其他库)
@@ -169,7 +168,6 @@ LOG_SHOW_CALLER=false     # 显示调用者信息
    - `lib/display.sh`: 统一日志格式，移除文件日志
    - `lib/common.sh`: 更新 `run_with_log` 函数
    - `lib/testing.sh`: 重构测试函数，添加新的测试工具
-   - `app/test_utils.sh`: 修复路径问题
 
 2. **主要脚本重构**：
    - `app/bootstrap`: 完全重构，使用共享库
@@ -214,7 +212,6 @@ LOG_SHOW_CALLER=false     # 显示调用者信息
 
 3. **测试脚本模板**：
    ```bash
-   source "../test_utils.sh"
    check_executable "command"
    check_file "/path/to/file"
    test_summary "测试名称"

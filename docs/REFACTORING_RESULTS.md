@@ -28,15 +28,13 @@ dotfiles/
 │   ├── lib/system.sh (系统检测)
 │   ├── lib/testing.sh (测试工具)
 │   └── lib/colors.sh (颜色定义)
-└── 测试工具 (1个)
-    └── app/test_utils.sh (应用测试工具)
 ```
 
 ### 依赖关系图
 ```
 bootstrap → app/bootstrap → app/*/init → app/*/test
     ↓           ↓              ↓           ↓
-lib/common.sh ← app/test_utils.sh ←────────┘
+lib/common.sh ←────────────────────────────┘
     ↓
 lib/display.sh + lib/system.sh + lib/testing.sh + lib/colors.sh
 ```
@@ -92,7 +90,6 @@ lib/display.sh + lib/system.sh + lib/testing.sh + lib/colors.sh
 3. **lib/testing.sh**: 重构测试函数，添加新工具
 4. **app/bootstrap**: 完全重构，使用共享库
 5. **integration_test**: 重构，移除文件日志
-6. **app/test_utils.sh**: 修复路径问题
 
 ### 示例重构的文件 (2个)
 1. **app/nvim/test**: 示例重构 (部分完成)
@@ -198,7 +195,6 @@ show_success "操作成功"
 
 3. **测试脚本模板**:
    ```bash
-   source "../test_utils.sh"
    check_executable "command"
    test_summary "测试名称"
    ```

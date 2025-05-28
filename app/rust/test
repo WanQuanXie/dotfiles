@@ -50,7 +50,7 @@ fi
 # 测试 cargo 配置
 show_test "检查 cargo 配置"
 
-test -f $HOME/.cargo/config.toml || test -f $HOME/.cargo/config >/dev/null 2>&1
+"test -f $HOME/.cargo/config.toml || test -f $HOME/.cargo/config" >/dev/null 2>&1
 
 if [[ -f ~/.cargo/config.toml ]]; then
     show_success "发现 cargo 配置文件 (TOML 格式)"

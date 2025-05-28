@@ -14,7 +14,7 @@ test_command "command -v fzf" "检查 fzf 是否安装"
 # 测试 fzf 版本
 show_test "检查 fzf 版本"
 FZF_VERSION=$(fzf --version | head -n1)
-echo "FZF 版本: $FZF_VERSION" | tee -a "$TEST_LOG"
+echo "FZF 版本: $FZF_VERSION"
 show_success "FZF 版本检查完成"
 
 # 测试 fzf 安装路径

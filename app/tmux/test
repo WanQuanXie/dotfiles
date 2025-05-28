@@ -15,7 +15,7 @@ test_command "command -v tmux" "检查 tmux 是否安装"
 # 测试 tmux 版本
 show_test "检查 tmux 版本"
 TMUX_VERSION=$(tmux -V)
-echo "Tmux 版本: $TMUX_VERSION" | tee -a "$TEST_LOG"
+echo "Tmux 版本: $TMUX_VERSION"
 show_success "Tmux 版本检查完成"
 
 # 测试配置文件

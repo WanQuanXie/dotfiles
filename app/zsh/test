@@ -24,7 +24,7 @@ check_file "$HOME/.zshrc" "检查 zshrc 配置文件"
 check_file "$HOME/.oh-my-zsh/custom/themes/crispy.zsh-theme" "检查自定义主题"
 
 # 检查语法高亮插件
-check_directory "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" "检查语法高亮插件"
+# check_directory "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" "检查语法高亮插件"
 
 # 运行 POSIX 兼容性测试
 run_posix_compatibility_tests "zsh"

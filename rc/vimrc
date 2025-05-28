@@ -75,8 +75,8 @@ nnoremap <leader>8 8gt
 nnoremap <leader>9 9gt
 nnoremap <leader>0 <cmd>tablast<cr>
 
-call plug#begin()
-Plug 'crispgm/nord-vim', { 'branch': 'develop' }
+call plug#begin(expand('~/.vim/plugged'))
+Plug 'arcticicestudio/nord-vim', { 'branch': 'develop' }
 Plug 'mkitt/tabline.vim'
 Plug 'google/vim-searchindex'
 Plug 'Yggdroot/indentLine'

@@ -3,16 +3,6 @@
 # Neovim 初始化脚本 - 使用共享库重构
 # 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
 
-# 获取脚本目录的绝对路径
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-
-# 加载共享库
-source "$PROJECT_ROOT/lib/common.sh"
-
-# 初始化环境
-init_dotfiles_env
-
 show_info "正在设置 Neovim"
 
 # 检查 Lazy.nvim 是否已安装

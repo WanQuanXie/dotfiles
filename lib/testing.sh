@@ -58,7 +58,7 @@ check_command() {
     local package="${2:-$cmd}"
     local msg="${3:-检查 $cmd 是否安装}"
 
-    test_command "command -v '$cmd'" "$msg"
+    test_command "command -v '$cmd'" "$msg" "true"
 }
 
 # 检查可执行文件
@@ -66,7 +66,7 @@ check_executable() {
     local cmd="$1"
     local msg="${2:-检查 $cmd 可执行文件}"
 
-    test_command "command -v '$cmd'" "$msg"
+    test_command "command -v '$cmd'" "$msg" "true"
 }
 
 # 检查目录是否存在
@@ -74,7 +74,7 @@ check_directory() {
     local dir="$1"
     local msg="${2:-检查目录 $dir}"
 
-    test_command "test -d '$dir'" "$msg"
+    test_command "test -d '$dir'" "$msg" "true"
 }
 
 # 检查文件是否存在
@@ -82,7 +82,7 @@ check_file() {
     local file="$1"
     local msg="${2:-检查文件 $file}"
 
-    test_command "test -f '$file'" "$msg"
+    test_command "test -f '$file'" "$msg" "true"
 }
 
 # 检查版本信息
@@ -108,7 +108,7 @@ check_readable() {
     local file="$1"
     local msg="${2:-检查文件 $file 是否可读}"
 
-    test_command "test -r '$file'" "$msg"
+    test_command "test -r '$file'" "$msg" "true"
 }
 
 # 检查文件是否可写
@@ -116,7 +116,7 @@ check_writable() {
     local file="$1"
     local msg="${2:-检查文件 $file 是否可写}"
 
-    test_command "test -w '$file'" "$msg"
+    test_command "test -w '$file'" "$msg" "true"
 }
 
 # 检查文件内容包含指定字符串
@@ -125,7 +125,7 @@ check_file_contains() {
     local pattern="$2"
     local msg="${3:-检查文件 $file 包含 $pattern}"
 
-    test_command "grep -q '$pattern' '$file'" "$msg"
+    test_command "grep -q '$pattern' '$file'" "$msg" "true"
 }
 
 # 检查环境变量
@@ -135,9 +135,9 @@ check_env_var() {
     local msg="${3:-检查环境变量 $var_name}"
 
     if [[ -n "$expected_value" ]]; then
-        test_command "test \"\${$var_name}\" = '$expected_value'" "$msg"
+        test_command "test \"\${$var_name}\" = '$expected_value'" "$msg" "true"
     else
-        test_command "test -n \"\${$var_name}\"" "$msg"
+        test_command "test -n \"\${$var_name}\"" "$msg" "true"
     fi
 }
 

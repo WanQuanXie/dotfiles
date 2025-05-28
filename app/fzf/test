@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
-# 获取脚本目录的绝对路径
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# # 获取脚本目录的绝对路径
+# SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# 导入测试工具函数
-source "$PROJECT_ROOT/app/test_utils.sh"
+# # 导入测试工具函数
+# source "$PROJECT_ROOT/app/test_utils.sh"
+
+# 初始化测试环境
+init_test_env "$(basename "$(dirname "$0")")"
 
 # 设置错误处理
 set -e

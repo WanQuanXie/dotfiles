@@ -13,12 +13,6 @@ LOG_SHOW_TIMESTAMP="${LOG_SHOW_TIMESTAMP:-true}"
 LOG_SHOW_LEVEL="${LOG_SHOW_LEVEL:-true}"
 LOG_SHOW_CALLER="${LOG_SHOW_CALLER:-false}"
 
-# 初始化日志系统（控制台输出，不再创建文件）
-init_logging() {
-    # 日志系统已改为纯控制台输出，无需创建目录
-    return 0
-}
-
 # 获取调用者信息用于日志
 get_caller_info() {
     local script_name
@@ -191,5 +185,5 @@ show_group() {
     write_log "$log_message" "GROUP"
 }
 
-# 初始化日志系统
-init_logging
+# 导出所有函数供其他脚本使用
+export -f get_caller_info format_log_prefix write_log show_success show_error show_warning show_info show_test show_check show_progress show_group

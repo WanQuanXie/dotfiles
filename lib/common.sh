@@ -223,3 +223,6 @@ show_lib_info() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     show_lib_info
 fi
+
+# 导出所有函数供其他脚本使用
+export -f check_and_install_dependency ensure_directory backup_file safe_symlink is_app_configured mark_app_configured clear_app_configured run_with_log init_dotfiles_env show_lib_info

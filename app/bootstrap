@@ -39,7 +39,7 @@ handle_error() {
 # 应用分组 - 按依赖关系和安装时间分组
 # 第1组：基础工具（快速安装）
 # shellcheck disable=SC2034  # group1 通过 nameref 在 process_group 函数中使用
-declare -a group1=("zsh" "git" "ssh" "gpg")
+declare -a group1=("zsh" "git" "ssh" "gpg" "starship")
 # 第2组：语言环境（耗时较长，可并行）
 # shellcheck disable=SC2034  # group2 通过 nameref 在 process_group 函数中使用
 declare -a group2=("go" "rust" "ruby" "java" "node")

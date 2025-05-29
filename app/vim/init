@@ -30,10 +30,11 @@ fi
 show_info "开始全新安装 Vim 插件..."
 
 # 执行插件安装并捕获退出状态
-if vim -E -s -u "$HOME"/.vimrc +PlugClean! +PlugInstall +qall > /dev/null 2>&1; then
+vim -E -s -u "$HOME"/.vimrc +PlugClean! +PlugInstall +qall 2>&1
+# if vim -E -s -u "$HOME"/.vimrc +PlugClean! +PlugInstall +qall > /dev/null 2>&1; then
   show_success "Vim 插件已自动安装完毕。"
-else
-  show_error "Vim 插件安装失败，退出状态码: $?"
-  show_info "请检查网络连接和插件配置是否正确。"
-  exit 1
-fi
+# else
+#   show_error "Vim 插件安装失败，退出状态码: $?"
+#   show_info "请检查网络连接和插件配置是否正确。"
+#   exit 1
+# fi

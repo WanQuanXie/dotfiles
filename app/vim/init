@@ -12,11 +12,24 @@ if [ ! -f ~/.vimrc ]; then
   exit 1
 fi
 
+# 清理现有插件环境，确保全新安装
+echo "[INFO] 清理现有插件目录和缓存..."
+if [ -d "$HOME/.vim/plugged" ]; then
+  rm -rf "$HOME/.vim/plugged"
+  echo "[INFO] 已删除插件目录: ~/.vim/plugged"
+fi
+
+# 清理vim-plug缓存
+if [ -d "$HOME/.cache/vim" ]; then
+  rm -rf "$HOME/.cache/vim"
+  echo "[INFO] 已清理vim缓存目录"
+fi
+
 # 实时输出插件安装过程
-echo "[INFO] 开始自动安装 Vim 插件..."
+echo "[INFO] 开始全新安装 Vim 插件..."
 
 # 执行插件安装并捕获退出状态
-if vim -E -s -u "$HOME"/.vimrc +PlugInstall +qall > /dev/null 2>&1; then
+if vim -E -s -u "$HOME"/.vimrc +PlugClean! +PlugInstall +qall > /dev/null 2>&1; then
   echo "[OK] Vim 插件已自动安装完毕。"
 else
   echo "[ERROR] Vim 插件安装失败，退出状态码: $?"

@@ -16,7 +16,7 @@ fi
 echo "[INFO] 开始自动安装 Vim 插件..."
 
 # 执行插件安装并捕获退出状态
-if vim -E -s -u $HOME/.vimrc +PlugInstall +qall > /dev/null 2>&1; then
+if vim -E -s -u "$HOME"/.vimrc +PlugInstall +qall > /dev/null 2>&1; then
   echo "[OK] Vim 插件已自动安装完毕。"
 else
   echo "[ERROR] Vim 插件安装失败，退出状态码: $?"

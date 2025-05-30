@@ -11,7 +11,7 @@ jobs:
   lint:
     name: 代码检查
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[ci skip]')"
+    if: ${{ !contains(github.event.head_commit.message, '[ci skip]') }}
     env:
       CI: true
     steps:
@@ -21,7 +21,7 @@ jobs:
 
   macos-test:
     name: macOS 测试
-    runs-on: macos-latest
+    runs-on: macos-15
     env:
       CI: true
     steps:

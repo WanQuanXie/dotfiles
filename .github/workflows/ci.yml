@@ -1,4 +1,9 @@
 name: build
+env:
+  ACTIONS_RUNNER_DEBUG: true
+  ACTIONS_STEP_DEBUG: true
+  # 禁用任何可能的缓存
+  NO_CACHE: true
 on:
   push:
     branches:
@@ -15,16 +20,38 @@ jobs:
     env:
       CI: true
     steps:
+      - name: 清理工作空间
+        run: |
+          rm -rf $GITHUB_WORKSPACE/*
+          rm -rf $GITHUB_WORKSPACE/.[!.]*
+          
       - uses: actions/checkout@v3
       - name: ShellCheck
         run: bash ./check
 
   macos-test:
     name: macOS 测试
-    runs-on: macos-15
+    runs-on: macos-latest
     env:
       CI: true
     steps:
+      - name: 完全清理环境
+        run: |
+          # 清理工作目录
+          sudo rm -rf $GITHUB_WORKSPACE/* $GITHUB_WORKSPACE/.[!.]* || true
+          
+          # 清理临时文件
+          sudo rm -rf /tmp/* || true
+          
+          # 对于macOS runner，清理Homebrew缓存
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew cleanup --prune=all || true
+            rm -rf ~/Library/Caches/Homebrew/* || true
+          fi
+          
+          # 清理用户目录下可能的配置文件
+          rm -rf ~/.zshrc ~/.gitconfig ~/.tmux.conf || true
+
       - uses: actions/checkout@v3
         with:
           submodules: recursive

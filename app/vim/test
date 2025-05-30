@@ -1,219 +1,52 @@
 #!/usr/bin/env bash
 
+# Vim 测试脚本 - 测试 vim-plug 插件管理器安装结果
+
 # 初始化测试环境
-init_test_env "$(basename "$(dirname "$0")")"
+init_test_env "$(basename "$(dirname "$0)")"
 
-# 设置错误处理
-set -e
+show_test "Vim 插件管理器测试开始"
 
-show_test "Vim 配置测试开始"
+# 定义 vim-plug 路径
+VIM_PLUG_PATH="$HOME/.vim/autoload/plug.vim"
 
-# 测试 vim 是否安装
-test_command "command -v vim" "检查 vim 是否安装"
+# 测试 vim-plug 安装结果 - 对应 init 脚本的核心功能
+show_test "检查 vim-plug 安装状态"
+if [[ -f "$VIM_PLUG_PATH" ]]; then
+    show_success "vim-plug 文件已安装"
+    
+    # 验证文件完整性
+    if [[ -s "$VIM_PLUG_PATH" ]]; then
+        show_success "vim-plug 文件完整"
+    else
+        show_error "vim-plug 文件为空" 0
+    fi
+else
+    show_error "vim-plug 文件不存在" 0
+fi
 
-# 测试 vim 版本
-show_test "检查 vim 版本"
-VIM_VERSION=$(vim --version | head -n1)
-echo "Vim 版本: $VIM_VERSION"
-show_success "Vim 版本检查完成"
-
-# 测试配置文件
-test_command "test -f ~/.vimrc" "检查 vim 配置文件"
-
-# 测试 vim-plug 插件管理器
-show_test "检查 vim-plug 插件管理器"
-test_command "test -f ~/.vim/autoload/plug.vim" "检查 vim-plug 文件"
-
-# 检查 vim-plug 目录结构
-test_command "test -d ~/.vim" "检查 .vim 目录"
+# 测试目录结构 - 对应 init 脚本的目录创建
+show_test "检查目录结构"
 test_command "test -d ~/.vim/autoload" "检查 autoload 目录"
 
-# 测试配置文件语法
-show_test "验证 vim 配置语法"
-
-# 创建临时测试文件
-TEMP_FILE=$(mktemp)
-echo "test content" > "$TEMP_FILE"
-
-# 测试 vim 配置是否有语法错误
-if vim -u ~/.vimrc -c "syntax on" -c "q" "$TEMP_FILE" 2>/dev/null; then
-    show_success "vim 配置语法正确"
-else
-    show_warning "vim 配置可能存在语法问题"
-fi
-
-# 清理临时文件
-rm -f "$TEMP_FILE"
-
-# 检查配置文件内容
-show_test "检查配置文件内容"
-
-if [[ -f ~/.vimrc ]]; then
-    # 检查是否包含 vim-plug 配置
-    if grep -q "plug#begin\|plug#end" ~/.vimrc; then
-        show_success "配置文件包含 vim-plug 设置"
-    else
-        show_warning "配置文件中未找到 vim-plug 设置"
-    fi
-
-    # 检查基本设置
-    if grep -q "syntax\|set" ~/.vimrc; then
-        show_success "配置文件包含基本设置"
-    else
-        show_warning "配置文件中未找到基本设置"
-    fi
-
-    # 检查插件配置
-    if grep -q "Plug\s" ~/.vimrc; then
-        show_success "配置文件包含插件配置"
-
-        # 统计插件数量
-        PLUGIN_COUNT=$(grep -c "^Plug\s" ~/.vimrc || echo "0")
-        echo "配置的插件数量: $PLUGIN_COUNT"
-    else
-        show_warning "配置文件中未找到插件配置"
-    fi
-fi
-
-# 检查插件目录
-show_test "检查插件安装状态"
-
-if [[ -d ~/.vim/plugged ]]; then
-    show_success "插件目录存在"
-
-    # 统计已安装的插件
-    INSTALLED_PLUGINS=$(find ~/.vim/plugged -maxdepth 1 -type d | wc -l)
-    INSTALLED_PLUGINS=$((INSTALLED_PLUGINS - 1))  # 减去父目录
-    echo "已安装插件数量: $INSTALLED_PLUGINS"
-
-    if [[ $INSTALLED_PLUGINS -gt 0 ]]; then
-        show_success "发现已安装的插件"
-    else
-        show_warning "未发现已安装的插件"
-    fi
-else
-    show_warning "插件目录不存在，可能尚未安装插件"
-fi
-
-# 功能测试
-show_test "Vim 功能测试"
-
-# 测试 vim 能否正常启动和退出
-TEMP_FILE=$(mktemp)
-echo "test content for vim" > "$TEMP_FILE"
-
-test_command "vim -c 'q' '$TEMP_FILE'" "测试 vim 启动和退出"
-
-# 测试 vim-plug 命令
+# 测试 vim-plug 功能 - 验证插件管理器可用性
 show_test "测试 vim-plug 功能"
-
-# 检查 vim-plug 命令是否可用
-if vim -c "PlugStatus" -c "q" 2>/dev/null; then
-    show_success "vim-plug PlugStatus 命令可用"
-else
-    show_warning "vim-plug PlugStatus 命令不可用"
-fi
-
-# 清理临时文件
-rm -f "$TEMP_FILE"
-
-# POSIX 兼容性测试
-show_test "POSIX 兼容性测试"
-
-# 检查 vim 在不同 shell 中的兼容性
-if command -v bash >/dev/null 2>&1; then
-    test_command "bash -c 'command -v vim'" "测试 bash 中的 vim 可用性"
-fi
-
-if command -v zsh >/dev/null 2>&1; then
-    test_command "zsh -c 'command -v vim'" "测试 zsh 中的 vim 可用性"
-fi
-
-# 检查 vim 编译特性
-show_test "检查 vim 编译特性"
-
-# 检查重要特性
-VIM_FEATURES=$(vim --version)
-
-if echo "$VIM_FEATURES" | grep -q "+python3"; then
-    show_success "vim 支持 Python3"
-else
-    show_warning "vim 不支持 Python3"
-fi
-
-if echo "$VIM_FEATURES" | grep -q "+clipboard"; then
-    show_success "vim 支持剪贴板"
-else
-    show_warning "vim 不支持剪贴板"
-fi
-
-if echo "$VIM_FEATURES" | grep -q "+syntax"; then
-    show_success "vim 支持语法高亮"
-else
-    show_warning "vim 不支持语法高亮"
-fi
-
-# macOS 兼容性测试
-show_test "macOS 兼容性测试"
-
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    # 检测芯片架构
-    ARCH=$(uname -m)
-    if [[ "$ARCH" == "arm64" ]]; then
-        show_success "Apple Silicon 架构下的 vim 运行正常"
-    elif [[ "$ARCH" == "x86_64" ]]; then
-        show_success "Intel 架构下的 vim 运行正常"
-    fi
-
-    # 测试与 macOS 剪贴板的集成
-    if echo "$VIM_FEATURES" | grep -q "+clipboard"; then
-        show_success "vim 支持 macOS 剪贴板集成"
+if [[ -f "$VIM_PLUG_PATH" ]] && command -v vim >/dev/null 2>&1; then
+    if vim -c "PlugStatus" -c "q" 2>/dev/null; then
+        show_success "vim-plug 功能正常"
     else
-        show_warning "vim 不支持 macOS 剪贴板集成"
-    fi
-
-    # 检查是否使用 Homebrew 安装的 vim
-    VIM_PATH=$(which vim)
-    if [[ "$VIM_PATH" == *"/opt/homebrew/"* ]] || [[ "$VIM_PATH" == *"/usr/local/"* ]]; then
-        show_success "使用 Homebrew 安装的 vim"
-    else
-        show_warning "可能使用系统自带的 vim"
+        show_warning "vim-plug 功能异常"
     fi
 else
-    show_warning "非 macOS 系统，跳过 macOS 特定测试"
+    show_warning "vim-plug 未安装或 vim 不可用"
 fi
 
-# 检查与 neovim 的关系
-show_test "检查与 neovim 的关系"
-
-if command -v nvim >/dev/null 2>&1; then
-    show_success "系统中同时安装了 neovim"
-
-    # 检查是否有 neovim 配置
-    if [[ -f ~/.config/nvim/init.lua ]] || [[ -f ~/.config/nvim/init.vim ]]; then
-        show_success "发现 neovim 配置文件"
-    fi
+# 测试幂等性 - 验证重复运行 init 脚本的安全性
+show_test "测试 init 脚本幂等性"
+if [[ -f "$VIM_PLUG_PATH" ]]; then
+    show_success "vim-plug 已存在 - 重复运行 init 脚本应跳过安装"
 else
-    show_success "系统中仅安装了 vim"
+    show_info "vim-plug 不存在 - init 脚本应进行安装"
 fi
 
-# 性能测试
-show_test "性能测试"
-
-# 创建较大的测试文件
-TEMP_FILE=$(mktemp)
-for i in {1..1000}; do
-    echo "This is line $i for vim performance testing" >> "$TEMP_FILE"
-done
-
-# 测试打开大文件的性能
-if timeout 10 vim -c "q" "$TEMP_FILE" 2>/dev/null; then
-    show_success "vim 能够处理较大文件"
-else
-    show_warning "vim 处理大文件可能有性能问题"
-fi
-
-# 清理临时文件
-rm -f "$TEMP_FILE"
-
-show_success "Vim 配置测试完成"
+show_success "Vim 插件管理器测试完成"

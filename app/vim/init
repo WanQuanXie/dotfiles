@@ -1,40 +1,23 @@
 #!/usr/bin/env bash
 
-set -e
+# Vim 初始化脚本 - 安装 vim-plug 插件管理器
+
+show_info "正在安装 vim-plug 插件管理器"
+
+# 定义 vim-plug 路径和下载地址
+VIM_PLUG_PATH="$HOME/.vim/autoload/plug.vim"
+VIM_PLUG_URL="https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
 
 # 安装 vim-plug
-curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
-# 检查 $HOME/.vimrc 是否存在
-if [ ! -f "$HOME"/.vimrc ]; then
-  show_warning "$HOME/.vimrc 不存在，请先配置好 vim 插件相关内容后再运行本脚本。"
-  exit 1
+if [[ -f "$VIM_PLUG_PATH" ]]; then
+    show_warning "vim-plug 已安装，跳过下载"
+else
+    if run_with_log "curl -fLo '$VIM_PLUG_PATH' --create-dirs '$VIM_PLUG_URL'" "下载 vim-plug"; then
+        show_success "vim-plug 安装完成"
+    else
+        show_error "vim-plug 安装失败" 1
+    fi
 fi
 
-# 清理现有插件环境，确保全新安装
-show_info "清理现有插件目录和缓存..."
-
-if [ -d "$HOME/.vim/plugged" ]; then
-  rm -rf "$HOME/.vim/plugged"
-  show_info "已删除插件目录: ~/.vim/plugged"
-fi
-
-# 清理vim-plug缓存
-if [ -d "$HOME/.cache/vim" ]; then
-  rm -rf "$HOME/.cache/vim"
-  show_info "已清理vim缓存目录"
-fi
-
-# 实时输出插件安装过程
-show_info "开始全新安装 Vim 插件..."
-
-# 执行插件安装并捕获退出状态
-vim -E -s -u "$HOME"/.vimrc +PlugClean! +PlugInstall +qall 2>&1
-# if vim -E -s -u "$HOME"/.vimrc +PlugClean! +PlugInstall +qall > /dev/null 2>&1; then
-  show_success "Vim 插件已自动安装完毕。"
-# else
-#   show_error "Vim 插件安装失败，退出状态码: $?"
-#   show_info "请检查网络连接和插件配置是否正确。"
-#   exit 1
-# fi
+show_success "Vim 插件管理器设置完成"
+show_info "提示: 运行 'vim +PlugInstall' 来安装配置的插件"

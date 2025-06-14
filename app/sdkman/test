@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+
+# SDKMAN 配置测试 - 使用共享库重构
+# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+
+# 初始化测试环境
+init_test_env "$(basename "$(dirname "$0")")"
+
+show_test "SDKMAN 配置测试开始"
+
+# 检查 SDKMAN 是否安装
+check_directory "$HOME/.sdkman" "检查 SDKMAN 安装目录"
+check_file "$HOME/.sdkman/bin/sdkman-init.sh" "检查 SDKMAN 初始化脚本"
+
+# 检查 SDKMAN 命令是否可用
+if [[ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+    # shellcheck source=/dev/null
+    source "$HOME/.sdkman/bin/sdkman-init.sh"
+    
+    # 检查 sdk 命令是否可用
+    check_command "sdk" "sdk" "检查 sdk 命令是否可用"
+    
+    # 检查 SDKMAN 版本
+    check_version "sdk" "version" "检查 SDKMAN 版本"
+else
+    show_error "SDKMAN 初始化脚本不存在，请先运行安装脚本" 0
+    exit 1
+fi
+
+# 检查 shell 配置文件集成
+show_test "检查 shell 配置文件集成"
+
+# 检查 .zshrc 集成
+if [[ -f ~/.zshrc ]]; then
+    if grep -q "sdkman-init.sh" "$HOME/.zshrc" 2>/dev/null; then
+        show_success "zshrc 中包含 SDKMAN 配置"
+    else
+        show_warning "zshrc 中未找到 SDKMAN 配置"
+    fi
+else
+    show_info "zshrc 文件不存在"
+fi
+
+# 检查 .bash_profile 集成
+if [[ -f ~/.bash_profile ]]; then
+    if grep -q "sdkman-init.sh" "$HOME/.bash_profile" 2>/dev/null; then
+        show_success "bash_profile 中包含 SDKMAN 配置"
+    else
+        show_warning "bash_profile 中未找到 SDKMAN 配置"
+    fi
+else
+    show_info "bash_profile 文件不存在"
+fi
+
+# 检查 .bashrc 集成
+if [[ -f ~/.bashrc ]]; then
+    if grep -q "sdkman-init.sh" "$HOME/.bashrc" 2>/dev/null; then
+        show_success "bashrc 中包含 SDKMAN 配置"
+    else
+        show_warning "bashrc 中未找到 SDKMAN 配置"
+    fi
+else
+    show_info "bashrc 文件不存在"
+fi
+
+# 检查环境变量
+show_test "检查 SDKMAN 环境变量"
+
+if [[ -n "${SDKMAN_DIR:-}" ]]; then
+    show_success "SDKMAN_DIR 环境变量已设置: $SDKMAN_DIR"
+    check_directory "$SDKMAN_DIR" "检查 SDKMAN_DIR 目录"
+else
+    show_warning "SDKMAN_DIR 环境变量未设置"
+fi
+
+if [[ -n "${SDKMAN_CANDIDATES_API:-}" ]]; then
+    show_info "SDKMAN_CANDIDATES_API: $SDKMAN_CANDIDATES_API"
+fi
+
+# 测试网络连接
+show_test "测试 SDKMAN 网络连接"
+
+# 测试 SDKMAN API 连接
+if command -v curl >/dev/null 2>&1; then
+    test_command "curl -s --connect-timeout 10 'https://api.sdkman.io/2/candidates/java' >/dev/null" "测试 SDKMAN API 连接" "SDKMAN API 连接失败"
+else
+    show_warning "curl 不可用，跳过网络连接测试"
+fi
+
+# 运行 POSIX 兼容性测试（跳过 sdk 命令测试，因为需要特殊环境）
+show_test "POSIX 兼容性测试"
+show_info "SDKMAN 需要在 shell 环境中初始化，跳过跨 shell 测试"
+
+# 运行 macOS 兼容性测试
+run_macos_compatibility_tests "sdkman"
+
+test_summary "SDKMAN 配置测试"

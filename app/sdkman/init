@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+SDKMAN_INIT_SHELL=$HOME/.sdkman/bin/sdkman-init.sh
+
+if curl -s "https://get.sdkman.io?ci=true" | bash; then
+    echo "sdkman install success"
+    if [ -f "$SDKMAN_INIT_SHELL" ]; then
+        # shellcheck source=/dev/null
+        source "$SDKMAN_INIT_SHELL"
+    fi
+else
+    echo "sdkman install failed"
+fi

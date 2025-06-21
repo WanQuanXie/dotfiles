@@ -28,13 +28,8 @@ brew 'cmake'
 brew 'pnpm'
 tap 'oven-sh/bun'
 brew 'oven-sh/bun/bun'
-# JDK 版本管理
-brew 'jenv'
-brew 'maven'
 brew 'watchman'
 brew 'nginx'
-
-cask 'oracle-jdk@17'
 
 # dev: CI testing
 if ENV.key? 'CI'

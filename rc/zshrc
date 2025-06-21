@@ -1,5 +1,5 @@
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PATH
+export PATH=/opt/homebrew/opt/python@3.13/libexec/bin:$HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -129,7 +129,7 @@ source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 # zsh-autosuggestions
 #source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
-# zsh-completions 
+# zsh-completions
 if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
 
@@ -188,4 +188,3 @@ eval "$(jenv init -)"
 # Cargo
 export CARGO_HOME=~/.cargo/bin
 export PATH=$CARGO_HOME:$PATH
-

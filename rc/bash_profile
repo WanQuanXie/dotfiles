@@ -14,3 +14,7 @@ gitPS1() {
 # 设置 PS1 提示符，使用 \[ \] 包围转义序列以防止换行问题
 PS1="\[\033[1;34m\]\w\$(gitPS1) $ \[\033[0m\]"
 export PS1
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"

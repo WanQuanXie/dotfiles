@@ -181,10 +181,6 @@ export OLLAMA_MAX_LOADED_MODELS=0
 # ollama 允许同时处理的客户端请求数，“0”表示动态根据内存调整
 export OLLAMA_NUM_PARALLEL=0
 
-# jenv: Master your Java Environment
-export PATH=$HOME/.jenv/bin:$PATH
-eval "$(jenv init -)"
-
 # Cargo
 export CARGO_HOME=~/.cargo/bin
 export PATH=$CARGO_HOME:$PATH

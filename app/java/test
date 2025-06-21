@@ -1,16 +1,4 @@
 #!/usr/bin/env bash
 
-test -x "$(which jenv)"
-
-# 设置 JAVA_HOME
-eval "$(jenv init -)"
-jenv enable-plugin export
-jenv add "$(/usr/libexec/java_home)"
-jenv global 17
-jenv doctor
-
 test -x "$(which java)"
 java --version
-
-test -x "$(which mvn)"
-mvn --version

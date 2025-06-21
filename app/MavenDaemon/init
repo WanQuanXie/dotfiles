@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if test -x "$(which sdk)"; then
+    if sdk install mvnd; then
+        show_success "Maven Daemon 安装完成!"
+    fi
+fi

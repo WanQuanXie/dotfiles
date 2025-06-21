@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-if test -x "$(which sdk)"; then
-    if sdk install maven; then
-        show_success "Maven 安装完成!"
-    fi
-fi

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+test -x "$(which mvnd)"
+mvnd --version

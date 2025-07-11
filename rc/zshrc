@@ -109,6 +109,9 @@ export LS_COLORS=gxfxaxdxcxegedabagacad
 # Alias
 source ~/.zsh_alias
 
+# fnm
+eval "$(fnm env --use-on-cd --shell zsh)"
+
 # fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 

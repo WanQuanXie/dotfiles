@@ -33,6 +33,7 @@ set shortmess+=c
 set t_Co=256
 set background=dark
 set termguicolors
+set rtp+=/opt/homebrew/opt/fzf
 
 let mapleader="\\"
 nnoremap <leader>q <cmd>q!<cr>

@@ -23,7 +23,7 @@ return require('lazy').setup({
     {
         'rmagatti/auto-session', -- auto session
         opts = {
-            suppressed_dirs = { '~/', '~/dev', '~/work', '/' },
+            suppressed_dirs = { '~/', '~/workspace', '/' },
         },
     },
     'rmagatti/session-lens', -- session lens for telescope

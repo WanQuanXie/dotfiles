@@ -34,6 +34,7 @@ set t_Co=256
 set background=dark
 set termguicolors
 set rtp+=/opt/homebrew/opt/fzf
+set sessionoptions=blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions
 
 let mapleader="\\"
 nnoremap <leader>q <cmd>q!<cr>

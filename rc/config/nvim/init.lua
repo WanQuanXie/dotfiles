@@ -17,6 +17,9 @@ vim.opt.rtp:prepend(lazypath)
 -- pre hooks
 vim.g.vimwiki_ext2syntax = vim.empty_dict()
 
+vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
+vim.o.wrap = false
+
 -- options
 try_require('options')
 

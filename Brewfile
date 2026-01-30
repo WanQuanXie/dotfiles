@@ -115,6 +115,7 @@ else
   # [cask] dev
   cask 'iterm2'
   cask 'visual-studio-code'
+  cask 'antigravity'
   cask 'cursor'
   cask 'kiro-cli'
   # HTTP 请求调试工具

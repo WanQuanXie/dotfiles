@@ -69,7 +69,7 @@ else
 
   # [brew] productivity
   # brew 'wget'
-  # brew 'p7zip'
+  # brew '7zip'
   # Terminal JSON viewer & processor
   # brew 'fx'
   # brew 'pandoc'
@@ -77,6 +77,8 @@ else
   brew 'bitwarden-cli'
   # Continuation of Clash Verge - A Clash Meta GUI based on Tauri
   cask "clash-verge-rev"
+  # Open-source BitTorrent client
+  cask "transmission"
 
   # [brew] AI & AIGC
   brew 'ollama'

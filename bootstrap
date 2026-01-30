@@ -3,6 +3,18 @@
 # 主引导脚本 - 使用共享库重构
 # 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
 
+# 检查是否需要强制重新执行
+if [[ "$1" == "--force" ]]; then
+    rm -f "$HOME/.dotfiles_bootstrapped"
+fi
+
+# 幂等性检查：如果已配置完成且非强制模式，则跳过
+BOOTSTRAP_MARKER="$HOME/.dotfiles_bootstrapped"
+if [[ -f "$BOOTSTRAP_MARKER" ]]; then
+    echo "Dotfiles 已配置完成。使用 --force 强制重新执行。"
+    exit 0
+fi
+
 # 加载共享库
 # shellcheck source=./lib/common.sh
 source "./lib/common.sh"
@@ -36,8 +48,18 @@ else
 fi
 
 show_bootstrap_progress "正在设置主机名"
-sudo scutil --set HostName xiewq-macbookpro || show_error "设置主机名失败"
-show_success "主机名设置完成"
+HOSTNAME="${DOTFILES_HOSTNAME:-$(scutil --get ComputerName 2>/dev/null || echo '')}"
+if [[ -z "$HOSTNAME" ]]; then
+    HOSTNAME="${USER}-macbookpro"
+fi
+# 仅在主机名需要变更时才执行（幂等性优化）
+CURRENT_HOSTNAME=$(scutil --get HostName 2>/dev/null || echo '')
+if [[ "$CURRENT_HOSTNAME" != "$HOSTNAME" ]]; then
+    sudo scutil --set HostName "$HOSTNAME" || show_error "设置主机名失败"
+    show_success "主机名设置完成: $HOSTNAME"
+else
+    show_success "主机名已正确设置: $HOSTNAME"
+fi
 
 show_bootstrap_progress "正在使用 Brew Bundle 安装软件包"
 set +e
@@ -61,6 +83,9 @@ mkdir -p ~/.tmux/plugins
 show_success "配置目录准备完成"
 
 show_bootstrap_progress "正在安装 dotfiles"
+if ! command -v rcup &>/dev/null; then
+    show_error "rcm 未安装，请先运行: brew install rcm"
+fi
 rcup -d ./rc -f || show_error "dotfiles 安装失败"
 
 # 验证关键配置文件
@@ -90,3 +115,6 @@ show_success "应用程序配置完成"
 echo -e "${GREEN}正在进行最终测试${NC}"
 ./test || show_error "测试失败"
 show_success "所有配置已完成！系统设置已就绪。"
+
+# 创建完成标记文件（幂等性）
+touch "$BOOTSTRAP_MARKER"

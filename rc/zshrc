@@ -1,5 +1,6 @@
+# Kiro CLI pre block. Keep at the top of this file.
+[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh"
 # If you come from bash you might have to change your $PATH.
-export PATH=/opt/homebrew/opt/python@3.13/libexec/bin:$HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PATH
 export PATH=/opt/homebrew/opt/python@3.13/libexec/bin:$HOME/bin:$HOME/.local/bin:/usr/local/bin:/opt/homebrew/bin:$PATH
 
 # Path to your oh-my-zsh installation.
@@ -201,3 +202,12 @@ eval "$(pyenv init - bash)"
 
 # bun completions
 [ -s "/Users/xiewq/.bun/_bun" ] && source "/Users/xiewq/.bun/_bun"
+export GPG_TTY=$(tty)
+
+# 尝试手动加载 Kiro 补全 (路径可能视安装方式而定，以下为常见路径)
+if command -v kiro-cli >/dev/null 2>&1; then
+  eval "$(kiro-cli completion zsh)"
+fi
+
+# Kiro CLI post block. Keep at the bottom of this file.
+[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"

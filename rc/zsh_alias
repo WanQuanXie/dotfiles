@@ -8,6 +8,10 @@ alias unproxy="unset https_proxy;unset http_proxy;unset all_proxy"
 
 alias chromeDebug="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=dev-debug-profile"
 
+alias brew='env PATH="${PATH//$(pyenv root)\/shims:/}" brew'
+
+alias claude-yolo='proxy && export ENABLE_LSP_TOOL=1 && claude --dangerously-skip-permissions'
+
 alias -s md=nvim
 alias -s markdown=nvim
 alias -s bean=nvim

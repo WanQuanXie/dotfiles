@@ -44,8 +44,6 @@ brew "pyright"
 # Extremely fast Python package installer and resolver, written in Rust
 brew "uv"
 
-brew 'cmake'
-
 brew 'pnpm'
 tap 'oven-sh/bun'
 brew 'oven-sh/bun/bun'

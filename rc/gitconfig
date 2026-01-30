@@ -1,6 +1,7 @@
 [user]
 	name = WanQuanXie
 	email = i2cherry941219@gmail.com
+	signingkey = 4489322F7F539EA8
 [core]
 	ignorecase = false
 	editor = nvim
@@ -23,5 +24,7 @@
        )\"; \
     }; f"
     rank = "shortlog -s -n --no-merges"
-[includeIf "gitdir:~/work/"]
-	path = ~/work/.gitconfig
+[commit]
+	gpgsign = true
+[tag]
+	gpgSign = true

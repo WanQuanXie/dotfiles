@@ -93,6 +93,7 @@ else
   tap "farion1231/ccswitch"
   cask "farion1231/ccswitch/cc-switch"
   # cask 'comfyui'
+  cask 'upscayl'
 
   # [font] for code editor
   cask "font-fira-code"

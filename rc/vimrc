@@ -1,98 +1,149 @@
-filetype plugin indent on
-syntax enable
+" ============================================
+" 基础设置
+" ============================================
+filetype plugin indent on                   " 启用文件类型检测、插件和自动缩进
+syntax enable                               " 启用语法高亮
 
-set encoding=utf-8
-set nobackup
-set noswapfile
-set undofile
-set expandtab
-set tabstop=4
-set softtabstop=4
-set autoindent
-set shiftwidth=4
-set number
-set whichwrap=b,s,<,>,[,]
-set backspace=indent,eol,start
-set ignorecase
-set smartcase
-set hlsearch
-set incsearch
-set hidden
-set cursorline
-set ruler
-set colorcolumn=120
-set signcolumn=yes
-set mouse=a
-set scrolloff=8
-set updatetime=300
-set virtualedit=block
-set showmatch
-set showtabline=2
-set cmdheight=2
-set wildmenu
-set wildmode=longest,full
-set splitright
-set splitbelow
-set shortmess+=c
-set shortmess-=S
-set background=dark
-set termguicolors
-set rtp+=/opt/homebrew/opt/fzf
-set sessionoptions=blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions
+" ============================================
+" 编码与文件设置
+" ============================================
+set encoding=utf-8                          " 设置文件编码为 UTF-8
+set nobackup                                " 禁用备份文件
+set noswapfile                              " 禁用交换文件
+set undofile                                " 启用持久化撤销历史
 
-let mapleader=" "
-nnoremap <leader>q <cmd>q!<cr>
-nnoremap <leader>Q <cmd>qa!<cr>
-nnoremap <leader>w <cmd>wq!<cr>
-nnoremap <leader>e <cmd>e!<cr>
-nnoremap <leader>r <cmd>source ~/.vimrc<cr>
-inoremap <c-a> <Esc>I
-inoremap <c-e> <End>
-cnoremap <c-a> <Home>
-cnoremap <c-e> <End>
-nnoremap k gk
-nnoremap j gj
-nnoremap <leader>pp "0p
-nnoremap <a-Up> <cmd>m .-2<cr>==
-nnoremap <a-Down> <cmd>m .+1<cr>==
-vnoremap <a-Up> :move '<-2<CR>gv=gv
-vnoremap <a-Down> :move '>+1<CR>gv=gv
-nnoremap <leader>ps :PlugInstall
-nnoremap <leader>s <c-w>w
-nnoremap <leader>j <c-w>j
-nnoremap <leader>k <c-w>k
-nnoremap <leader>h <c-w>h
-nnoremap <leader>l <c-w>l
-nnoremap <s-Tab> gT
-nnoremap <Tab> gt
-nnoremap <leader>t[ <cmd>tabmove -1<cr>
-nnoremap <leader>t] <cmd>tabmove +1<cr>
-nnoremap <leader>1 1gt
-nnoremap <leader>2 2gt
-nnoremap <leader>3 3gt
-nnoremap <leader>4 4gt
-nnoremap <leader>5 5gt
-nnoremap <leader>6 6gt
-nnoremap <leader>7 7gt
-nnoremap <leader>8 8gt
-nnoremap <leader>9 9gt
-nnoremap <leader>0 <cmd>tablast<cr>
+" ============================================
+" 缩进与制表符设置
+" ============================================
+set expandtab                               " 将 Tab 转换为空格
+set tabstop=4                               " Tab 显示为 4 个空格宽度
+set softtabstop=4                           " 编辑时 Tab 键插入 4 个空格
+set autoindent                              " 自动继承上一行的缩进
+set shiftwidth=4                            " 自动缩进时使用 4 个空格
 
+" ============================================
+" 显示设置
+" ============================================
+set number                                  " 显示行号
+set whichwrap=b,s,<,>,[,]                   " 允许退格键和方向键跨行移动
+set backspace=indent,eol,start              " 允许退格键删除缩进、换行符和插入前的字符
+" set ignorecase                              " 搜索时忽略大小写
+set smartcase                               " 搜索包含大写字母时区分大小写
+set hlsearch                                " 高亮显示搜索结果
+set incsearch                               " 输入搜索模式时即时高亮匹配
+set hidden                                  " 允许切换缓冲区时不保存
+set cursorline                              " 高亮当前行
+set ruler                                   " 在状态栏显示光标位置
+set colorcolumn=120                         " 在第 120 列显示参考线
+set signcolumn=yes                          " 始终显示标记列（用于 git/lint 等提示）
+set mouse=a                                 " 启用鼠标支持
+set scrolloff=8                             " 光标距离顶部/底部保持 8 行距离
+set updatetime=300                          " 减少更新延迟（毫秒），提升响应速度
+set virtualedit=block                       " 可视块模式下允许光标移动到无字符位置
+set showmatch                               " 高亮显示匹配的括号
+set showtabline=2                           " 始终显示标签栏
+set cmdheight=2                             " 命令行高度为 2 行
+
+" ============================================
+" 其他设置
+" ============================================
+set wildmenu                                " 启用命令行补全菜单
+set wildmode=longest,full                   " 补全模式：先匹配最长公共部分，再显示完整列表
+set splitright                              " 垂直分屏时新窗口在右侧
+set splitbelow                              " 水平分屏时新窗口在下方
+set shortmess+=c                            " 减少补全菜单的冗余消息
+set shortmess-=S                            " 显示搜索匹配计数
+set background=dark                         " 使用深色背景主题
+set termguicolors                           " 启用真彩色支持
+set rtp+=/opt/homebrew/opt/fzf              " 添加 fzf 到运行时路径
+set sessionoptions=blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions  " 会话保存选项
+
+" ============================================
+" Leader 键设置
+" ============================================
+let mapleader=" "                           " 设置 Leader 键为空格键
+
+" ============================================
+" 文件操作快捷键
+" ============================================
+nnoremap <leader>q <cmd>q!<cr>              " <Space>q 强制退出当前窗口
+nnoremap <leader>Q <cmd>qa!<cr>             " <Space>Q 强制退出所有窗口
+nnoremap <leader>w <cmd>wq!<cr>             " <Space>w 保存并退出
+nnoremap <leader>e <cmd>e!<cr>              " <Space>e 重新加载当前文件
+nnoremap <leader>r <cmd>source ~/.vimrc<cr> " <Space>r 重新加载 vimrc 配置
+
+" ============================================
+" 行内移动快捷键 (Emacs 风格)
+" ============================================
+inoremap <c-a> <Esc>I                       " 插入模式 Ctrl+a 移动到行首
+inoremap <c-e> <End>                        " 插入模式 Ctrl+e 移动到行尾
+cnoremap <c-a> <Home>                       " 命令模式 Ctrl+a 移动到行首
+cnoremap <c-e> <End>                        " 命令模式 Ctrl+e 移动到行尾
+
+" ============================================
+" 移动与编辑快捷键
+" ============================================
+nnoremap k gk                               " k 键按显示行移动（支持折行）
+nnoremap j gj                               " j 键按显示行移动（支持折行）
+nnoremap <leader>pp "0p                     " <Space>pp 粘贴最近复制的内容（忽略删除）
+nnoremap <a-Up> <cmd>m .-2<cr>==            " Alt+上 将当前行上移
+nnoremap <a-Down> <cmd>m .+1<cr>==          " Alt+下 将当前行下移
+vnoremap <a-Up> :move '<-2<CR>gv=gv         " 可视模式 Alt+上 将选中行上移
+vnoremap <a-Down> :move '>+1<CR>gv=gv       " 可视模式 Alt+下 将选中行下移
+
+" ============================================
+" 插件管理快捷键
+" ============================================
+nnoremap <leader>ps :PlugInstall            " <Space>ps 安装插件
+
+" ============================================
+" 窗口导航快捷键
+" ============================================
+nnoremap <leader>s <c-w>w                   " <Space>s 切换到下一个窗口
+nnoremap <leader>j <c-w>j                   " <Space>j 切换到下方窗口
+nnoremap <leader>k <c-w>k                   " <Space>k 切换到上方窗口
+nnoremap <leader>h <c-w>h                   " <Space>h 切换到左侧窗口
+nnoremap <leader>l <c-w>l                   " <Space>l 切换到右侧窗口
+
+" ============================================
+" 标签页导航快捷键
+" ============================================
+nnoremap <s-Tab> gT                         " Shift+Tab 切换到上一个标签页
+nnoremap <Tab> gt                           " Tab 切换到下一个标签页
+nnoremap <leader>t[ <cmd>tabmove -1<cr>     " <Space>t[ 将当前标签页左移
+nnoremap <leader>t] <cmd>tabmove +1<cr>     " <Space>t] 将当前标签页右移
+nnoremap <leader>1 1gt                      " <Space>1 切换到第 1 个标签页
+nnoremap <leader>2 2gt                      " <Space>2 切换到第 2 个标签页
+nnoremap <leader>3 3gt                      " <Space>3 切换到第 3 个标签页
+nnoremap <leader>4 4gt                      " <Space>4 切换到第 4 个标签页
+nnoremap <leader>5 5gt                      " <Space>5 切换到第 5 个标签页
+nnoremap <leader>6 6gt                      " <Space>6 切换到第 6 个标签页
+nnoremap <leader>7 7gt                      " <Space>7 切换到第 7 个标签页
+nnoremap <leader>8 8gt                      " <Space>8 切换到第 8 个标签页
+nnoremap <leader>9 9gt                      " <Space>9 切换到第 9 个标签页
+nnoremap <leader>0 <cmd>tablast<cr>         " <Space>0 切换到最后一个标签页
+
+" ============================================
+" 插件列表
+" ============================================
 call plug#begin(expand('~/.vim/plugged'))
-Plug 'arcticicestudio/nord-vim', { 'branch': 'develop' }
-Plug 'vim-airline/vim-airline'
-" Plug 'Yggdroot/indentLine'
-Plug 'RRethy/vim-illuminate'
-Plug 'christoomey/vim-system-copy'
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-abolish'
-Plug 'kana/vim-textobj-user'
-Plug 'haya14busa/vim-textobj-number'
-Plug 'AndrewRadev/splitjoin.vim'
+Plug 'arcticicestudio/nord-vim', { 'branch': 'develop' }  " Nord 主题 - 北欧风格配色方案
+Plug 'vim-airline/vim-airline'              " 状态栏美化插件
+" Plug 'Yggdroot/indentLine'                " 缩进线显示插件（已禁用）
+Plug 'RRethy/vim-illuminate'                " 高亮光标下相同单词
+Plug 'christoomey/vim-system-copy'          " 系统剪贴板复制支持 (cp/cv)
+Plug 'tpope/vim-commentary'                 " 快速注释插件 (gc)
+Plug 'tpope/vim-repeat'                     " 使 . 命令支持插件操作
+Plug 'tpope/vim-surround'                   " 快速修改包围符号 (cs/ds/ys)
+Plug 'tpope/vim-abolish'                    " 智能替换和大小写转换 (cr)
+Plug 'kana/vim-textobj-user'                " 自定义文本对象基础库
+Plug 'haya14busa/vim-textobj-number'        " 数字文本对象 (in/an)
+Plug 'AndrewRadev/splitjoin.vim'            " 单行/多行代码互转 (gS/gJ)
 call plug#end()
 
-colorscheme nord
+" ============================================
+" 插件配置
+" ============================================
+colorscheme nord                            " 应用 Nord 配色方案
 
-let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#enabled = 1  " 启用 airline 标签栏扩展

@@ -14,14 +14,18 @@ set number
 set whichwrap=b,s,<,>,[,]
 set backspace=indent,eol,start
 set ignorecase
+set smartcase
 set hlsearch
-set noincsearch
+set incsearch
 set hidden
 set cursorline
 set ruler
 set colorcolumn=120
 set signcolumn=yes
-set mouse=nv
+set mouse=a
+set scrolloff=8
+set updatetime=300
+set virtualedit=block
 set showmatch
 set showtabline=2
 set cmdheight=2
@@ -30,13 +34,13 @@ set wildmode=longest,full
 set splitright
 set splitbelow
 set shortmess+=c
-set t_Co=256
+set shortmess-=S
 set background=dark
 set termguicolors
 set rtp+=/opt/homebrew/opt/fzf
 set sessionoptions=blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions
 
-let mapleader="\\"
+let mapleader=" "
 nnoremap <leader>q <cmd>q!<cr>
 nnoremap <leader>Q <cmd>qa!<cr>
 nnoremap <leader>w <cmd>wq!<cr>
@@ -48,9 +52,6 @@ cnoremap <c-a> <Home>
 cnoremap <c-e> <End>
 nnoremap k gk
 nnoremap j gj
-nnoremap C c$
-nnoremap D d$
-nnoremap Y y$
 nnoremap <leader>pp "0p
 nnoremap <a-Up> <cmd>m .-2<cr>==
 nnoremap <a-Down> <cmd>m .+1<cr>==
@@ -79,9 +80,8 @@ nnoremap <leader>0 <cmd>tablast<cr>
 
 call plug#begin(expand('~/.vim/plugged'))
 Plug 'arcticicestudio/nord-vim', { 'branch': 'develop' }
-Plug 'mkitt/tabline.vim'
-Plug 'google/vim-searchindex'
-Plug 'Yggdroot/indentLine'
+Plug 'vim-airline/vim-airline'
+" Plug 'Yggdroot/indentLine'
 Plug 'RRethy/vim-illuminate'
 Plug 'christoomey/vim-system-copy'
 Plug 'tpope/vim-commentary'
@@ -94,3 +94,5 @@ Plug 'AndrewRadev/splitjoin.vim'
 call plug#end()
 
 colorscheme nord
+
+let g:airline#extensions#tabline#enabled = 1

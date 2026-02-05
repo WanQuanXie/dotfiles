@@ -9,7 +9,8 @@ brew 'luarocks'
 brew 'neovim'
 brew 'zsh'
 brew 'zsh-completions'
-brew 'zsh-syntax-highlighting'
+# brew 'zsh-syntax-highlighting'
+brew 'zsh-fast-syntax-highlighting'
 # 终端主题
 brew 'starship'
 # Terminal multiplexer
@@ -76,7 +77,7 @@ else
   # 密码管理工具命令行
   brew 'bitwarden-cli'
   # Continuation of Clash Verge - A Clash Meta GUI based on Tauri
-  cask "clash-verge-rev"
+  # cask "clash-verge-rev"
   # Open-source BitTorrent client
   cask "transmission"
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Zsh 初始化脚本 - 使用共享库重构
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 面向 macOS 15+ (Apple Silicon)
 
 show_info "正在设置 Zsh"
 ZSH_PATH="$(get_brew_prefix)/bin/zsh"

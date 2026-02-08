@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Bash 配置测试 - 使用共享库重构
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 面向 macOS 15+ (Apple Silicon)
 
 # 初始化测试环境
 init_test_env "$(basename "$(dirname "$0")")"
@@ -32,12 +32,6 @@ if [[ -f ~/.bash_profile ]]; then
 else
     show_warning "bash_profile 文件不存在，这可能是正常的（如果主要使用 zsh）"
 fi
-
-# 运行 POSIX 兼容性测试
-run_posix_compatibility_tests "bash"
-
-# 运行 macOS 兼容性测试
-run_macos_compatibility_tests "bash"
 
 # 测试 motd 内容显示
 show_test "测试 motd 内容"

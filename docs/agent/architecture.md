@@ -24,8 +24,8 @@ bootstrap (入口)
 |------|------|
 | `colors.sh` | ANSI 颜色变量定义 |
 | `display.sh` | 显示函数：show_info/success/error/warning/progress/group/check/test |
-| `system.sh` | 系统检测（macOS 版本/架构）、环境变量设置、日志记录 |
-| `testing.sh` | 测试框架：init_test_env、兼容性测试、POSIX 测试 |
+| `system.sh` | 环境变量设置（Homebrew 路径）、日志记录 |
+| `testing.sh` | 测试框架：init_test_env、test_command、check_* 系列函数 |
 
 通过 `DOTFILES_COMMON_LOADED` 环境变量防止重复加载。
 

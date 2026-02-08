@@ -43,19 +43,7 @@ function prompt_exitcode {
   fi
 }
 
-function prompt_arch {
-  if [ "$ZSH_CRISPY_SHOW_ARCH" != "1" ]; then
-    return
-  fi
-  MAC_ARCH=`arch`
-  if [ "$MAC_ARCH" = "i386" ]; then
-    echo "i "
-  elif [ "$MAC_ARCH" = "arm64" ]; then
-    echo "a "
-  fi
-}
-
-PROMPT='%{$fg_bold[blue]%}$(prompt_arch)%(!.%1~.%~) $(git_prompt_info)$(prompt_char)%{$reset_color%} '
+PROMPT='%{$fg_bold[blue]%}%(!.%1~.%~) $(git_prompt_info)$(prompt_char)%{$reset_color%} '
 RPROMPT='$(prompt_exitcode)$(prompt_elapse)%{$fg[magenta]%}[%*]%{$reset_color%}'
 
 ZSH_THEME_GIT_PROMPT_PREFIX="("

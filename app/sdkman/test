@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # SDKMAN 配置测试 - 使用共享库重构
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 面向 macOS 15+ (Apple Silicon)
 
 # 初始化测试环境
 init_test_env "$(basename "$(dirname "$0")")"
@@ -90,8 +90,5 @@ fi
 # 运行 POSIX 兼容性测试（跳过 sdk 命令测试，因为需要特殊环境）
 show_test "POSIX 兼容性测试"
 show_info "SDKMAN 需要在 shell 环境中初始化，跳过跨 shell 测试"
-
-# 运行 macOS 兼容性测试
-run_macos_compatibility_tests "sdkman"
 
 test_summary "SDKMAN 配置测试"

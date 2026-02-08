@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Node.js 配置测试 - 使用共享库重构
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 面向 macOS 15+ (Apple Silicon)
 
 # 初始化测试环境
 init_test_env "$(basename "$(dirname "$0")")"
@@ -18,12 +18,6 @@ check_executable "npm" "检查 npm 包管理器"
 check_version "pnpm" "--version" "检查 pnpm 版本"
 check_version "node" "--version" "检查 Node.js 版本"
 check_version "npm" "--version" "检查 npm 版本"
-
-# 运行 POSIX 兼容性测试
-run_posix_compatibility_tests "node"
-
-# 运行 macOS 兼容性测试
-run_macos_compatibility_tests "node"
 
 test_summary "Node.js 配置测试"
 

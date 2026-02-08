@@ -1,13 +1,8 @@
 # Kiro CLI pre block. Keep at the top of this file.
 [[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh"
 # If you come from bash you might have to change your $PATH.
-# 动态获取 Homebrew 路径，兼容 Intel 和 Apple Silicon Mac
-if command -v brew &>/dev/null; then
-    HOMEBREW_PREFIX="$(brew --prefix)"
-else
-    # 默认路径回退
-    [[ -d /opt/homebrew ]] && HOMEBREW_PREFIX="/opt/homebrew" || HOMEBREW_PREFIX="/usr/local"
-fi
+# Homebrew 路径 - Apple Silicon
+HOMEBREW_PREFIX="/opt/homebrew"
 
 # Python 路径 - 使用动态检测
 PYTHON_BIN=""
@@ -17,7 +12,7 @@ elif [[ -d "$HOMEBREW_PREFIX/opt/python/libexec/bin" ]]; then
     PYTHON_BIN="$HOMEBREW_PREFIX/opt/python/libexec/bin"
 fi
 
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$HOMEBREW_PREFIX/bin:$PATH
+export PATH=$HOME/bin:$HOME/.local/bin:$HOMEBREW_PREFIX/bin:$PATH
 [[ -n "$PYTHON_BIN" ]] && export PATH="$PYTHON_BIN:$PATH"
 
 # Path to your oh-my-zsh installation.
@@ -112,9 +107,6 @@ export LANG=en_US.UTF-8
 
 # allow the respect for LS_COLORS
 export LS_COLORS=gxfxaxdxcxegedabagacad
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh

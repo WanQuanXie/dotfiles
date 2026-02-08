@@ -111,10 +111,10 @@ else
     show_warning "tmux 会话创建失败"
 fi
 
-# POSIX 兼容性测试
-show_test "POSIX 兼容性测试"
+# 跨 Shell 测试
+show_test "跨 Shell 测试"
 
-# 检查 tmux 在不同 shell 中的兼容性
+# 检查 tmux 在不同 shell 中的可用性
 if command -v bash >/dev/null 2>&1; then
     test_command "bash -c 'command -v tmux'" "测试 bash 中的 tmux 可用性"
 fi
@@ -123,29 +123,16 @@ if command -v zsh >/dev/null 2>&1; then
     test_command "zsh -c 'command -v tmux'" "测试 zsh 中的 tmux 可用性"
 fi
 
-# macOS 兼容性测试
-show_test "macOS 兼容性测试"
+# macOS 剪贴板集成测试
+show_test "macOS 剪贴板集成测试"
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    # 检测芯片架构
-    ARCH=$(uname -m)
-    if [[ "$ARCH" == "arm64" ]]; then
-        show_success "Apple Silicon 架构下的 tmux 运行正常"
-    elif [[ "$ARCH" == "x86_64" ]]; then
-        show_success "Intel 架构下的 tmux 运行正常"
+if command -v pbcopy >/dev/null 2>&1 && command -v pbpaste >/dev/null 2>&1; then
+    # 检查配置文件中是否有剪贴板配置
+    if [[ -f ~/.tmux.conf ]] && grep -q "pbcopy\|pbpaste" ~/.tmux.conf; then
+        show_success "配置文件包含 macOS 剪贴板集成"
+    else
+        show_warning "配置文件中未找到 macOS 剪贴板集成配置"
     fi
-
-    # 测试与 macOS 剪贴板的集成
-    if command -v pbcopy >/dev/null 2>&1 && command -v pbpaste >/dev/null 2>&1; then
-        # 检查配置文件中是否有剪贴板配置
-        if [[ -f ~/.tmux.conf ]] && grep -q "pbcopy\|pbpaste" ~/.tmux.conf; then
-            show_success "配置文件包含 macOS 剪贴板集成"
-        else
-            show_warning "配置文件中未找到 macOS 剪贴板集成配置"
-        fi
-    fi
-else
-    show_warning "非 macOS 系统，跳过 macOS 特定测试"
 fi
 
 # 检查 tmux 服务器状态

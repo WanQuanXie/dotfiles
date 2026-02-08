@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # 语法检查脚本 - 使用共享库重构
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 面向 macOS 15+ (Apple Silicon)
 
 # 加载共享库
 # shellcheck source=./lib/common.sh

@@ -25,8 +25,6 @@
 完整测试套件：
 - 系统配置测试（调用 `./test`）
 - 应用测试（遍历所有 app/*/test）
-- 系统兼容性测试（macOS 版本/架构检测）
-- Shell 兼容性测试（POSIX 兼容性）
 - 集成功能测试（Git+GPG、FZF+Zsh 等工具联动）
 - 性能测试（Zsh 启动时间，<1000ms 为良好）
 
@@ -49,8 +47,6 @@ bash, fzf, git, go, gpg, java, MavenDaemon, node, nvim, ruby, rust, sdkman, ssh,
 - `init_test_env "<suite_name>"` - 初始化测试环境
 - `show_test "<description>"` - 显示测试项
 - `show_success "<message>"` / `show_error "<message>"` - 结果输出
-- `run_macos_compatibility_tests` - macOS 兼容性测试
-- `run_posix_compatibility_tests` - POSIX 兼容性测试
 
 ## CI 测试
 

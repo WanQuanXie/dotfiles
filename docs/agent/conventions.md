@@ -5,7 +5,7 @@
 - Shebang 行统一使用 `#!/usr/bin/env bash`
 - 所有脚本通过 `source lib/common.sh` 或 `source "$PROJECT_ROOT/lib/common.sh"` 加载共享库
 - 调用 `init_dotfiles_env` 或 `init_test_env` 初始化环境
-- 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS 10.15+ (Intel/Apple Silicon)
+- 面向 macOS 15+ (Apple Silicon)
 
 ## 幂等性设计
 

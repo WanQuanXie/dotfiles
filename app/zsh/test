@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Zsh 配置测试 - 使用共享库重构
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 面向 macOS 15+ (Apple Silicon)
 
 # 初始化测试环境
 init_test_env "$(basename "$(dirname "$0")")"
@@ -25,11 +25,5 @@ check_file "$HOME/.oh-my-zsh/custom/themes/crispy.zsh-theme" "检查自定义主
 
 # 检查语法高亮插件
 # check_directory "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" "检查语法高亮插件"
-
-# 运行 POSIX 兼容性测试
-run_posix_compatibility_tests "zsh"
-
-# 运行 macOS 兼容性测试
-run_macos_compatibility_tests "zsh"
 
 test_summary "Zsh 配置测试"

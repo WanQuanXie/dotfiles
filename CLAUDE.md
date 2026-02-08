@@ -2,7 +2,7 @@
 
 ## WHAT - 技术栈与结构
 
-- **Shell 脚本项目** (Bash 4+/Zsh 5+)，面向 macOS (Intel/Apple Silicon)
+- **Shell 脚本项目** (Bash 4+/Zsh 5+)，面向 macOS 15+ (Apple Silicon)
 - 使用 [Homebrew](https://brew.sh) 管理软件包，[rcm](https://github.com/thoughtbot/rcm) 管理 dotfiles 符号链接
 - 通过 GitHub Actions CI 在 macOS 上自动化测试
 

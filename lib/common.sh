@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # 通用库加载器 - dotfiles 项目的主要共享库
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 面向 macOS 15+ (Apple Silicon)
 
 # 获取库目录路径
 LIB_DIR="$(dirname "${BASH_SOURCE[0]}")"
@@ -213,7 +213,7 @@ init_dotfiles_env() {
 show_lib_info() {
     show_info "dotfiles 共享库已加载"
     show_info "支持的功能: 颜色显示、日志记录、系统检测、测试工具"
-    show_info "兼容性: POSIX shell (bash 4+/zsh 5+), macOS 10.15+ (Intel/Apple Silicon)"
+    show_info "目标平台: macOS 15+ (Apple Silicon)"
 }
 
 # 如果直接运行此脚本，显示库信息

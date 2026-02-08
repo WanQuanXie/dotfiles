@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # 集成测试脚本 - 使用共享库重构
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 面向 macOS 15+ (Apple Silicon)
 
 # 加载共享库
 # shellcheck source=./lib/common.sh
@@ -55,15 +55,6 @@ done
 # 生成测试报告
 show_group "测试报告"
 show_info "测试完成时间: $(date)"
-
-# 系统兼容性测试
-show_group "系统兼容性测试"
-
-# 运行系统兼容性测试
-run_macos_compatibility_tests "integration_test"
-
-# Shell 兼容性测试
-run_posix_compatibility_tests "integration_test"
 
 # 集成功能测试
 show_group "集成功能测试"

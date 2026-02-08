@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # 测试工具库 - 统一的测试函数和模式
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 面向 macOS 15+ (Apple Silicon)
 
 # 加载依赖库
 # shellcheck source=./display.sh

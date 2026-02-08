@@ -65,12 +65,10 @@ fi
 
 # Pinentry 路径检查
 show_progress "检查 pinentry 配置"
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    if command -v pinentry-mac &>/dev/null; then
-        show_success "pinentry-mac 已安装: $(which pinentry-mac)"
-    else
-        show_warning "pinentry-mac 未安装"
-    fi
+if command -v pinentry-mac &>/dev/null; then
+    show_success "pinentry-mac 已安装: $(which pinentry-mac)"
+else
+    show_warning "pinentry-mac 未安装"
 fi
 
 test_summary "GPG 配置"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Go 配置测试 - 使用共享库重构
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 面向 macOS 15+ (Apple Silicon)
 
 # 初始化测试环境
 init_test_env "$(basename "$(dirname "$0")")"
@@ -16,11 +16,5 @@ check_directory "$HOME/go" "检查 Go 工作目录"
 
 # 检查版本信息
 check_version "go" "version" "检查 Go 版本"
-
-# 运行 POSIX 兼容性测试
-run_posix_compatibility_tests "go"
-
-# 运行 macOS 兼容性测试
-run_macos_compatibility_tests "go"
 
 test_summary "Go 配置测试"

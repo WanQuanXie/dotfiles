@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Git 配置测试 - 使用共享库重构
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 面向 macOS 15+ (Apple Silicon)
 
 # 初始化测试环境
 init_test_env "$(basename "$(dirname "$0")")"
@@ -107,8 +107,8 @@ fi
 cd - >/dev/null
 rm -rf "$TEMP_DIR"
 
-# POSIX 兼容性测试
-show_test "POSIX 兼容性测试"
+# 跨 Shell 测试
+show_test "跨 Shell 测试"
 
 if command -v bash >/dev/null 2>&1; then
     test_command "bash -c 'command -v git'" "测试 bash 中的 git 可用性"
@@ -118,30 +118,14 @@ if command -v zsh >/dev/null 2>&1; then
     test_command "zsh -c 'command -v git'" "测试 zsh 中的 git 可用性"
 fi
 
-# macOS 兼容性测试
-show_test "macOS 兼容性测试"
+# Homebrew 安装检查
+show_test "Homebrew 安装检查"
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    ARCH=$(uname -m)
-    if [[ "$ARCH" == "arm64" ]]; then
-        show_success "Apple Silicon 架构下的 Git 运行正常"
-    elif [[ "$ARCH" == "x86_64" ]]; then
-        show_success "Intel 架构下的 Git 运行正常"
-    fi
-
-    # 检查是否使用 Homebrew 安装的 git
-    GIT_PATH=$(which git)
-    if [[ "$GIT_PATH" == *"/opt/homebrew/"* ]] || [[ "$GIT_PATH" == *"/usr/local/"* ]]; then
-        show_success "使用 Homebrew 安装的 Git"
-    else
-        show_warning "可能使用系统自带的 Git"
-    fi
+GIT_PATH=$(which git)
+if [[ "$GIT_PATH" == *"/opt/homebrew/"* ]]; then
+    show_success "使用 Homebrew 安装的 Git"
 else
-    show_warning "非 macOS 系统，跳过 macOS 特定测试"
+    show_warning "可能使用系统自带的 Git"
 fi
-
-# 运行兼容性测试
-run_posix_compatibility_tests "git"
-run_macos_compatibility_tests "git"
 
 test_summary "Git 配置测试"

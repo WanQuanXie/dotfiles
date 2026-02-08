@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # 主引导脚本 - 使用共享库重构
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 面向 macOS 15+ (Apple Silicon)
 
 # 检查是否需要强制重新执行
 if [[ "$1" == "--force" ]]; then

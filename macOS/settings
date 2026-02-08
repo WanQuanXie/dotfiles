@@ -1,39 +1,136 @@
 #!/usr/bin/env bash
+
 # macOS 系统设置脚本
+# 面向 macOS 15+ (Sequoia) / Apple Silicon
 # 基于: https://github.com/mathiasbynens/dotfiles/blob/master/.macos
 
+set -euo pipefail
+
+# 获取项目根目录并加载共享库
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+source "$PROJECT_ROOT/lib/common.sh"
+
+# 保持 sudo 权限
 sudo -v
 
-# Disable Notification Center and remove the menu bar icon
-launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
+###############################################################################
+# 触控板                                                                       #
+###############################################################################
 
-# Trackpad: enable tap to click for this user and for the login screen
-defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad "Clicking" -bool true
-defaults -currentHost write NSGlobalDomain "com.apple.mouse.tapBehavior" -int 1
-defaults write NSGlobalDomain "com.apple.mouse.tapBehavior" -int 1
+show_group "触控板设置"
 
-# Trackpad: map bottom right corner to right-click
-defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad "TrackpadCornerSecondaryClick" -int 2
-defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad "TrackpadRightClick" -bool true
-defaults -currentHost write NSGlobalDomain "com.apple.trackpad.trackpadCornerClickBehavior" -int 1
-defaults -currentHost write NSGlobalDomain "com.apple.trackpad.enableSecondaryClick" -bool true
+show_info "启用轻触点击 (tap to click)"
+# 蓝牙触控板
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+# 内建触控板
+defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
+# 登录屏幕
+defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
-# Open Desktop
+show_info "右下角映射为右键点击"
+# 蓝牙触控板
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -int 2
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true
+# 内建触控板
+defaults write com.apple.AppleMultitouchTrackpad TrackpadCornerSecondaryClick -int 2
+defaults write com.apple.AppleMultitouchTrackpad TrackpadRightClick -bool true
+# 全局
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.trackpadCornerClickBehavior -int 1
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool true
+
+show_success "触控板设置完成"
+
+###############################################################################
+# 键盘与输入                                                                   #
+###############################################################################
+
+show_group "键盘与输入设置"
+
+show_info "加快按键重复速度"
+defaults write NSGlobalDomain KeyRepeat -int 2
+defaults write NSGlobalDomain InitialKeyRepeat -int 15
+
+show_info "禁用自动纠正/大写/智能替换（避免干扰编码）"
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+show_success "键盘与输入设置完成"
+
+###############################################################################
+# Finder                                                                      #
+###############################################################################
+
+show_group "Finder 设置"
+
+show_info "新窗口打开桌面目录"
 defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/Desktop/"
+
+show_info "显示路径栏"
 defaults write com.apple.finder ShowPathbar -bool true
 
-# Dock
-defaults write com.apple.dock "tilesize" -int "36"
-defaults write com.apple.dock "show-recents" -bool "false"
-defaults write com.apple.dock "show-process-indicators" -bool "true"
-defaults write com.apple.dock "minimize-to-application" -bool "true"
-# Left corner to screensaver
+show_info "显示所有文件扩展名"
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+show_info "显示隐藏文件"
+defaults write com.apple.finder AppleShowAllFiles -bool true
+
+killall Finder || true
+
+show_success "Finder 设置完成"
+
+###############################################################################
+# Dock                                                                        #
+###############################################################################
+
+show_group "Dock 设置"
+
+show_info "设置图标大小为 36px"
+defaults write com.apple.dock tilesize -int 36
+
+show_info "隐藏最近使用的应用"
+defaults write com.apple.dock show-recents -bool false
+
+show_info "显示进程指示器"
+defaults write com.apple.dock show-process-indicators -bool true
+
+show_info "最小化到应用图标"
+defaults write com.apple.dock minimize-to-application -bool true
+
+show_info "左下角触发屏幕保护"
 defaults write com.apple.dock wvous-bl-corner -int 5
-killall Dock
+defaults write com.apple.dock wvous-bl-modifier -int 0
 
-# Terminal utf-8
-defaults write com.apple.terminal StringEncodings -array 4
+killall Dock || true
 
-# Avoid create DS_Store to USB
+show_success "Dock 设置完成"
+
+###############################################################################
+# 截图                                                                        #
+###############################################################################
+
+show_group "截图设置"
+
+show_info "截图保存到桌面，格式 PNG"
+defaults write com.apple.screencapture location -string "${HOME}/Desktop"
+defaults write com.apple.screencapture type -string "png"
+
+show_success "截图设置完成"
+
+###############################################################################
+# 其他                                                                        #
+###############################################################################
+
+show_group "其他设置"
+
+show_info "禁止在网络和 USB 存储上创建 .DS_Store"
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
+
+show_success "其他设置完成"
+
+show_success "macOS 系统设置全部完成，部分设置需要重新登录后生效"

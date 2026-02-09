@@ -1,41 +1,25 @@
+-- snacks.nvim picker 文件搜索配置
+-- 替代 telescope.nvim + telescope-heading + session-lens
+-- 统一使用 Snacks.picker API，与 snacks.nvim 体系深度集成
+
 local nnoremap = require('common').nnoremap
 
-local actions = require('telescope.actions')
-require('telescope').setup({
-    defaults = require('telescope.themes').get_ivy({
-        mappings = {
-            i = {
-                ['<esc>'] = actions.close,
-            },
-        },
-    }),
-    extensions = {
-        heading = {
-            treesitter = true,
-        },
-    },
-})
+-- 文件查找
+nnoremap('<leader>ff', function() Snacks.picker.files({ hidden = true }) end)         -- 查找文件（含隐藏文件，排除 .git）
+nnoremap('<leader>fF', function()
+    Snacks.picker.files({ hidden = true, ignored = true })                            -- 查找所有文件（含 gitignore 忽略的）
+end)
+nnoremap('<leader>fd', function() Snacks.picker.git_files() end)                      -- 查找 Git 跟踪的文件
+nnoremap('<leader>fr', function() Snacks.picker.recent() end)                         -- 最近打开的文件
 
-require('telescope').load_extension('session-lens')
-require('telescope').load_extension('heading')
+-- 内容搜索
+nnoremap('<leader>fg', function() Snacks.picker.grep_word() end)                      -- Grep 光标下的单词
+nnoremap('<leader>fG', function() Snacks.picker.grep() end)                           -- Grep 交互式输入
 
-nnoremap(
-    '<leader>ff',
-    '<cmd>Telescope find_files find_command=fd,--hidden,--exclude,*.git,--type,f<cr>'
-)
-nnoremap(
-    '<leader>fF',
-    '<cmd>Telescope find_files find_command=fd,--hidden,--no-ignore,--exclude,*.git,--type,f<cr>'
-)
-nnoremap('<leader>fd', '<cmd>Telescope git_files<cr>')
-nnoremap(
-    '<leader>fg',
-    "<cmd>lua require('telescope.builtin').live_grep({default_text = vim.fn.expand('<cword>'), additional_args={'--sortr','modified'}})<cr>"
-)
-nnoremap('<leader>fG', '<cmd>Telescope grep_string<cr>')
-nnoremap('<leader>fb', '<cmd>Telescope buffers<cr>')
-nnoremap('<leader>fh', '<cmd>Telescope help_tags<cr>')
-nnoremap('<leader>fl', '<cmd>Telescope lsp_document_symbols<cr>')
-nnoremap('<leader>fk', '<cmd>Telescope keymaps<cr>')
-nnoremap('<leader>fm', '<cmd>Telescope heading<cr>')
-nnoremap('<leader>fs', '<cmd>Telescope session-lens search_session<cr>')
+-- 导航与查找
+nnoremap('<leader>fb', function() Snacks.picker.buffers() end)                        -- 缓冲区列表
+nnoremap('<leader>fh', function() Snacks.picker.help() end)                           -- 帮助文档搜索
+nnoremap('<leader>fl', function() Snacks.picker.lsp_symbols() end)                    -- LSP 文档符号
+nnoremap('<leader>fk', function() Snacks.picker.keymaps() end)                        -- 快捷键搜索
+nnoremap('<leader>fs', function() Snacks.picker.smart() end)                          -- Smart open（frecency 智能排序）
+nnoremap('<leader>fm', function() Snacks.picker.lsp_symbols({ filter = { kind = 'String' } }) end) -- Markdown heading（通过 LSP symbols）

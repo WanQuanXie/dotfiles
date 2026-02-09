@@ -1,79 +1,42 @@
-local cmp = require('cmp')
-local ls = require('luasnip')
+-- blink.cmp 自动补全配置
+-- 替代 nvim-cmp + 11 个 cmp-xxx 源插件
+-- Rust 核心引擎，内建 LSP/buffer/path/snippet 源
+-- Beancount 补全通过 blink.compat 兼容层适配 cmp-beancount
 
+-- 加载 VSCode 格式的自定义代码片段
 require('luasnip.loaders.from_vscode').lazy_load({ paths = '~/dev/snippets' })
 
-cmp.setup({
-    mapping = cmp.mapping.preset.insert({
-        ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-        ['<C-f>'] = cmp.mapping.scroll_docs(4),
-        ['<C-Space>'] = cmp.mapping.complete(),
-        ['<C-c>'] = cmp.mapping.close(),
-        ['<CR>'] = cmp.mapping.confirm({
-            behavior = cmp.ConfirmBehavior.Insert,
-            select = true,
-        }),
-        ['<C-j>'] = cmp.mapping(function(fallback)
-            if ls.expand_or_jumpable() then
-                ls.expand_or_jump()
-            else
-                fallback()
-            end
-        end, { 'i', 's' }),
-    }),
-    sources = cmp.config.sources({
-        -- { name = 'copilot' },
-        { name = 'nvim_lsp' },
-        { name = 'nvim_lsp_signature_help' },
-        { name = 'nvim_lua' },
-        { name = 'luasnip' },
-        {
-            name = 'beancount',
-            option = { account = '~/dev/ledger/beancounts/accounts.bean' },
+require('blink.cmp').setup({
+    keymap = {
+        ['<C-Space>'] = { 'show' },                       -- 手动触发补全菜单
+        ['<CR>']      = { 'accept', 'fallback' },         -- 确认选中项
+        ['<C-n>']     = { 'select_next', 'fallback' },    -- 下一个候选项
+        ['<C-p>']     = { 'select_prev', 'fallback' },    -- 上一个候选项
+        ['<C-d>']     = { 'scroll_documentation_down' },  -- 文档预览向下滚动
+        ['<C-u>']     = { 'scroll_documentation_up' },    -- 文档预览向上滚动
+        ['<C-c>']     = { 'cancel' },                     -- 取消补全
+    },
+    sources = {
+        default = { 'lsp', 'path', 'snippets', 'buffer', 'lazydev', 'beancount' },
+        providers = {
+            lazydev = {                            -- Neovim Lua API 补全源
+                name = 'LazyDev',
+                module = 'lazydev.integrations.blink',
+                score_offset = 100,                -- 优先级最高
+            },
+            beancount = {                          -- Beancount 账户名补全源
+                name = 'beancount',
+                module = 'blink.compat.source',    -- 通过兼容层桥接 nvim-cmp 源
+                opts = {
+                    account = '~/dev/ledger/beancounts/accounts.bean',
+                },
+            },
         },
-        { name = 'path' },
-        { name = 'calc' },
-        { name = 'emoji' },
-        { name = 'buffer' },
-    }),
-    snippet = {
-        expand = function(args)
-            require('luasnip').lsp_expand(args.body)
-        end,
     },
-    experimental = {
-        native_menu = false,
-        ghost_text = true,
+    completion = {
+        documentation = { auto_show = true },  -- 自动显示文档预览窗口
+        ghost_text = { enabled = true },       -- 内联灰色预览文本
     },
-    formatting = {
-        format = function(entry, vim_item)
-            vim_item.menu = ({
-                -- copilot = '[cop]',
-                nvim_lsp = '[lsp]',
-                nvim_lua = '[lua]',
-                nvim_lsp_signature_help = '[sig]',
-                bean_account = '[bean]',
-                luasnip = '[snippet]',
-                path = '[path]',
-                calc = '[cal]',
-                emoji = '[emo]',
-                buffer = '[buf]',
-            })[entry.source.name]
-            return vim_item
-        end,
-    },
-})
-
-cmp.setup.cmdline(':', {
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = {
-        { name = 'cmdline', max_item_count = 30 },
-    },
-})
-
-cmp.setup.cmdline('/', {
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = {
-        { name = 'buffer' },
-    },
+    signature = { enabled = true },            -- 函数签名参数帮助（替代 cmp-nvim-lsp-signature-help）
+    snippets = { preset = 'luasnip' },         -- 使用 LuaSnip 作为代码片段后端
 })

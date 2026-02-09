@@ -15,8 +15,8 @@ else
     run_with_log "nvim --headless '+Lazy! sync' +qa" "安装 Neovim 插件"
 fi
 
-show_info "安装格式化工具和 linters..."
-# 安装格式化工具和 linters（语言服务器由 mason-lspconfig 确保）
-run_with_log "nvim --headless '+MasonInstall luacheck markdownlint revive stylua shfmt yamllint' +qa" "安装格式化工具和 linters"
+show_info "安装格式化工具..."
+# 安装格式化工具（语言服务器由 mason-lspconfig 确保）
+run_with_log "nvim --headless '+MasonInstall prettier stylua shfmt' +qa" "安装格式化工具"
 
 show_success "Neovim 设置完成"

@@ -1,40 +1,19 @@
 -- LSP 语言服务器配置
 -- 管理各语言的 LSP 设置，navic 面包屑集成，以及语言专用选项
 
-local lspconfig = require('lspconfig')
-
--- navic 面包屑 — 为支持 documentSymbol 的 LSP 客户端附加面包屑导航
+-- navic 面包屑 — 通过全局 LspAttach 自动附加，无需逐个配置 on_attach
 local navic = require('nvim-navic')
-local attach_navic = function(client, bufnr)
-    if client.server_capabilities.documentSymbolProvider then
-        navic.attach(client, bufnr)
-    end
-end
-
--- ━━ 主要语言 LSP ━━（附加 navic 面包屑）
-lspconfig.gopls.setup({
-    on_attach = attach_navic, -- Go 语言服务器
-})
-lspconfig.rust_analyzer.setup({
-    on_attach = attach_navic, -- Rust 语言服务器
-})
-lspconfig.ts_ls.setup({
-    on_attach = attach_navic, -- TypeScript/JavaScript 语言服务器
+vim.api.nvim_create_autocmd('LspAttach', {
+    callback = function(args)
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+        if client and client.server_capabilities.documentSymbolProvider then
+            navic.attach(client, args.buf)
+        end
+    end,
 })
 
--- ━━ 其他语言 LSP ━━
-lspconfig.bashls.setup({})    -- Bash 脚本
-lspconfig.beancount.setup({}) -- Beancount 记账
-lspconfig.cssls.setup({})     -- CSS
-lspconfig.html.setup({})      -- HTML
-lspconfig.jsonls.setup({})    -- JSON
-lspconfig.lua_ls.setup({})    -- Lua（lazydev.nvim 自动增强 Neovim API 补全）
-lspconfig.pyright.setup({})   -- Python
-lspconfig.ruby_lsp.setup({})  -- Ruby
-lspconfig.sqlls.setup({})     -- SQL
-lspconfig.vimls.setup({})     -- Vim 脚本
-lspconfig.vuels.setup({})     -- Vue
-lspconfig.yamlls.setup({})    -- YAML
+-- LSP 服务器由 mason-lspconfig 的 automatic_enable 自动启用（vim.lsp.enable）
+-- 无需手动调用 lspconfig.XXX.setup() 或 vim.lsp.enable()
 
 -- ━━ HTML/Emmet ━━
 vim.g.user_emmet_install_global = 0        -- 不全局安装 emmet

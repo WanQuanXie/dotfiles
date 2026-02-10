@@ -6,11 +6,11 @@ local M = {}
 --- 安全 require 模块，失败时显示错误通知而不是崩溃
 --- 用于 init.lua 加载各配置模块，避免单个模块错误导致整体配置不可用
 function M.try_require(name)
-    local ok, _ = pcall(require, name)
+    local ok, err = pcall(require, name)
     if not ok then
         local msg = string.format(
-            'The configuration is not fully loaded. Requiring `%s` failed. Check the path and syntax.',
-            name
+            'Requiring `%s` failed: %s',
+            name, err
         )
         vim.notify(msg, vim.log.levels.ERROR)
     end

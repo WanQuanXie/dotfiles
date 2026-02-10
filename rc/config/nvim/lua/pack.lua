@@ -117,7 +117,6 @@ return require('lazy').setup({
             require('mason-lspconfig').setup({
                 ensure_installed = {
                     'bashls',        -- Bash
-                    'beancount',     -- Beancount 记账
                     'cssls',         -- CSS
                     'gopls',         -- Go
                     'html',          -- HTML
@@ -132,6 +131,7 @@ return require('lazy').setup({
                     'vuels',         -- Vue
                     'yamlls',        -- YAML
                 },
+                automatic_enable = true, -- 自动对已安装的服务器调用 vim.lsp.enable()
             })
         end,
     },
@@ -154,11 +154,13 @@ return require('lazy').setup({
     -- Treesitter
     -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     {
-        'nvim-treesitter/nvim-treesitter', -- 语法高亮/增量解析引擎
+        'nvim-treesitter/nvim-treesitter', -- 语法高亮/增量解析引擎（main 分支，新 API）
+        lazy = false,
         build = ':TSUpdate',
     },
     {
         'nvim-treesitter/nvim-treesitter-textobjects', -- 函数/类/参数的 Treesitter 文本对象
+        branch = 'main',
         dependencies = { 'nvim-treesitter/nvim-treesitter' },
     },
 

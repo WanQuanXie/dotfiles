@@ -81,7 +81,8 @@ if [[ ! -f "$ZSHRC" ]] || ! grep -q "GPG_TTY" "$ZSHRC" 2>/dev/null; then
     cat >> "$ZSHRC" << 'EOF'
 
 # GPG TTY 配置 (解决签名时无法输入密码的问题)
-export GPG_TTY=$(tty)
+GPG_TTY=$(tty)
+export GPG_TTY
 EOF
     show_success "已添加 GPG_TTY 到 ~/.zshrc"
 else
@@ -89,7 +90,8 @@ else
 fi
 
 # 立即导出当前 TTY
-export GPG_TTY=$(tty)
+GPG_TTY=$(tty)
+export GPG_TTY
 
 # ============================================
 # 5. 生成/验证 GPG 密钥

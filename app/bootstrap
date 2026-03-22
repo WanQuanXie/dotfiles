@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # 应用引导脚本 - 使用共享库重构
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 兼容 POSIX shell (bash 4+) 和 macOS (Intel/Apple Silicon)
 
 # 获取脚本目录的绝对路径
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -38,7 +38,7 @@ handle_error() {
 # 应用分组 - 按依赖关系和安装时间分组
 # 第1组：基础工具（快速安装）
 # shellcheck disable=SC2034  # group1 通过 nameref 在 process_group 函数中使用
-declare -a group1=("zsh" "git" "ssh" "gpg" "starship")
+declare -a group1=("fish" "git" "ssh" "gpg" "starship")
 # 第2组：语言环境（耗时较长，可并行）
 # shellcheck disable=SC2034  # group2 通过 nameref 在 process_group 函数中使用
 declare -a group2=("go" "rust" "ruby" "java" "node")
@@ -185,7 +185,7 @@ backup_configs() {
     mkdir -p "$backup_dir"
 
     # 备份关键配置文件
-    for file in .zshrc .bashrc .gitconfig .vimrc .tmux.conf; do
+    for file in .config/fish/config.fish .bashrc .gitconfig .vimrc .tmux.conf; do
         if [ -f "$HOME/$file" ]; then
             cp "$HOME/$file" "$backup_dir/"
         fi

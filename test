@@ -45,10 +45,10 @@ else
 fi
 
 show_test "RCM 符号链接"
-if [ -s ~/.zshrc ]; then
-    show_success "zshrc 符号链接已创建"
+if [ -s ~/.config/fish/config.fish ]; then
+    show_success "fish config 符号链接已创建"
 else
-    show_error "zshrc 符号链接未创建"
+    show_error "fish config 符号链接未创建"
 fi
 
 if [ -s ~/.gitconfig ]; then

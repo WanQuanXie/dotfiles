@@ -2,20 +2,20 @@
 
 ## WHAT - 技术栈与结构
 
-- **Shell 脚本项目** (Bash 4+/Zsh 5+)，面向 macOS 15+ (Apple Silicon)
+- **Shell 脚本项目** (Bash 4+/Fish 4+)，面向 macOS 15+ (Apple Silicon)
 - 使用 [Homebrew](https://brew.sh) 管理软件包，[rcm](https://github.com/thoughtbot/rcm) 管理 dotfiles 符号链接
 - 通过 GitHub Actions CI 在 macOS 上自动化测试
 
 | 目录 | 用途 |
 |------|------|
 | `app/` | 各应用的 init/test/cleanup 脚本（分组：基础工具、语言环境、开发工具） |
-| `rc/` | 由 rcm 管理的 dotfiles（zshrc, vimrc, tmux.conf, gitconfig 等） |
+| `rc/` | 由 rcm 管理的 dotfiles（fish config, vimrc, tmux.conf, gitconfig 等） |
 | `lib/` | 共享 Shell 库（颜色、显示、系统检测、测试工具） |
 | `macOS/` | macOS 系统偏好设置脚本 |
 
 ## WHY - 目的
 
-自动化配置全新 macOS 开发环境，包含终端 (zsh/tmux/nvim)、开发语言 (Go/Rust/Ruby/Java/Node)、GPG 签名、SSH 等完整工具链。
+自动化配置全新 macOS 开发环境，包含终端 (fish/tmux/nvim)、开发语言 (Go/Rust/Ruby/Java/Node)、GPG 签名、SSH 等完整工具链。
 
 ## HOW - 开发工作流
 

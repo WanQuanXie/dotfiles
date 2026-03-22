@@ -7,10 +7,7 @@ brew 'mas'
 # lua 包管理器, 安装 vim 的 lua 插件模块需要
 brew 'luarocks'
 brew 'neovim'
-brew 'zsh'
-brew 'zsh-completions'
-# brew 'zsh-syntax-highlighting'
-brew 'zsh-fast-syntax-highlighting'
+brew 'fish'
 # 终端主题
 brew 'starship'
 # Terminal multiplexer

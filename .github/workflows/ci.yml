@@ -50,7 +50,7 @@ jobs:
           fi
           
           # 清理用户目录下可能的配置文件
-          rm -rf ~/.zshrc ~/.gitconfig ~/.tmux.conf || true
+          rm -rf ~/.config/fish ~/.gitconfig ~/.tmux.conf || true
 
       - uses: actions/checkout@v3
         with:
@@ -69,14 +69,14 @@ jobs:
       
       - name: 验证配置文件
         run: |
-          test -f ~/.zshrc
+          test -f ~/.config/fish/config.fish
           test -f ~/.gitconfig
           test -f ~/.tmux.conf
       
       - name: 验证应用配置
         run: |
-          zsh -c "source ~/.zshrc && which nvim"
-          zsh -c "source ~/.zshrc && which git"
+          fish -ic "which nvim"
+          fish -ic "which git"
       
       - name: 生成报告
         if: always()
@@ -88,7 +88,7 @@ jobs:
           
           # 添加详细测试结果
           echo "### 应用测试结果" >> $GITHUB_STEP_SUMMARY
-          for app in zsh git ssh gpg go rust ruby java node vim nvim tmux fzf VSCode; do
+          for app in fish git ssh gpg go rust ruby java node vim nvim tmux fzf VSCode; do
             if [ -f "./app/$app/test" ]; then
               if bash "./app/$app/test" &>/dev/null; then
                 echo "- $app: ✅" >> $GITHUB_STEP_SUMMARY

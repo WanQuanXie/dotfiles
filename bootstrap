@@ -78,7 +78,7 @@ show_success "工作目录创建完成"
 # 创建必要的配置目录
 show_bootstrap_progress "正在准备配置目录"
 mkdir -p ~/.config/nvim
-mkdir -p ~/.oh-my-zsh/custom/themes
+mkdir -p ~/.config/fish
 mkdir -p ~/.tmux/plugins
 show_success "配置目录准备完成"
 
@@ -91,7 +91,7 @@ rcup -d ./rc -f || show_error "dotfiles 安装失败"
 # 验证关键配置文件
 echo "验证配置文件..."
 declare -a config_files=(
-    "$HOME/.zshrc"
+    "$HOME/.config/fish/config.fish"
     "$HOME/.gitconfig"
     "$HOME/.tmux.conf"
     "$HOME/.config/nvim/init.lua"

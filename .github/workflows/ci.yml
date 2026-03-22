@@ -25,7 +25,7 @@ jobs:
           rm -rf $GITHUB_WORKSPACE/*
           rm -rf $GITHUB_WORKSPACE/.[!.]*
           
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: ShellCheck
         run: bash ./check
 
@@ -52,7 +52,7 @@ jobs:
           # 清理用户目录下可能的配置文件
           rm -rf ~/.config/fish ~/.gitconfig ~/.tmux.conf || true
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
       

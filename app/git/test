@@ -97,7 +97,12 @@ test_command "git add test.txt" "添加文件到暂存区"
 
 # 提交测试（如果用户配置完整）
 if [[ -n "$GIT_NAME" && -n "$GIT_EMAIL" ]]; then
-    test_command "git commit -m 'Test commit'" "创建测试提交"
+    # CI 环境没有 GPG 私钥，使用 --no-gpg-sign 跳过签名
+    if [[ "$CI" == "true" ]]; then
+        test_command "git commit --no-gpg-sign -m 'Test commit'" "创建测试提交"
+    else
+        test_command "git commit -m 'Test commit'" "创建测试提交"
+    fi
     show_success "Git 基本功能正常"
 else
     show_warning "由于用户配置不完整，跳过提交测试"

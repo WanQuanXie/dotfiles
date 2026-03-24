@@ -3,7 +3,7 @@
 # 面向 macOS 15+ (Apple Silicon)
 
 # 加载核心库
-source "$(dirname (status --current-filename))/init.fish"
+include lib/init
 
 # ============================================================================
 # 测试函数

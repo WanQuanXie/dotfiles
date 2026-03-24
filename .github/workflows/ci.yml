@@ -4,6 +4,8 @@ env:
   ACTIONS_STEP_DEBUG: true
   # 禁用任何可能的缓存
   NO_CACHE: true
+  # 强制使用 Node.js 24 运行 actions
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 on:
   push:
     branches:
@@ -25,7 +27,7 @@ jobs:
           rm -rf $GITHUB_WORKSPACE/*
           rm -rf $GITHUB_WORKSPACE/.[!.]*
           
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
       - name: ShellCheck
         run: bash ./check
 
@@ -52,7 +54,7 @@ jobs:
           # 清理用户目录下可能的配置文件
           rm -rf ~/.config/fish ~/.gitconfig ~/.tmux.conf || true
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.2.2
         with:
           submodules: recursive
       

@@ -3,7 +3,8 @@
 # GPG 配置验证脚本
 # 验证 GPG 签名配置是否正确
 
-set -e
+# 注意: fish 不支持 set -e (errexit)
+# 如需错误处理，请使用 `; or exit 1` 语法显式处理
 
 # 获取项目根目录
 set -l SCRIPT_DIR (cd (dirname (status --current-filename)); and pwd)

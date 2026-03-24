@@ -168,10 +168,17 @@ function show_error
 
     write_log "$log_message" "ERROR"
 
-    # 如果提供了退出代码且不为 0，则退出
-    if test "$exit_code" != "0"
+    # CI 环境下：所有错误都应该导致非零退出码
+    # 非 CI 环境下：仅当 exit_code 非0时退出
+    if test "$CI" = "true"
+        # CI 下直接退出
+        exit $exit_code
+    else if test "$exit_code" != "0"
+        # 非 CI 下，仅当 exit_code 非0时退出
         exit $exit_code
     end
+    # 否则仅报告，不退出
+    return 0
 end
 
 # 显示警告消息

@@ -8,8 +8,8 @@ source lib/test.fish
 # 初始化测试环境
 init_test_env (basename (dirname (status --current-filename)))
 
-# 设置错误处理
-set -e
+# 注意: fish 不支持 set -e (errexit)
+# 如需错误处理，请使用 `; or exit 1` 语法显式处理
 
 show_test "Git 配置测试开始"
 

@@ -8,32 +8,8 @@ source lib/test.fish
 # 初始化测试环境
 init_test_env (basename (dirname (status --current-filename)))
 
-# 测试命令并提供反馈
-function test_command
-    if test (count $argv) -lt 2
-        echo "test_command 需要至少 2 个参数" >&2
-        return 1
-    end
-
-    set -l cmd "$argv[1]"
-    set -l msg "$argv[2]"
-    set -l err_msg "$argv[3]"
-    if test -z "$err_msg"
-        set err_msg "$msg 失败"
-    end
-
-    show_test "$msg"
-    if eval "$cmd" >> "$TEST_LOG" 2>&1
-        show_success "$msg 通过"
-        return 0
-    else
-        set -l exit_code $status
-        show_error "$err_msg (错误代码: $exit_code)"
-    end
-end
-
-# 设置错误处理
-set -e
+# 注意: fish 不支持 set -e (errexit)
+# 如需错误处理，请使用 `; or exit 1` 语法显式处理
 
 # 检查 nvim 是否安装
 test -x (which nvim)

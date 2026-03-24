@@ -3,7 +3,8 @@
 # GPG 签名配置脚本 (macOS Apple Silicon 版)
 # 完整流程：安装依赖、配置 pinentry-mac、生成/导入密钥、配置 Git
 
-set -e
+# 注意: fish 不支持 set -e (errexit)
+# 如需错误处理，请使用 `; or exit 1` 语法显式处理
 
 # 获取项目根目录
 set -l SCRIPT_DIR (cd (dirname (status --current-filename)); and pwd)

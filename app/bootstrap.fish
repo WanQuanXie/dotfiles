@@ -23,17 +23,17 @@ function handle_error
 
     show_error "配置 $app 时发生错误: $error_msg (错误代码: $exit_code)"
 
-    # 询问是否继续
-    if test -z "$CI"  # 非 CI 环境下询问
-        read -p "是否继续安装其他应用? (y/n) " -n 1 -r
-        echo
-        if not string match -rq '^[Yy]$' $REPLY
-            show_error "安装中止"
-            exit 1
-        end
-    else
-        # CI 环境下继续执行
-        show_warning "CI 环境中，继续执行后续步骤"
+    # CI 环境下必须让 step 真正失败，直接退出
+    if test "$CI" = "true"
+        exit $exit_code
+    end
+
+    # 非 CI 环境下询问是否继续
+    read -p "是否继续安装其他应用? (y/n) " -n 1 -r
+    echo
+    if not string match -rq '^[Yy]$' $REPLY
+        show_error "安装中止"
+        exit 1
     end
 end
 

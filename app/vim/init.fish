@@ -1,0 +1,25 @@
+#!/usr/bin/env fish
+
+include lib/init
+
+# Vim 初始化脚本 - 安装 vim-plug 插件管理器
+
+show_info "正在安装 vim-plug 插件管理器"
+
+# 定义 vim-plug 路径和下载地址
+set -l VIM_PLUG_PATH "$HOME/.vim/autoload/plug.vim"
+set -l VIM_PLUG_URL "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+
+# 安装 vim-plug
+if test -f "$VIM_PLUG_PATH"
+    show_warning "vim-plug 已安装，跳过下载"
+else
+    if run_with_log "curl -fLo '$VIM_PLUG_PATH' --create-dirs '$VIM_PLUG_URL'" "下载 vim-plug"
+        show_success "vim-plug 安装完成"
+    else
+        show_error "vim-plug 安装失败" 1
+    end
+end
+
+show_success "Vim 插件管理器设置完成"
+show_info "提示: 运行 'vim +PlugInstall' 来安装配置的插件"

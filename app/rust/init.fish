@@ -1,0 +1,8 @@
+#!/usr/bin/env fish
+
+if test -z "$CI"
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+else
+    # 在 CI 环境中，使用 -y 参数自动安装，避免交互式安装
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+end

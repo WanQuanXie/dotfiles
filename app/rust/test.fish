@@ -1,0 +1,120 @@
+#!/usr/bin/env fish
+
+include lib/test
+
+# 初始化测试环境
+init_test_env (basename (dirname (status --current-filename)))
+
+# 设置错误处理
+set -e
+
+show_test "Rust 配置测试开始"
+
+# 基本安装测试
+test_command "command -v rustc" "检查 rustc 编译器"
+test_command "command -v rustfmt" "检查 rustfmt 格式化工具"
+test_command "command -v cargo" "检查 cargo 包管理器"
+test_command "test -d ~/.cargo" "检查 cargo 目录"
+
+# 版本信息测试
+show_test "检查 Rust 工具链版本"
+set -l RUSTC_VERSION (rustc --version)
+set -l CARGO_VERSION (cargo --version)
+echo "Rustc 版本: $RUSTC_VERSION"
+echo "Cargo 版本: $CARGO_VERSION"
+show_success "Rust 版本检查完成"
+
+# 测试 Rust 工具链
+show_test "检查 Rust 工具链组件"
+
+# 检查 rustup
+if command -v rustup >/dev/null 2>&1
+    show_success "rustup 工具链管理器可用"
+
+    # 检查默认工具链
+    set -l DEFAULT_TOOLCHAIN (rustup default)
+    echo "默认工具链: $DEFAULT_TOOLCHAIN"
+
+    # 检查已安装的组件
+    set -l INSTALLED_COMPONENTS (rustup component list --installed | wc -l)
+    echo "已安装组件数量: $INSTALLED_COMPONENTS"
+else
+    show_warning "rustup 不可用"
+end
+
+# 检查其他 Rust 工具
+if command -v clippy >/dev/null 2>&1
+    show_success "clippy 代码检查工具可用"
+else
+    show_warning "clippy 不可用"
+end
+
+# 测试 cargo 配置
+show_test "检查 cargo 配置"
+
+if test -f ~/.cargo/config.toml
+    show_success "发现 cargo 配置文件 (TOML 格式)"
+else if test -f ~/.cargo/config
+    show_success "发现 cargo 配置文件 (旧格式)"
+else
+    show_warning "未发现 cargo 配置文件"
+end
+
+# 检查环境变量
+show_test "检查 Rust 环境变量"
+
+if test -n "$CARGO_HOME"
+    echo "CARGO_HOME: $CARGO_HOME"
+    show_success "CARGO_HOME 环境变量已设置"
+else
+    show_warning "CARGO_HOME 环境变量未设置"
+end
+
+if test -n "$RUSTUP_HOME"
+    echo "RUSTUP_HOME: $RUSTUP_HOME"
+    show_success "RUSTUP_HOME 环境变量已设置"
+else
+    show_warning "RUSTUP_HOME 环境变量未设置"
+end
+
+# 功能测试
+show_test "Rust 功能测试"
+
+# 创建临时项目进行测试
+set -l TEMP_DIR (mktemp -d)
+cd "$TEMP_DIR"
+
+# 创建简单的 Rust 项目
+test_command "cargo init --name rust_test_project" "创建测试项目"
+
+# 编译测试
+test_command "cargo check" "检查项目编译"
+test_command "cargo build" "构建项目"
+
+# 运行测试
+test_command "cargo test" "运行项目测试"
+
+# 格式化测试
+test_command "cargo fmt --check" "检查代码格式"
+
+# 清理
+cd - >/dev/null
+rm -rf "$TEMP_DIR"
+
+# 跨 Shell 测试
+show_test "跨 Shell 测试"
+
+if command -v bash >/dev/null 2>&1
+    test_command "bash -c 'command -v rustc'" "测试 bash 中的 rustc 可用性"
+end
+
+# ARM64 目标平台检查
+show_test "ARM64 目标平台检查"
+
+if rustup target list --installed | grep -q "aarch64-apple-darwin"
+    show_success "支持 aarch64-apple-darwin 目标平台"
+else
+    show_warning "未安装 aarch64-apple-darwin 目标平台"
+end
+
+show_success "Rust 配置测试完成"

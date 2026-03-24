@@ -1,0 +1,48 @@
+#!/usr/bin/env fish
+
+include lib/init
+
+show_info "正在设置 Fish Shell"
+set -l FISH_PATH (get_brew_prefix)/bin/fish
+
+# 检查 fish 是否已在 shells 列表中
+if grep -q "$FISH_PATH" /etc/shells
+    show_warning "Fish 已在 shells 列表中，跳过添加"
+else
+    show_info "将 Fish 添加到 shells 列表..."
+    sudo sh -c "echo $FISH_PATH >> /etc/shells"
+end
+
+# 检查当前 shell 是否已经是 fish
+if test "$SHELL" = "$FISH_PATH"
+    show_warning "当前 shell 已经是 Fish，跳过切换"
+else
+    show_info "切换默认 shell 为 Fish..."
+    sudo chsh -s "$FISH_PATH" "$USER"
+end
+
+# 安装 Fisher 插件管理器
+if fish -c 'type -q fisher' 2>/dev/null
+    show_warning "Fisher 已安装，跳过"
+else
+    show_info "安装 Fisher 插件管理器..."
+    run_with_log "fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher'" "安装 Fisher"
+end
+
+# 安装 plugin-git (oh-my-zsh git 插件等价物)
+if fish -c 'fisher list 2>/dev/null | grep -q jhillyerd/plugin-git'
+    show_warning "plugin-git 已安装，跳过"
+else
+    show_info "安装 plugin-git..."
+    run_with_log "fish -c 'fisher install jhillyerd/plugin-git'" "安装 plugin-git"
+end
+
+# 安装 bass (bash 兼容桥接，用于 SDKMAN 等)
+if fish -c 'fisher list 2>/dev/null | grep -q edc/bass'
+    show_warning "bass 已安装，跳过"
+else
+    show_info "安装 bass 插件..."
+    run_with_log "fish -c 'fisher install edc/bass'" "安装 bass"
+end
+
+show_success "Fish Shell 设置完成"

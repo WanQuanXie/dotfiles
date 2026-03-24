@@ -1,0 +1,11 @@
+#!/usr/bin/env fish
+
+# tpm
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+# plugins
+git clone https://github.com/arcticicestudio/nord-tmux ~/.tmux/themes/nord-tmux
+git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux/plugins/tmux-resurrect
+
+# install plugins
+echo "Toggle `prefix + I` inside a tmux session."

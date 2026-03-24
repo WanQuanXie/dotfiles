@@ -3,8 +3,9 @@
 # 兼容 macOS 15+ (Apple Silicon)
 
 # 获取脚本目录的绝对路径
-set -g SCRIPT_DIR (dirname (status -f))
-set -g PROJECT_ROOT (dirname $SCRIPT_DIR)
+# 注意: status -f 可能返回相对路径，需要转换为绝对路径
+set -g SCRIPT_DIR (cd (dirname (status -f)); and pwd)
+set -g PROJECT_ROOT (dirname "$SCRIPT_DIR")
 
 # 加载共享库
 source $PROJECT_ROOT/lib/init.fish

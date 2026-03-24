@@ -118,13 +118,13 @@ end
 show_success "dotfiles 安装完成"
 
 show_bootstrap_progress "正在配置应用程序"
-./app/bootstrap.fish
+fish ./app/bootstrap.fish
 or show_warning "应用程序配置可能失败，请检查日志"
 show_success "应用程序配置完成"
 
 echo "$GREEN""正在进行最终测试""$NC"
 if test -f ./test.fish
-    ./test.fish; or show_warning "测试可能失败，请检查日志"
+    fish ./test.fish; or show_warning "测试可能失败，请检查日志"
 else
     echo "test.fish 不存在，跳过测试"
 end

@@ -47,7 +47,7 @@ for app in $test_apps
         if test $status -eq 0
             show_success "$app 测试通过"
         else
-            show_error "$app 测试失败" 0
+            show_error "$app 测试失败"
         end
     else
         show_warning "跳过 $app (测试脚本不存在)"

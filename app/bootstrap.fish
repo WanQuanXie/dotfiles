@@ -132,18 +132,15 @@ function process_group
     show_progress "处理应用组: $group_name" "$CURRENT_GROUP" "$TOTAL_GROUPS"
 
     set -l success_count 0
-    # 使用 eval 进行间接变量访问获取数组长度
-    set -l total_count (eval "count \$$group_var_name")
+    set -l total_count (count $$group_var_name)
 
-    # 使用 eval 进行间接变量访问遍历数组元素 (fish 使用 1-based 索引)
-    set -l i 1
-    while test $i -le $total_count
-        set -l app (eval "echo \$$group_var_name[$i]")
+    # 使用 fish 的 $$ 语法进行间接变量访问遍历数组元素
+    # $$group_var_name 会展开为变量名对应的值
+    for app in $$group_var_name
         show_info "处理应用: $app"
         if process_app "$app"
             set success_count (math $success_count + 1)
         end
-        set i (math $i + 1)
     end
 
     show_info "$group_name 组完成: $success_count/$total_count 个应用配置成功"

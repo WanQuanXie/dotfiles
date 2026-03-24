@@ -27,7 +27,12 @@ check_file "$HOME/.config/fish/conf.d/02-path.fish" "检查 PATH 配置"
 check_file "$HOME/.config/fish/conf.d/20-tools.fish" "检查工具初始化配置"
 
 # 检查 Fisher 插件管理器
-check_file "$HOME/.config/fish/functions/fisher.fish" "检查 Fisher 插件管理器"
+# CI 环境下跳过 Fisher 检查（Fisher 需要网络下载，可能在 CI 中失败）
+if test "$CI" = "true"
+    show_warning "CI 环境检测到，跳过 Fisher 插件管理器检查"
+else
+    check_file "$HOME/.config/fish/functions/fisher.fish" "检查 Fisher 插件管理器"
+end
 
 # 验证 fish 可正常启动且环境变量加载正确
 test_command "fish -ic 'echo \$LANG'" "检查 Fish 交互模式启动"

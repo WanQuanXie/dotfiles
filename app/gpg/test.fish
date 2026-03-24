@@ -10,9 +10,9 @@
 set -l SCRIPT_DIR (cd (dirname (status --current-filename)); and pwd)
 set -l PROJECT_ROOT (dirname (dirname "$SCRIPT_DIR"))
 
-# 加载共享库
-source lib/init.fish
-source lib/test.fish
+# 加载共享库 (使用 $PROJECT_ROOT 绝对路径)
+source $PROJECT_ROOT/lib/init.fish
+source $PROJECT_ROOT/lib/test.fish
 
 init_test_env "GPG"
 

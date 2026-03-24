@@ -1,6 +1,11 @@
 #!/usr/bin/env fish
 
-source lib/test.fish
+# 获取项目根目录的绝对路径
+set -g APP_TEST_DIR (cd (dirname (status --current-filename)); and pwd)
+set -g APP_TEST_PROJECT_ROOT (dirname (dirname "$APP_TEST_DIR"))
+
+# 加载测试库 (使用绝对路径)
+source "$APP_TEST_PROJECT_ROOT/lib/test.fish"
 
 # 初始化测试环境
 init_test_env (basename (dirname (status --current-filename)))
@@ -19,10 +24,10 @@ if test -f "$VIM_PLUG_PATH"
     if test -s "$VIM_PLUG_PATH"
         show_success "vim-plug 文件完整"
     else
-        show_error "vim-plug 文件为空" 0
+        show_error "vim-plug 文件为空"
     end
 else
-    show_error "vim-plug 文件不存在" 0
+    show_error "vim-plug 文件不存在"
 end
 
 # 测试目录结构 - 对应 init 脚本的目录创建

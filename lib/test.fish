@@ -2,8 +2,12 @@
 # lib/test.fish - 测试工具库 (Fish Shell 版本)
 # 面向 macOS 15+ (Apple Silicon)
 
-# 加载核心库
-source lib/init.fish
+# 获取项目根目录的绝对路径
+set -g LIB_TEST_DIR (cd (dirname (status --current-filename)); and pwd)
+set -g LIB_TEST_PROJECT_ROOT (dirname "$LIB_TEST_DIR")
+
+# 加载核心库 (使用绝对路径)
+source "$LIB_TEST_PROJECT_ROOT/lib/init.fish"
 
 # ============================================================================
 # 测试函数
@@ -55,7 +59,7 @@ function test_command
         show_success "$msg 通过"
         return 0
     else
-        show_error "$err_msg (错误代码: $result)" 0
+        show_error "$err_msg (错误代码: $result)"
         exit 1
     end
 end
@@ -151,7 +155,7 @@ function check_version
         show_info "$cmd 版本: $version_output"
         show_success "$msg 完成"
     else
-        show_error "$cmd 未安装" 0
+        show_error "$cmd 未安装"
         exit 1
     end
 end

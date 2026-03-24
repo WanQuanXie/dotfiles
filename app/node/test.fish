@@ -1,6 +1,11 @@
 #!/usr/bin/env fish
 
-source lib/test.fish
+# 获取项目根目录的绝对路径
+set -g APP_TEST_DIR (cd (dirname (status --current-filename)); and pwd)
+set -g APP_TEST_PROJECT_ROOT (dirname (dirname "$APP_TEST_DIR"))
+
+# 加载测试库 (使用绝对路径)
+source "$APP_TEST_PROJECT_ROOT/lib/test.fish"
 
 # Node.js 配置测试 - 使用共享库重构
 # 面向 macOS 15+ (Apple Silicon)

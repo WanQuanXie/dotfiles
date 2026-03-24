@@ -2,8 +2,12 @@
 # test.fish - 主测试脚本
 # 运行基础测试和各个 app 的测试脚本
 
-# 加载测试库
-source lib/test.fish
+# 获取项目根目录的绝对路径
+set -g TEST_SCRIPT_DIR (cd (dirname (status --current-filename)); and pwd)
+set -g TEST_PROJECT_ROOT (dirname "$TEST_SCRIPT_DIR")
+
+# 加载测试库 (使用绝对路径)
+source "$TEST_PROJECT_ROOT/lib/test.fish"
 
 # ============================================================================
 # 主测试入口

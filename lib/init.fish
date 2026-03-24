@@ -268,7 +268,7 @@ function show_progress
     end
 
     set -l progress_text "$message"
-    if test -n "$current" -a -n "$total"
+    if test -n "$current"; and test -n "$total"
         set progress_text "[$current/$total] $message"
     end
 
@@ -307,7 +307,13 @@ end
 
 # 获取 Homebrew 前缀路径
 function get_brew_prefix
-    echo "/opt/homebrew"
+    if test -d /opt/homebrew
+        echo "/opt/homebrew"
+    else if test -d /usr/local/homebrew
+        echo "/usr/local/homebrew"
+    else
+        brew --prefix 2>/dev/null
+    end
 end
 
 # 设置基础环境变量
@@ -454,6 +460,12 @@ end
 # ============================================================================
 # 初始化
 # ============================================================================
+
+# 初始化 dotfiles 环境
+function init_dotfiles_env
+    setup_base_environment
+    write_log "dotfiles 环境初始化完成" "INIT"
+end
 
 # 标记库已加载
 set -gx DOTFILES_INIT_LOADED 1

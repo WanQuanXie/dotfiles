@@ -87,12 +87,24 @@ jobs:
           echo "- 操作系统: $(sw_vers -productName) $(sw_vers -productVersion)" >> $GITHUB_STEP_SUMMARY
           echo "- Homebrew: $(brew --version | head -n 1)" >> $GITHUB_STEP_SUMMARY
           echo "- 已安装包数量: $(brew list | wc -l | xargs)" >> $GITHUB_STEP_SUMMARY
-          
+
           # 添加详细测试结果
           echo "### 应用测试结果" >> $GITHUB_STEP_SUMMARY
-          for app in fish git ssh gpg go rust ruby java node vim nvim tmux fzf VSCode; do
+
+          # 定义需要测试的应用列表 (与 bootstrap 安装分组一致)
+          # group1: fish git ssh gpg starship
+          # group2: go rust ruby java node
+          # group3: vim nvim tmux fzf (VSCode 无 init 且 CI 跳过测试)
+          for app in bash fish git ssh gpg starship go rust ruby java node vim nvim tmux fzf MavenDaemon sdkman; do
             if [ -f "./app/$app/test" ]; then
-              if bash "./app/$app/test" &>/dev/null; then
+              # 捕获测试脚本输出，用于判断是否跳过
+              test_output=$(bash "./app/$app/test" 2>&1)
+              test_exit_code=$?
+
+              # 检查是否是 CI 环境下跳过测试
+              if echo "$test_output" | grep -q "CI 环境"; then
+                echo "- $app: ⏭️ (CI 跳过)" >> $GITHUB_STEP_SUMMARY
+              elif [ $test_exit_code -eq 0 ]; then
                 echo "- $app: ✅" >> $GITHUB_STEP_SUMMARY
               else
                 echo "- $app: ❌" >> $GITHUB_STEP_SUMMARY
@@ -101,5 +113,11 @@ jobs:
               echo "- $app: ⚠️ (无测试)" >> $GITHUB_STEP_SUMMARY
             fi
           done
-          
-          echo "- dotfiles 状态: $(if [ $? -eq 0 ]; then echo '✅ 成功'; else echo '❌ 失败'; fi)" >> $GITHUB_STEP_SUMMARY
+
+          # 检查 dotfiles 安装标记文件来判断状态
+          INSTALLED_COUNT=$(ls ~/.dotfiles_configured_* 2>/dev/null | wc -l | xargs)
+          if [ "$INSTALLED_COUNT" -ge 15 ]; then
+            echo "- dotfiles 状态: ✅ 成功 ($INSTALLED_COUNT 个应用已配置)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- dotfiles 状态: ⚠️ 部分成功 ($INSTALLED_COUNT 个应用已配置)" >> $GITHUB_STEP_SUMMARY
+          fi

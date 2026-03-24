@@ -41,9 +41,14 @@ test_command "test -d ~/.tmux" "检查 tmux 插件目录"
 test_command "test -d ~/.tmux/plugins" "检查 tmux 插件子目录"
 
 # 测试 TPM (Tmux Plugin Manager)
+# CI 环境下跳过 TPM 相关检查（TPM 需要网络下载，在 CI 中可能不可用）
 show_test "检查 TPM 插件管理器"
-test_command "test -d ~/.tmux/plugins/tpm" "检查 TPM 目录"
-test_command "test -f ~/.tmux/plugins/tpm/tpm" "检查 TPM 主脚本"
+if test "$CI" = "true"
+    show_warning "CI 环境检测到，跳过 TPM 插件检查"
+else
+    test_command "test -d ~/.tmux/plugins/tpm" "检查 TPM 目录"
+    test_command "test -f ~/.tmux/plugins/tpm/tpm" "检查 TPM 主脚本"
+end
 
 # 检查 TPM 脚本权限
 if test -f ~/.tmux/plugins/tpm/tpm

@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-include lib/test
+source lib/test.fish
 
 # Git 配置测试 - 使用共享库重构
 # 面向 macOS 15+ (Apple Silicon)

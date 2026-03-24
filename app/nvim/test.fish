@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-include lib/test
+source lib/test.fish
 
 # Neovim 配置测试 - 使用共享库重构
 # 兼容 POSIX shell (bash 4+/fish 4+) 和 macOS (Intel/Apple Silicon)

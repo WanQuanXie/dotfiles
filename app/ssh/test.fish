@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-include lib/test
+source lib/test.fish
 
 # 设置错误处理
 set -e

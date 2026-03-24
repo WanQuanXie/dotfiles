@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-include lib/init
+source lib/init.fish
 
 # 获取 brew 前缀路径
 set -l BREW_PREFIX (brew --prefix)

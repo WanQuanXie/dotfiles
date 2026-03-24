@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-include lib/init
+source lib/init.fish
 
 if test -x (which sdk)
     if sdk install mvnd

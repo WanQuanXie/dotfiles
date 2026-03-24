@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-include lib/init
+source lib/init.fish
 
 show_info "正在设置 Fish Shell"
 set -l FISH_PATH (get_brew_prefix)/bin/fish

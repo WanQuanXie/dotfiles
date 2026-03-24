@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-include lib/init
+source lib/init.fish
 
 echo "Setup SSH"
 mkdir -p ~/.ssh

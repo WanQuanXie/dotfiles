@@ -3,7 +3,7 @@
 # 面向 macOS 15+ (Apple Silicon)
 
 # 加载核心库
-include lib/init
+source lib/init.fish
 
 # 检查是否需要强制重新执行
 if test "$argv[1]" = "--force"

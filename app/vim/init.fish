@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-include lib/init
+source lib/init.fish
 
 # Vim 初始化脚本 - 安装 vim-plug 插件管理器
 

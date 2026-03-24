@@ -10,7 +10,7 @@ set -l SCRIPT_DIR (cd (dirname (status --current-filename)); and pwd)
 set -l PROJECT_ROOT (dirname (dirname "$SCRIPT_DIR"))
 
 # 加载共享库
-include lib/init
+source lib/init.fish
 
 # GPG 配置信息
 set -g GPG_EMAIL "i2cherry941219@gmail.com"

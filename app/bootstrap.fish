@@ -7,7 +7,7 @@ set -g SCRIPT_DIR (dirname (status -f))
 set -g PROJECT_ROOT (dirname $SCRIPT_DIR)
 
 # 加载共享库
-include $PROJECT_ROOT/lib/init.fish
+source $PROJECT_ROOT/lib/init.fish
 
 # 初始化环境
 init_dotfiles_env

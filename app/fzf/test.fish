@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-include lib/test
+source lib/test.fish
 
 # 初始化测试环境
 init_test_env (basename (dirname (status --current-filename)))

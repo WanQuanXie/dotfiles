@@ -2,7 +2,7 @@
 
 # 获取项目根目录的绝对路径
 # 使用 status -f 获取脚本的绝对路径，然后取其目录 (app/xxx 的父目录的父目录)
-set -g APP_TEST_PROJECT_ROOT (dirname (dirname (status -f)))
+set -g APP_TEST_PROJECT_ROOT (cd (dirname (dirname (status -f))); and pwd)
 
 # 加载测试库 (使用绝对路径)
 source "$APP_TEST_PROJECT_ROOT/lib/test.fish"
@@ -11,7 +11,7 @@ source "$APP_TEST_PROJECT_ROOT/lib/test.fish"
 # 面向 macOS 15+ (Apple Silicon)
 
 # 初始化测试环境
-init_test_env (basename (dirname (status --current-filename)))
+init_test_env (basename (dirname (status -f)))
 
 show_test "Go 配置测试开始"
 

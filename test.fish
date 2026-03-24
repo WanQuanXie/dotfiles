@@ -4,7 +4,7 @@
 
 # 获取项目根目录的绝对路径
 # 使用 status -f 获取脚本的绝对路径，然后取其目录
-set -g TEST_PROJECT_ROOT (dirname (status -f))
+set -g TEST_PROJECT_ROOT (cd (dirname (status -f)); and pwd)
 
 # 加载测试库 (使用绝对路径)
 source "$TEST_PROJECT_ROOT/lib/test.fish"

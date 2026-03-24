@@ -2,13 +2,13 @@
 
 # 获取项目根目录的绝对路径
 # 使用 status -f 获取脚本的绝对路径，然后取其目录 (app/xxx 的父目录的父目录)
-set -g APP_TEST_PROJECT_ROOT (dirname (dirname (status -f)))
+set -g APP_TEST_PROJECT_ROOT (cd (dirname (dirname (status -f))); and pwd)
 
 # 加载测试库 (使用绝对路径)
 source "$APP_TEST_PROJECT_ROOT/lib/test.fish"
 
 # 初始化测试环境
-init_test_env (basename (dirname (status --current-filename)))
+init_test_env (basename (dirname (status -f)))
 
 # 注意: fish 不支持 set -e (errexit)
 # 如需错误处理，请使用 `; or exit 1` 语法显式处理

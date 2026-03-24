@@ -7,11 +7,11 @@
 # 如需错误处理，请使用 `; or exit 1` 语法显式处理
 
 # 获取项目根目录
-set -l SCRIPT_DIR (cd (dirname (status --current-filename)); and pwd)
-set -l PROJECT_ROOT (dirname (dirname "$SCRIPT_DIR"))
+set -l SCRIPT_DIR (cd (dirname (status -f)); and pwd)
+set -l PROJECT_ROOT (dirname "$SCRIPT_DIR")
 
-# 加载共享库
-source lib/init.fish
+# 加载共享库 (使用绝对路径)
+source "$PROJECT_ROOT/lib/init.fish"
 
 # GPG 配置信息
 set -g GPG_EMAIL "i2cherry941219@gmail.com"

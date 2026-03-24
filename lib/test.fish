@@ -6,8 +6,18 @@
 # 使用 status -f 获取脚本的绝对路径，然后取其目录 (lib/ 的父目录的父目录)
 set -g LIB_TEST_PROJECT_ROOT (cd (dirname (dirname (status -f))); and pwd)
 
+# DEBUG: 输出路径信息
+echo "LIB_TEST: status -f = "(status -f)
+echo "LIB_TEST: LIB_TEST_PROJECT_ROOT = $LIB_TEST_PROJECT_ROOT"
+echo "LIB_TEST: Will source: $LIB_TEST_PROJECT_ROOT/lib/init.fish"
+
 # 加载核心库 (使用绝对路径)
-source "$LIB_TEST_PROJECT_ROOT/lib/init.fish"
+if test -f "$LIB_TEST_PROJECT_ROOT/lib/init.fish"
+    source "$LIB_TEST_PROJECT_ROOT/lib/init.fish"
+    echo "LIB_TEST: lib/init.fish sourced successfully"
+else
+    echo "LIB_TEST: lib/init.fish NOT FOUND at $LIB_TEST_PROJECT_ROOT/lib/init.fish"
+end
 
 # ============================================================================
 # 测试函数

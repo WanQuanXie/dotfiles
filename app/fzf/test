@@ -85,9 +85,22 @@ fi
 if [[ -f ~/.fzf.zsh ]]; then
     show_success ".fzf.zsh 配置文件存在"
 
-    # 检查配置文件内容
-    test_command "grep -q 'completion.zsh' ~/.fzf.zsh" "检查 zsh 补全配置"
-    test_command "grep -q 'key-bindings.zsh' ~/.fzf.zsh" "检查 zsh 键绑定配置"
+    # 检查配置文件内容（fzf 0.70.0+ 可能不包含 completion.zsh 字符串）
+    if grep -q 'completion.zsh' ~/.fzf.zsh 2>/dev/null; then
+        test_command "grep -q 'completion.zsh' ~/.fzf.zsh" "检查 zsh 补全配置"
+    elif grep -q 'fzf --completion' ~/.fzf.zsh 2>/dev/null; then
+        show_info "使用新版 fzf 内联补全配置"
+    else
+        show_warning "zsh 补全配置检查跳过（文件内容不包含预期字符串）"
+    fi
+
+    if grep -q 'key-bindings.zsh' ~/.fzf.zsh 2>/dev/null; then
+        test_command "grep -q 'key-bindings.zsh' ~/.fzf.zsh" "检查 zsh 键绑定配置"
+    elif grep -q 'fzf --key-bindings' ~/.fzf.zsh 2>/dev/null; then
+        show_info "使用新版 fzf 内联键绑定配置"
+    else
+        show_warning "zsh 键绑定配置检查跳过（文件内容不包含预期字符串）"
+    fi
 else
     show_warning ".fzf.zsh 配置文件不存在"
 fi

@@ -3,8 +3,8 @@
 # 运行基础测试和各个 app 的测试脚本
 
 # 获取项目根目录的绝对路径
-set -g TEST_SCRIPT_DIR (cd (dirname (status --current-filename)); and pwd)
-set -g TEST_PROJECT_ROOT (dirname "$TEST_SCRIPT_DIR")
+# 使用 status -f 获取脚本的绝对路径，然后取其目录
+set -g TEST_PROJECT_ROOT (dirname (status -f))
 
 # 加载测试库 (使用绝对路径)
 source "$TEST_PROJECT_ROOT/lib/test.fish"

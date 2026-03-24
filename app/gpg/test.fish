@@ -6,13 +6,13 @@
 # 注意: fish 不支持 set -e (errexit)
 # 如需错误处理，请使用 `; or exit 1` 语法显式处理
 
-# 获取项目根目录
-set -l SCRIPT_DIR (cd (dirname (status --current-filename)); and pwd)
-set -l PROJECT_ROOT (dirname (dirname "$SCRIPT_DIR"))
+# 获取项目根目录的绝对路径
+# 使用 status -f 获取脚本的绝对路径，然后取其目录 (app/xxx 的父目录的父目录)
+set -g APP_TEST_PROJECT_ROOT (dirname (dirname (status -f)))
 
 # 加载共享库 (使用 $PROJECT_ROOT 绝对路径)
-source $PROJECT_ROOT/lib/init.fish
-source $PROJECT_ROOT/lib/test.fish
+source $APP_TEST_PROJECT_ROOT/lib/init.fish
+source $APP_TEST_PROJECT_ROOT/lib/test.fish
 
 init_test_env "GPG"
 

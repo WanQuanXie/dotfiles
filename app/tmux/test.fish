@@ -1,8 +1,8 @@
 #!/usr/bin/env fish
 
 # 获取项目根目录的绝对路径
-set -g APP_TEST_DIR (cd (dirname (status --current-filename)); and pwd)
-set -g APP_TEST_PROJECT_ROOT (dirname (dirname "$APP_TEST_DIR"))
+# 使用 status -f 获取脚本的绝对路径，然后取其目录 (app/xxx 的父目录的父目录)
+set -g APP_TEST_PROJECT_ROOT (dirname (dirname (status -f)))
 
 # 加载测试库 (使用绝对路径)
 source "$APP_TEST_PROJECT_ROOT/lib/test.fish"

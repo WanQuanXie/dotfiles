@@ -75,6 +75,9 @@ jobs:
           # 清理用户目录下可能的配置文件
           rm -rf ~/.config/fish ~/.gitconfig ~/.tmux.conf || true
 
+          # 清理 dotfiles 配置标记文件，确保重新运行
+          rm -rf ~/.dotfiles_configured_* || true
+
       - uses: actions/checkout@v6.0.2
         with:
           submodules: recursive

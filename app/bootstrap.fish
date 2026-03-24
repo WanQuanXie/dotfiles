@@ -24,9 +24,10 @@ function handle_error
 
     show_error "配置 $app 时发生错误: $error_msg (错误代码: $exit_code)"
 
-    # CI 环境下必须让 step 真正失败，直接退出
+    # CI 环境下记录失败并继续处理其他应用
     if test "$CI" = "true"
-        exit $exit_code
+        set -g FAILED_APPS (math $FAILED_APPS + 1)
+        return 0  # 不影响流程继续
     end
 
     # 非 CI 环境下询问是否继续
@@ -49,6 +50,7 @@ set -g group3 vim nvim tmux fzf VSCode
 # 计算总步骤数
 set -g TOTAL_GROUPS 3
 set -g CURRENT_GROUP 0
+set -g FAILED_APPS 0  # 跟踪失败的应用数量
 
 show_group "开始配置应用程序 (共 $TOTAL_GROUPS 组)"
 
@@ -190,5 +192,11 @@ create_rollback_script
 process_group group1 "基础工具"
 process_group group2 "语言环境"
 process_group group3 "开发工具"
+
+# CI 模式下，如果有任何应用失败，退出码为 1
+if test "$CI" = "true" -a $FAILED_APPS -gt 0
+    show_error "有 $FAILED_APPS 个应用配置失败"
+    exit 1
+end
 
 show_success "所有应用程序配置完成"

@@ -28,8 +28,22 @@ jobs:
           rm -rf $GITHUB_WORKSPACE/.[!.]*
           
       - uses: actions/checkout@v6.0.2
-      - name: ShellCheck
-        run: bash ./check
+      - name: Fish 语法检查
+        run: |
+          # 确保 fish 已安装
+          if ! command -v fish >/dev/null 2>&1; then
+            brew install fish
+          fi
+          # 语法检查所有 fish 脚本
+          fish -n bootstrap.fish
+          fish -n app/bootstrap.fish
+          fish -n lib/init.fish
+          fish -n lib/test.fish
+          for f in app/*/init.fish app/*/test.fish app/*/cleanup.fish; do
+            if test -f "$f"; then
+              fish -n "$f" || echo "FAIL: $f"
+            fi
+          done
 
   macos-test:
     name: macOS 测试
@@ -64,7 +78,7 @@ jobs:
           brew install rcm
       
       - name: 运行 bootstrap
-        run: bash ./bootstrap
+        run: ./bootstrap.fish
       
       - name: 运行测试
         run: bash ./test

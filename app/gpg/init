@@ -17,6 +17,13 @@ GPG_EMAIL="i2cherry941219@gmail.com"
 GPG_NAME="WanQuanXie"
 GPG_SIGNING_KEY="4489322F7F539EA8"  # 预设签名密钥
 
+# 检测 CI 环境
+if [[ "$CI" == "true" ]]; then
+    IS_CI=true
+else
+    IS_CI=false
+fi
+
 show_group "GPG 签名配置"
 
 # ============================================
@@ -34,6 +41,10 @@ fi
 if gpg --list-secret-keys --keyid-format=long 2>/dev/null | grep -q "$GPG_SIGNING_KEY"; then
     show_info "检测到已存在的 GPG 密钥: $GPG_SIGNING_KEY"
     KEY_EXISTS=true
+elif [[ "$IS_CI" == "true" ]]; then
+    # CI 环境：直接生成新密钥，不做额外检查
+    show_info "CI 环境检测到，密钥不存在，将生成新密钥"
+    KEY_EXISTS=false
 else
     KEY_EXISTS=false
 fi
@@ -89,8 +100,12 @@ else
     show_info "GPG_TTY 已配置"
 fi
 
-# 立即导出当前 TTY
-GPG_TTY=$(tty)
+# 立即导出当前 TTY（CI 环境中可能不存在 tty）
+if [[ "$IS_CI" == "true" ]]; then
+    GPG_TTY=""
+else
+    GPG_TTY=$(tty 2>/dev/null || echo "")
+fi
 export GPG_TTY
 
 # ============================================
@@ -122,7 +137,11 @@ EOF
     if gpg --batch --generate-key /tmp/gpg-batch; then
         show_success "GPG 密钥生成成功"
     else
-        show_error "GPG 密钥生成失败"
+        if [[ "$IS_CI" == "true" ]]; then
+            show_warning "GPG 密钥生成失败（CI 环境，跳过此步骤）"
+        else
+            show_error "GPG 密钥生成失败"
+        fi
     fi
 
     # 清理临时批处理文件
@@ -137,8 +156,13 @@ else
 fi
 
 if [[ -z "$KEY_ID" ]]; then
-    show_error "无法提取 GPG 密钥 ID"
-    exit 1
+    if [[ "$IS_CI" == "true" ]]; then
+        show_warning "无法提取 GPG 密钥 ID（CI 环境，跳过 Git GPG 签名配置）"
+        KEY_ID=""
+    else
+        show_error "无法提取 GPG 密钥 ID"
+        exit 1
+    fi
 fi
 
 show_info "当前使用密钥 ID: $KEY_ID"
@@ -158,7 +182,9 @@ if [[ -f "$PROJECT_ROOT/rc/gitconfig" ]]; then
     show_info "检测到 Git 配置文件，使用预设值"
 else
     # 如果没有配置文件，手动设置
-    git config --global user.signingkey "$KEY_ID" 2>/dev/null || true
+    if [[ -n "$KEY_ID" ]]; then
+        git config --global user.signingkey "$KEY_ID" 2>/dev/null || true
+    fi
 fi
 
 # 确保 Git GPG 签名开启
@@ -166,8 +192,9 @@ git config --global commit.gpgsign true 2>/dev/null || true
 git config --global tag.gpgSign true 2>/dev/null || true
 
 # 配置 GPG 程序路径
-if command -v gpg > /dev/null; then
-    git config --global gpg.program "$(which gpg)"
+if command -v gpg > /dev/null 2>&1; then
+    GPG_PATH=$(command -v gpg 2>/dev/null || which gpg 2>/dev/null || echo "gpg")
+    git config --global gpg.program "$GPG_PATH" 2>/dev/null || true
 fi
 
 # 验证 Git 配置
@@ -181,8 +208,15 @@ echo "  GPG 程序: $(git config --global gpg.program || echo '默认')"
 # ============================================
 show_progress "重启 gpg-agent"
 
-gpgconf --kill gpg-agent 2>/dev/null || true
-show_success "gpg-agent 已重启"
+if ! gpgconf --kill gpg-agent 2>/dev/null; then
+    if [[ "$IS_CI" == "true" ]]; then
+        show_warning "gpg-agent 重启失败，可能已在 CI 环境中运行"
+    else
+        show_warning "gpg-agent 重启失败"
+    fi
+else
+    show_success "gpg-agent 已重启"
+fi
 
 # ============================================
 # 8. 标记完成

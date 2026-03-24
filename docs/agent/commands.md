@@ -26,7 +26,7 @@ bash ./app/gpg/cleanup
 
 ## 应用分组
 
-**第 1 组 - 基础工具**（快速）: zsh, git, ssh, gpg, starship
+**第 1 组 - 基础工具**（快速）: fish, git, ssh, gpg, starship
 
 **第 2 组 - 语言环境**（耗时）: go, rust, ruby, java, node
 

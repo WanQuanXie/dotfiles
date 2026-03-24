@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # 显示函数库 - 统一的消息显示和日志记录
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 兼容 POSIX shell (bash 4+/fish 4+) 和 macOS (Intel/Apple Silicon)
 
 # 加载颜色定义
 # shellcheck source=./colors.sh

@@ -18,28 +18,28 @@
 - 主机名是否正确（期望 `xiewq-macbookpro`）
 - 必要软件已安装（git, nvim）
 - 工作目录已创建（~/workspace/dev, ~/workspace/work）
-- rcm 符号链接正确（~/.zshrc, ~/.gitconfig）
+- rcm 符号链接正确（~/.config/fish/config.fish, ~/.gitconfig）
 
 ### 3. 集成测试 (`./integration_test`)
 
 完整测试套件：
 - 系统配置测试（调用 `./test`）
 - 应用测试（遍历所有 app/*/test）
-- 集成功能测试（Git+GPG、FZF+Zsh 等工具联动）
-- 性能测试（Zsh 启动时间，<1000ms 为良好）
+- 集成功能测试（Git+GPG、FZF+Fish 等工具联动）
+- 性能测试（Fish 启动时间，<1000ms 为良好）
 
 ### 4. 单个应用测试
 
 ```bash
-bash ./app/zsh/test    # 测试 zsh 配置
-bash ./app/git/test    # 测试 git 配置
+bash ./app/fish/test  # 测试 fish 配置
+bash ./app/git/test   # 测试 git 配置
 bash ./app/gpg/test    # 测试 gpg 配置
 # ... 其他应用同理
 ```
 
 ## 有测试的应用
 
-bash, fzf, git, go, gpg, java, MavenDaemon, node, nvim, ruby, rust, sdkman, ssh, tmux, vim, VSCode, zsh
+bash, fish, fzf, git, go, gpg, java, MavenDaemon, node, nvim, ruby, rust, sdkman, ssh, tmux, vim, VSCode
 
 ## 测试框架
 

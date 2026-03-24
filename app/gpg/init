@@ -85,17 +85,19 @@ fi
 # ============================================
 show_progress "配置 GPG_TTY 环境变量"
 
-ZSHRC="$HOME/.zshrc"
+FISH_CONFIG="$HOME/.config/fish/config.fish"
 
-if [[ ! -f "$ZSHRC" ]] || ! grep -q "GPG_TTY" "$ZSHRC" 2>/dev/null; then
-    backup_file "$ZSHRC"
-    cat >> "$ZSHRC" << 'EOF'
+# 确保 fish 配置目录存在
+ensure_directory "$HOME/.config/fish"
+
+if [[ ! -f "$FISH_CONFIG" ]] || ! grep -q "GPG_TTY" "$FISH_CONFIG" 2>/dev/null; then
+    backup_file "$FISH_CONFIG"
+    cat >> "$FISH_CONFIG" << 'EOF'
 
 # GPG TTY 配置 (解决签名时无法输入密码的问题)
-GPG_TTY=$(tty)
-export GPG_TTY
+set -gx GPG_TTY (tty)
 EOF
-    show_success "已添加 GPG_TTY 到 ~/.zshrc"
+    show_success "已添加 GPG_TTY 到 ~/.config/fish/config.fish"
 else
     show_info "GPG_TTY 已配置"
 fi

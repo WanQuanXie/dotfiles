@@ -126,7 +126,7 @@ process_app() {
 # 处理应用组的函数
 process_group() {
     # 使用 POSIX 兼容的间接变量访问替代 nameref (bash 4.3+ 特性)
-    # 这样可以确保在 bash 4+/zsh 5+ 和 macOS 10.15+ 上都能正常工作
+    # 这样可以确保在 bash 4+ 和 macOS 10.15+ 上都能正常工作
     local group_var_name=$1
     local group_name=$2
 

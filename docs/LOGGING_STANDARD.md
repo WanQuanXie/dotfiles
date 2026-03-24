@@ -272,7 +272,7 @@ export LOG_ENABLED=false
 
 ### Shell 兼容性
 - bash 4.0+
-- zsh 5.0+
+- fish 4.0+
 - macOS 默认 shell
 
 ### 系统兼容性

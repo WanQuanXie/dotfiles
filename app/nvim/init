@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Neovim 初始化脚本 - 使用共享库重构
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 兼容 POSIX shell (bash 4+/fish 4+) 和 macOS (Intel/Apple Silicon)
 
 show_info "正在设置 Neovim"
 

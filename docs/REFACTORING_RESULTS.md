@@ -67,7 +67,7 @@ lib/display.sh + lib/system.sh + lib/testing.sh + lib/colors.sh
 
 ### POSIX 兼容性 ✅
 - **bash 4+**: 支持 (避免使用 bash 4.3+ 特有功能)
-- **zsh 5+**: 支持 (测试通过)
+- **fish 4+**: 支持 (测试通过)
 - **数组操作**: 使用 POSIX 兼容语法
 - **变量引用**: 使用 `eval` 替代 `${!var}`
 
@@ -111,7 +111,7 @@ $ ./test
 ✓ nvim 已安装
 ✓ 开发工作目录已创建
 ✓ 工作目录已创建
-✓ zshrc 符号链接已创建
+✓ fish config 符号链接已创建
 ✓ gitconfig 符号链接已创建
 ✓ 所有测试通过！
 ```

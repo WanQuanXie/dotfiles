@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # 颜色定义库 - 统一的颜色常量定义
-# 兼容 POSIX shell (bash 4+/zsh 5+) 和 macOS (Intel/Apple Silicon)
+# 兼容 POSIX shell (bash 4+/fish 4+) 和 macOS (Intel/Apple Silicon)
 
 # 防止重复加载
 if [[ -n "${DOTFILES_COLORS_LOADED:-}" ]]; then

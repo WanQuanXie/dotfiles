@@ -30,17 +30,6 @@ fi
 # 检查 shell 配置文件集成
 show_test "检查 shell 配置文件集成"
 
-# 检查 .zshrc 集成
-if [[ -f ~/.zshrc ]]; then
-    if grep -q "sdkman-init.sh" "$HOME/.zshrc" 2>/dev/null; then
-        show_success "zshrc 中包含 SDKMAN 配置"
-    else
-        show_warning "zshrc 中未找到 SDKMAN 配置"
-    fi
-else
-    show_info "zshrc 文件不存在"
-fi
-
 # 检查 .bash_profile 集成
 if [[ -f ~/.bash_profile ]]; then
     if grep -q "sdkman-init.sh" "$HOME/.bash_profile" 2>/dev/null; then

@@ -30,7 +30,7 @@ if [[ -f ~/.bash_profile ]]; then
 
     show_success "bash_profile 配置检查通过"
 else
-    show_warning "bash_profile 文件不存在，这可能是正常的（如果主要使用 zsh）"
+    show_warning "bash_profile 文件不存在，这可能是正常的（如果主要使用 fish）"
 fi
 
 # 测试 motd 内容显示

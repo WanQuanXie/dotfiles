@@ -34,7 +34,7 @@ fi
 
 # Git 配置检查
 show_progress "检查 Git GPG 配置"
-check_file_contains "$HOME/.zshrc" "GPG_TTY" "GPG_TTY 在 zshrc 中"
+check_file_contains "$HOME/.config/fish/config.fish" "GPG_TTY" "GPG_TTY 在 fish config 中"
 
 # 检查 Git 配置
 if git config --global user.signingkey &>/dev/null; then

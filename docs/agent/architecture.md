@@ -10,7 +10,7 @@ bootstrap (入口)
 ├── 工作目录创建
 ├── rcup (rc/ → ~/.*) 符号链接
 ├── app/bootstrap (应用配置)
-│   ├── group1: zsh, git, ssh, gpg, starship
+│   ├── group1: fish, git, ssh, gpg, starship
 │   ├── group2: go, rust, ruby, java, node
 │   └── group3: vim, nvim, tmux, fzf, VSCode
 └── test (验证)
@@ -43,7 +43,7 @@ bootstrap (入口)
 
 由 rcm 管理，`rcup -d ./rc -f` 会将 `rc/` 下的文件链接到 `~/` 对应的 dotfile：
 
-- `rc/zshrc` → `~/.zshrc`
+- `rc/config/fish/config.fish` → `~/.config/fish/config.fish`
 - `rc/vimrc` → `~/.vimrc`
 - `rc/tmux.conf` → `~/.tmux.conf`
 - `rc/gitconfig` → `~/.gitconfig`

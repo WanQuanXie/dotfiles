@@ -36,7 +36,7 @@ show_group "应用测试"
 
 # 第1组：基础工具
 show_info "基础工具测试"
-for app in zsh git ssh gpg; do
+for app in fish git ssh gpg; do
     run_app_test "$app"
 done
 
@@ -78,15 +78,10 @@ fi
 
 # Shell 和工具集成测试
 show_test "Shell 和工具集成测试"
-if [[ -f ~/.zshrc ]]; then
+if [[ -f ~/.config/fish/config.fish ]]; then
     # 检查 FZF 集成
-    if grep -q "fzf" ~/.zshrc && command -v fzf >/dev/null 2>&1; then
-        show_success "FZF 和 Zsh 集成正常"
-    fi
-
-    # 检查语法高亮集成
-    if grep -q "zsh-syntax-highlighting" ~/.zshrc; then
-        show_success "Zsh 语法高亮集成正常"
+    if grep -q "fzf" ~/.config/fish/config.fish && command -v fzf >/dev/null 2>&1; then
+        show_success "FZF 和 Fish 集成正常"
     fi
 fi
 
@@ -95,12 +90,12 @@ show_group "性能测试"
 
 # Shell 启动性能测试
 show_test "Shell 启动性能测试"
-if command -v zsh >/dev/null 2>&1; then
+if command -v fish >/dev/null 2>&1; then
     START_TIME=$(date +%s%N)
-    timeout 10 zsh -i -c exit 2>/dev/null || true
+    timeout 10 fish -i -c exit 2>/dev/null || true
     END_TIME=$(date +%s%N)
     STARTUP_TIME=$(( (END_TIME - START_TIME) / 1000000 ))
-    show_info "Zsh 启动时间: ${STARTUP_TIME}ms"
+    show_info "Fish 启动时间: ${STARTUP_TIME}ms"
 
     if [[ $STARTUP_TIME -lt 1000 ]]; then
         show_success "Shell 启动性能良好"

@@ -41,17 +41,17 @@ else
     show_warning "Bash 键绑定脚本不存在"
 fi
 
-# 检查 zsh 集成
-if [[ -f "$BREW_PREFIX/opt/fzf/shell/completion.zsh" ]]; then
-    show_success "Zsh 补全脚本存在"
+# 检查 fish 集成
+if [[ -f "$BREW_PREFIX/opt/fzf/shell/completion.fish" ]]; then
+    show_success "Fish 补全脚本存在"
 else
-    show_warning "Zsh 补全脚本不存在"
+    show_warning "Fish 补全脚本不存在"
 fi
 
-if [[ -f "$BREW_PREFIX/opt/fzf/shell/key-bindings.zsh" ]]; then
-    show_success "Zsh 键绑定脚本存在"
+if [[ -f "$BREW_PREFIX/opt/fzf/shell/key-bindings.fish" ]]; then
+    show_success "Fish 键绑定脚本存在"
 else
-    show_warning "Zsh 键绑定脚本不存在"
+    show_warning "Fish 键绑定脚本不存在"
 fi
 
 # 测试用户配置文件
@@ -81,41 +81,17 @@ else
     show_warning ".fzf.bash 配置文件不存在"
 fi
 
-# 检查 .fzf.zsh
-if [[ -f ~/.fzf.zsh ]]; then
-    show_success ".fzf.zsh 配置文件存在"
+# 检查 fish config 集成
+if [[ -f ~/.config/fish/config.fish ]]; then
+    show_test "检查 fish config 中的 fzf 集成"
 
-    # 检查配置文件内容（fzf 0.70.0+ 可能不包含 completion.zsh 字符串）
-    if grep -q 'completion.zsh' ~/.fzf.zsh 2>/dev/null; then
-        test_command "grep -q 'completion.zsh' ~/.fzf.zsh" "检查 zsh 补全配置"
-    elif grep -q 'fzf --completion' ~/.fzf.zsh 2>/dev/null; then
-        show_info "使用新版 fzf 内联补全配置"
+    if grep -q "fzf" ~/.config/fish/config.fish 2>/dev/null; then
+        show_success "fish config 中包含 fzf 配置"
     else
-        show_warning "zsh 补全配置检查跳过（文件内容不包含预期字符串）"
-    fi
-
-    if grep -q 'key-bindings.zsh' ~/.fzf.zsh 2>/dev/null; then
-        test_command "grep -q 'key-bindings.zsh' ~/.fzf.zsh" "检查 zsh 键绑定配置"
-    elif grep -q 'fzf --key-bindings' ~/.fzf.zsh 2>/dev/null; then
-        show_info "使用新版 fzf 内联键绑定配置"
-    else
-        show_warning "zsh 键绑定配置检查跳过（文件内容不包含预期字符串）"
+        show_warning "fish config 中未找到 fzf 配置"
     fi
 else
-    show_warning ".fzf.zsh 配置文件不存在"
-fi
-
-# 测试 zshrc 集成
-if [[ -f ~/.zshrc ]]; then
-    show_test "检查 zshrc 中的 fzf 集成"
-
-    if grep -q "fzf.zsh" ~/.zshrc; then
-        show_success "zshrc 中包含 fzf 配置"
-    else
-        show_warning "zshrc 中未找到 fzf 配置"
-    fi
-else
-    show_warning "zshrc 文件不存在"
+    show_warning "fish config 文件不存在"
 fi
 
 # 功能测试
@@ -133,10 +109,6 @@ show_test "跨 Shell 测试"
 # 检查 fzf 在不同 shell 中的可用性
 if command -v bash >/dev/null 2>&1; then
     test_command "bash -c 'command -v fzf'" "测试 bash 中的 fzf 可用性"
-fi
-
-if command -v zsh >/dev/null 2>&1; then
-    test_command "zsh -c 'command -v fzf'" "测试 zsh 中的 fzf 可用性"
 fi
 
 # 测试与 macOS 剪贴板的集成

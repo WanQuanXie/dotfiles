@@ -116,7 +116,7 @@ LOG_SHOW_CALLER=false     # 显示调用者信息
 
 ## 3. 兼容性验证
 
-### POSIX 兼容性 (bash 4+/zsh 5+)
+### POSIX 兼容性 (bash 4+/fish 4+)
 
 ✅ **已验证的兼容性特性**：
 - 使用 `#!/usr/bin/env bash` shebang

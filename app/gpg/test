@@ -24,7 +24,13 @@ check_command "gpg" "GPG 命令"
 check_version "gpg" "--version"
 check_file "$HOME/.gnupg/gpg-agent.conf" "gpg-agent.conf"
 check_file_contains "$HOME/.gnupg/gpg-agent.conf" "pinentry-mac" "pinentry-mac 配置"
-check_env_var "GPG_TTY" "GPG_TTY 环境变量"
+
+# CI 环境中 GPG_TTY 可能为空，跳过检查
+if [[ "$CI" == "true" ]]; then
+    show_warning "CI 环境检测到，跳过 GPG_TTY 环境变量检查"
+else
+    check_env_var "GPG_TTY" "GPG_TTY 环境变量"
+fi
 
 # Git 配置检查
 show_progress "检查 Git GPG 配置"

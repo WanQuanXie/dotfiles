@@ -2,10 +2,8 @@
 # lib/init.fish - dotfiles 核心初始化库 (Fish Shell 版本)
 # 面向 macOS 15+ (Apple Silicon)
 
-# 防止重复加载
-if set -q DOTFILES_INIT_LOADED
-    return 0
-end
+# 注意: 由于 fish source 在同一作用域执行，此文件可能被多次 source
+# 函数会覆盖式定义，不会造成问题
 
 # ============================================================================
 # 颜色定义
@@ -477,5 +475,4 @@ function init_dotfiles_env
     write_log "dotfiles 环境初始化完成" "INIT"
 end
 
-# 标记库已加载
-set -gx DOTFILES_INIT_LOADED 1
+# 注意: 不再使用 DOTFILES_INIT_LOADED 标记，因为函数会覆盖式定义

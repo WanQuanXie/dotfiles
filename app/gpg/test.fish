@@ -8,18 +8,7 @@
 
 # 获取项目根目录的绝对路径
 # 使用 status -f 获取脚本的绝对路径，然后取其目录 (app/xxx 的父目录的父目录)
-set -l raw_path (status -f)
-set -l step1 (dirname $raw_path)
-set -l step2 (dirname $step1)
-set -l step3 (dirname $step2)
-set -g APP_TEST_PROJECT_ROOT (cd $step3; and pwd)
-
-# DEBUG: 输出路径信息
-echo "DEBUG: status -f = $raw_path"
-echo "DEBUG: step1 (dirname) = $step1"
-echo "DEBUG: step2 (dirname) = $step2"
-echo "DEBUG: step3 (dirname) = $step3"
-echo "DEBUG: APP_TEST_PROJECT_ROOT = $APP_TEST_PROJECT_ROOT"
+set -g APP_TEST_PROJECT_ROOT (cd (dirname (dirname (dirname (status -f)))); and pwd)
 
 # 加载共享库 (使用 $PROJECT_ROOT 绝对路径)
 source $APP_TEST_PROJECT_ROOT/lib/init.fish

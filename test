@@ -12,7 +12,9 @@ init_test_env "main_system"
 
 show_test "主机名"
 HOSTNAME=$(hostname)
-if [ "$HOSTNAME" = "xiewq-macbookpro" ]; then
+if [[ "$CI" == "true" ]]; then
+    show_warning "CI 环境跳过主机名检查"
+elif [ "$HOSTNAME" = "xiewq-macbookpro" ]; then
     show_success "主机名设置正确"
 else
     show_error "主机名设置错误: 期望 'xiewq-macbookpro', 实际为 '$HOSTNAME'"

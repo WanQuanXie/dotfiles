@@ -83,10 +83,13 @@ jobs:
       - name: 生成报告
         if: always()
         run: |
+          # 禁用 set -e，避免测试脚本失败导致整个报告生成中断
+          set +e
+
           echo "## 测试结果 - macOS $(sw_vers -productVersion)" > $GITHUB_STEP_SUMMARY
           echo "- 操作系统: $(sw_vers -productName) $(sw_vers -productVersion)" >> $GITHUB_STEP_SUMMARY
-          echo "- Homebrew: $(brew --version | head -n 1)" >> $GITHUB_STEP_SUMMARY
-          echo "- 已安装包数量: $(brew list | wc -l | xargs)" >> $GITHUB_STEP_SUMMARY
+          echo "- Homebrew: $(brew --version 2>/dev/null | head -n 1)" >> $GITHUB_STEP_SUMMARY
+          echo "- 已安装包数量: $(brew list 2>/dev/null | wc -l | xargs)" >> $GITHUB_STEP_SUMMARY
 
           # 添加详细测试结果
           echo "### 应用测试结果" >> $GITHUB_STEP_SUMMARY
@@ -98,7 +101,8 @@ jobs:
           for app in bash fish git ssh gpg starship go rust ruby java node vim nvim tmux fzf MavenDaemon sdkman; do
             if [ -f "./app/$app/test" ]; then
               # 捕获测试脚本输出，用于判断是否跳过
-              test_output=$(bash "./app/$app/test" 2>&1)
+              # 使用 || true 确保即使测试脚本失败也不会中断循环
+              test_output=$(bash "./app/$app/test" 2>&1 || true)
               test_exit_code=$?
 
               # 检查是否是 CI 环境下跳过测试

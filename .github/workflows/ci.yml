@@ -82,7 +82,7 @@ jobs:
       - name: 安装基础依赖
         run: |
           brew update
-          brew install rcm
+          brew install fish rcm
       
       - name: 运行 bootstrap
         run: fish ./bootstrap.fish

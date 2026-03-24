@@ -318,11 +318,14 @@ end
 
 # 设置基础环境变量
 function setup_base_environment
-    # 设置 PATH
-    set -gx PATH "/opt/homebrew/bin" "/opt/homebrew/sbin" $PATH
-    set -gx HOMEBREW_PREFIX "/opt/homebrew"
+    # 获取 Homebrew 前缀
+    set -l brew_prefix (get_brew_prefix)
 
-    write_log "基础环境变量设置完成: HOMEBREW_PREFIX=/opt/homebrew" "ENV_SETUP"
+    # 设置 PATH
+    set -gx PATH "$brew_prefix/bin" "$brew_prefix/sbin" $PATH
+    set -gx HOMEBREW_PREFIX "$brew_prefix"
+
+    write_log "基础环境变量设置完成: HOMEBREW_PREFIX=$brew_prefix" "ENV_SETUP"
 end
 
 # ============================================================================

@@ -81,7 +81,7 @@ jobs:
         run: ./bootstrap.fish
       
       - name: 运行测试
-        run: bash ./test
+        run: fish ./test.fish
       
       - name: 验证配置文件
         run: |
@@ -110,7 +110,7 @@ jobs:
 
           # 动态发现所有有测试脚本的应用 (与 bootstrap 安装分组一致)
           # 读取 bootstrap 中定义的应用分组
-          BOOTSTRAP_CONTENT=$(cat ./app/bootstrap)
+          BOOTSTRAP_CONTENT=$(cat ./app/bootstrap.fish)
           APPS=$(echo "$BOOTSTRAP_CONTENT" | grep -E 'declare -a group[123]=' | sed 's/.*=(\([^)]*\)).*/\1/' | tr -d '"')
 
           # 对每个发现的应用执行测试
@@ -123,10 +123,10 @@ jobs:
             for app in $apps; do
               [ -z "$app" ] && continue
 
-              if [ -f "./app/$app/test" ]; then
+              if [ -f "./app/$app/test.fish" ]; then
                 # 捕获测试脚本输出，用于判断是否跳过
                 # 使用 || true 确保即使测试脚本失败也不会中断循环
-                test_output=$(bash "./app/$app/test" 2>&1 || true)
+                test_output=$(fish "./app/$app/test.fish" 2>&1 || true)
                 test_exit_code=$?
 
                 # 检查是否是 CI 环境下跳过测试

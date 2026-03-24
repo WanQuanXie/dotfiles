@@ -123,8 +123,11 @@ or show_warning "应用程序配置可能失败，请检查日志"
 show_success "应用程序配置完成"
 
 echo "$GREEN""正在进行最终测试""$NC"
-echo "测试步骤已完成（test.fish 待创建）"
-or show_warning "测试可能失败，请检查日志"
+if test -f ./test.fish
+    ./test.fish; or show_warning "测试可能失败，请检查日志"
+else
+    echo "test.fish 不存在，跳过测试"
+end
 show_success "所有配置已完成！系统设置已就绪。"
 
 # 创建完成标记文件（幂等性）

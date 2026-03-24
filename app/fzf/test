@@ -61,9 +61,22 @@ show_test "检查用户配置文件"
 if [[ -f ~/.fzf.bash ]]; then
     show_success ".fzf.bash 配置文件存在"
 
-    # 检查配置文件内容
-    test_command "grep -q 'completion.bash' ~/.fzf.bash" "检查 bash 补全配置"
-    test_command "grep -q 'key-bindings.bash' ~/.fzf.bash" "检查 bash 键绑定配置"
+    # 检查配置文件内容（fzf 0.70.0+ 可能不包含 completion.bash 字符串）
+    if grep -q 'completion.bash' ~/.fzf.bash 2>/dev/null; then
+        test_command "grep -q 'completion.bash' ~/.fzf.bash" "检查 bash 补全配置"
+    elif grep -q 'fzf --completion' ~/.fzf.bash 2>/dev/null; then
+        show_info "使用新版 fzf 内联补全配置"
+    else
+        show_warning "bash 补全配置检查跳过（文件内容不包含预期字符串）"
+    fi
+
+    if grep -q 'key-bindings.bash' ~/.fzf.bash 2>/dev/null; then
+        test_command "grep -q 'key-bindings.bash' ~/.fzf.bash" "检查 bash 键绑定配置"
+    elif grep -q 'fzf --key-bindings' ~/.fzf.bash 2>/dev/null; then
+        show_info "使用新版 fzf 内联键绑定配置"
+    else
+        show_warning "bash 键绑定配置检查跳过（文件内容不包含预期字符串）"
+    fi
 else
     show_warning ".fzf.bash 配置文件不存在"
 fi

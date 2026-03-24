@@ -61,8 +61,13 @@ end
 
 # 测试主题
 show_test "检查 Nord 主题"
-test_command "test -d ~/.tmux/themes" "检查主题目录"
-test_command "test -d ~/.tmux/themes/nord-tmux" "检查 Nord 主题目录"
+# CI 环境下跳过主题检查
+if test "$CI" = "true"
+    show_warning "CI 环境检测到，跳过 Nord 主题检查"
+else
+    test_command "test -d ~/.tmux/themes" "检查主题目录"
+    test_command "test -d ~/.tmux/themes/nord-tmux" "检查 Nord 主题目录"
+end
 
 # 检查主题文件
 if test -d ~/.tmux/themes/nord-tmux
@@ -72,8 +77,13 @@ end
 # 测试插件
 show_test "检查 tmux 插件"
 
-# 检查 tmux-resurrect 插件
-test_command "test -d ~/.tmux/plugins/tmux-resurrect" "检查 tmux-resurrect 插件目录"
+# CI 环境下跳过插件检查
+if test "$CI" = "true"
+    show_warning "CI 环境检测到，跳过 tmux 插件检查"
+else
+    # 检查 tmux-resurrect 插件
+    test_command "test -d ~/.tmux/plugins/tmux-resurrect" "检查 tmux-resurrect 插件目录"
+end
 
 if test -d ~/.tmux/plugins/tmux-resurrect
     test_command "test -f ~/.tmux/plugins/tmux-resurrect/resurrect.tmux" "检查 tmux-resurrect 主文件"

@@ -30,9 +30,16 @@ jobs:
       - uses: actions/checkout@v6.0.2
       - name: Fish 语法检查
         run: |
-          # 确保 fish 已安装
+          # 确保 fish 已安装 (Ubuntu 自带 fish，macOS 用 brew)
           if ! command -v fish >/dev/null 2>&1; then
-            brew install fish
+            if command -v apt-get >/dev/null 2>&1; then
+              sudo apt-get update && sudo apt-get install -y fish
+            elif command -v brew >/dev/null 2>&1; then
+              brew install fish
+            else
+              echo "fish not found and no package manager available"
+              exit 1
+            fi
           fi
           # 语法检查所有 fish 脚本
           fish -n bootstrap.fish
@@ -78,7 +85,7 @@ jobs:
           brew install rcm
       
       - name: 运行 bootstrap
-        run: ./bootstrap.fish
+        run: fish ./bootstrap.fish
       
       - name: 运行测试
         run: fish ./test.fish

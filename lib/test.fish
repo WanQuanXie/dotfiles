@@ -3,8 +3,8 @@
 # 面向 macOS 15+ (Apple Silicon)
 
 # 获取项目根目录的绝对路径
-# 使用 status -f 获取脚本的绝对路径，然后取其目录 (lib/ 的父目录)
-set -g LIB_TEST_PROJECT_ROOT (cd (dirname (status -f)); and pwd)
+# 使用 status -f 获取脚本的绝对路径，然后取其目录 (lib/ 的父目录的父目录)
+set -g LIB_TEST_PROJECT_ROOT (cd (dirname (dirname (status -f))); and pwd)
 
 # 加载核心库 (使用绝对路径)
 source "$LIB_TEST_PROJECT_ROOT/lib/init.fish"

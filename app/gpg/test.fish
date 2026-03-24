@@ -23,8 +23,15 @@ show_progress "执行基础检查"
 
 check_command "gpg" "GPG 命令"
 check_version "gpg" "--version"
-check_file "$HOME/.gnupg/gpg-agent.conf" "gpg-agent.conf"
-check_file_contains "$HOME/.gnupg/gpg-agent.conf" "pinentry-mac" "pinentry-mac 配置"
+
+# CI 环境下跳过 gpg-agent.conf 检查（CI 可能没有完整 GUI 环境）
+# 非 CI 环境下检查 gpg-agent.conf 和 pinentry-mac 配置
+if test "$CI" != "true"
+    check_file "$HOME/.gnupg/gpg-agent.conf" "gpg-agent.conf"
+    check_file_contains "$HOME/.gnupg/gpg-agent.conf" "pinentry-mac" "pinentry-mac 配置"
+else
+    show_warning "CI 环境检测到，跳过 gpg-agent.conf 文件检查"
+end
 
 # CI 环境中 GPG_TTY 可能为空，跳过检查
 if test "$CI" = "true"
@@ -40,7 +47,13 @@ end
 
 # Git 配置检查
 show_progress "检查 Git GPG 配置"
-check_file_contains "$HOME/.config/fish/config.fish" "GPG_TTY" "GPG_TTY 在 fish config 中"
+
+# CI 环境下跳过 GPG_TTY 检查
+if test "$CI" != "true"
+    check_file_contains "$HOME/.config/fish/config.fish" "GPG_TTY" "GPG_TTY 在 fish config 中"
+else
+    show_warning "CI 环境检测到，跳过 GPG_TTY 配置检查"
+end
 
 # 检查 Git 配置
 if git config --global user.signingkey &>/dev/null
@@ -80,7 +93,11 @@ show_progress "检查 pinentry 配置"
 if command -v pinentry-mac &>/dev/null
     show_success "pinentry-mac 已安装: "(which pinentry-mac)
 else
-    show_warning "pinentry-mac 未安装"
+    if test "$CI" = "true"
+        show_warning "pinentry-mac 未安装（CI 环境，可跳过）"
+    else
+        show_warning "pinentry-mac 未安装"
+    end
 end
 
 test_summary "GPG 配置"

@@ -135,9 +135,9 @@ function process_group
     # 使用 eval 进行间接变量访问获取数组长度
     set -l total_count (eval "count \$$group_var_name")
 
-    # 使用 eval 进行间接变量访问遍历数组元素
-    set -l i 0
-    while test $i -lt $total_count
+    # 使用 eval 进行间接变量访问遍历数组元素 (fish 使用 1-based 索引)
+    set -l i 1
+    while test $i -le $total_count
         set -l app (eval "echo \$$group_var_name[$i]")
         show_info "处理应用: $app"
         if process_app "$app"

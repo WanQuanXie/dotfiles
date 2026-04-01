@@ -11,7 +11,7 @@ bootstrap (入口)
 ├── rcup (rc/ → ~/.*) 符号链接
 ├── app/bootstrap (应用配置)
 │   ├── group1: fish, git, ssh, gpg, starship
-│   ├── group2: go, rust, ruby, java, node
+│   ├── group2: go, rust, ruby, java, node, sdkman
 │   └── group3: vim, nvim, tmux, fzf, VSCode
 └── test (验证)
 ```

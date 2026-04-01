@@ -44,6 +44,7 @@ $ ./bootstrap
 - [x] Setup Hostname `sudo scutil --set HostName david-macbook`
 - [x] Install softwares and fonts from [Brewfile](https://github.com/crispgm/dotfiles/blob/master/Brewfile) with `brew bundle`. HINT: Login to AppStore at first. Some of the applications from Mac App Store may need purchase.
 - [x] Install `fish`, [Fisher](https://github.com/jorgebucaran/fisher) and setup fish config
+- [x] Setup [SDKMAN](https://sdkman.io/) with [sdkman-for-fish](https://github.com/reitzig/sdkman-for-fish) plugin
 - [x] Setup tmux
 - [x] Setup Neovim
 

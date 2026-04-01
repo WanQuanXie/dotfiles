@@ -28,7 +28,7 @@ bash ./app/gpg/cleanup
 
 **第 1 组 - 基础工具**（快速）: fish, git, ssh, gpg, starship
 
-**第 2 组 - 语言环境**（耗时）: go, rust, ruby, java, node
+**第 2 组 - 语言环境**（耗时）: go, rust, ruby, java, node, sdkman
 
 **第 3 组 - 开发工具**（依赖前两组）: vim, nvim, tmux, fzf, VSCode
 

@@ -43,7 +43,7 @@ end
 # 第1组：基础工具（快速安装）
 set -g group1 fish git ssh gpg starship
 # 第2组：语言环境（耗时较长，可并行）
-set -g group2 go rust ruby java node
+set -g group2 go rust ruby java node sdkman
 # 第3组：开发工具（依赖前两组）
 set -g group3 vim nvim tmux fzf VSCode
 

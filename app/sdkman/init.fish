@@ -11,13 +11,40 @@ source "$PROJECT_ROOT/lib/init.fish"
 show_info "正在设置 SDKMAN"
 
 # 检查前置条件
-set -l BASH_PATH (get_brew_prefix)/bin/bash
+set -l BREW_PREFIX (get_brew_prefix)
+set -l BREW_BASH_PATH "$BREW_PREFIX/bin/bash"
 
-# 检查 Bash 版本（SDKMAN 需要 Bash 4+）
-if test -f "$BASH_PATH"
-    set -l BASH_VERSION (bash -c "echo \$BASH_VERSION" 2>/dev/null | string split '.' | head -1)
-    if test "$BASH_VERSION" -lt 4
-        show_warning "Homebrew Bash 版本低于 4，SDKMAN 可能无法正常工作"
+# 检查系统 Bash 版本（macOS 预装 Bash 3.2，SDKMAN 需要 Bash 4+）
+set -l SYSTEM_BASH_VERSION (bash --version 2>/dev/null | string split '.' | head -1 | string match -r '\d+')
+if test "$SYSTEM_BASH_VERSION" -lt 4
+    show_warning "系统 Bash 版本低于 4，将使用 Homebrew Bash 替代"
+
+    # 安装 Homebrew Bash（如尚未安装）
+    if not test -f "$BREW_BASH_PATH"
+        show_info "安装 Homebrew Bash..."
+        if not brew install bash
+            show_error "Homebrew Bash 安装失败" 1
+        end
+    end
+
+    # 添加到 allowed shells
+    set -l BREW_BASH_VERSION ($BREW_BASH_PATH --version 2>/dev/null | string split '.' | head -1 | string match -r '\d+')
+    if test "$BREW_BASH_VERSION" -ge 4
+        if not grep -q "$BREW_BASH_PATH" /etc/shells
+            show_info "将 Homebrew Bash 添加到 allowed shells..."
+            echo "$BREW_BASH_PATH" | sudo tee -a /etc/shells >/dev/null 2>&1
+            if test (grep -c "$BREW_BASH_PATH" /etc/shells) -gt 0
+                show_success "Homebrew Bash 已添加到 allowed shells"
+            else
+                show_warning "添加失败，请手动执行: echo $BREW_BASH_PATH | sudo tee -a /etc/shells"
+            end
+        else
+            show_info "Homebrew Bash 已在 allowed shells 中"
+        end
+
+        # 注意：不切换默认 shell，默认 shell 始终为 fish
+        # Homebrew Bash 仅供 sdkman-for-fish 插件调用 sdkman-init.sh 使用
+        show_info "Homebrew Bash 仅用于 SDKMAN，不更改默认 shell"
     end
 end
 

@@ -5,7 +5,7 @@ echo "此脚本将删除 GPG 密钥并重置 Git GPG 签名设置"
 echo ""
 
 # 检查是否存在 GPG 密钥
-if ! command -v gpg &> /dev/null
+if not command -sq gpg
     echo "错误：未找到 GPG 命令"
     exit 1
 end
@@ -13,6 +13,7 @@ end
 # 获取当前配置的 Git 签名密钥
 set -l CURRENT_KEY_ID (git config --global user.signingkey)
 
+set -l KEY_ID ""
 if test -z "$CURRENT_KEY_ID"
     echo "未找到已配置的 Git GPG 签名密钥"
 
@@ -29,7 +30,7 @@ if test -z "$CURRENT_KEY_ID"
 
         echo ""
         echo "请输入要删除的 GPG 密钥 ID（长格式，例如：3B1C6D0A9D0A9D0A）："
-        read -l KEY_ID
+        read KEY_ID
 
         if test -z "$KEY_ID"
             echo "未提供密钥 ID，操作取消"
@@ -37,14 +38,14 @@ if test -z "$CURRENT_KEY_ID"
         end
     end
 else
-    set -l KEY_ID "$CURRENT_KEY_ID"
+    set KEY_ID "$CURRENT_KEY_ID"
     echo "找到已配置的 Git GPG 签名密钥：$KEY_ID"
 end
 
 # 显示密钥详情
 echo ""
 echo "将删除以下 GPG 密钥："
-if ! gpg --list-secret-keys --keyid-format=long "$KEY_ID" 2>/dev/null
+if not gpg --list-secret-keys --keyid-format=long "$KEY_ID" 2>/dev/null
     echo "错误：无法找到指定的 GPG 密钥 $KEY_ID"
     exit 1
 end
@@ -75,20 +76,23 @@ echo "   检查密钥 $KEY_ID 是否存在..."
 # 获取完整的指纹
 set -l FINGERPRINT (gpg --list-keys --with-colons "$KEY_ID" 2>/dev/null | grep "^fpr" | head -n 1 | cut -d: -f10)
 
+set -l PUBLIC_KEY_EXISTS 0
+set -l SECRET_KEY_EXISTS 0
+
 if test -z "$FINGERPRINT"
     echo "   警告: 公钥不存在，无需删除"
-    set -l PUBLIC_KEY_EXISTS 0
+    set PUBLIC_KEY_EXISTS 0
 else
-    set -l PUBLIC_KEY_EXISTS 1
+    set PUBLIC_KEY_EXISTS 1
     echo "   找到公钥，指纹: $FINGERPRINT"
 end
 
 # 检查私钥是否存在
-if ! gpg --list-secret-keys "$KEY_ID" > /dev/null 2>&1
+if not gpg --list-secret-keys "$KEY_ID" >/dev/null 2>/dev/null
     echo "   警告: 私钥不存在，无需删除"
-    set -l SECRET_KEY_EXISTS 0
+    set SECRET_KEY_EXISTS 0
 else
-    set -l SECRET_KEY_EXISTS 1
+    set SECRET_KEY_EXISTS 1
     echo "   找到私钥"
 end
 
@@ -107,7 +111,7 @@ set -l SECRET_KEY_DELETED 0
 if test $PUBLIC_KEY_EXISTS -eq 1
     echo "   尝试删除公钥..."
     gpg --batch --yes --delete-keys "$KEY_ID" 2> "$ERROR_LOG"
-    set -l PUBLIC_KEY_DELETED $status
+    set PUBLIC_KEY_DELETED $status
 
     if test $PUBLIC_KEY_DELETED -ne 0
         echo "   警告: 直接删除公钥失败，可能需要先删除私钥"
@@ -123,11 +127,11 @@ if test $PUBLIC_KEY_DELETED -ne 0; and test $SECRET_KEY_EXISTS -eq 1
 
     if test -z "$FINGERPRINT"
         echo "   错误: 无法获取密钥指纹，无法删除私钥"
-        set -l SECRET_KEY_DELETED 1
+        set SECRET_KEY_DELETED 1
     else
         echo "   使用指纹: $FINGERPRINT"
         gpg --batch --yes --delete-secret-keys "$FINGERPRINT" 2> "$ERROR_LOG"
-        set -l SECRET_KEY_DELETED $status
+        set SECRET_KEY_DELETED $status
 
         if test $SECRET_KEY_DELETED -ne 0
             echo "   错误: 私钥删除失败"
@@ -136,7 +140,7 @@ if test $PUBLIC_KEY_DELETED -ne 0; and test $SECRET_KEY_EXISTS -eq 1
             # 尝试使用另一种方式删除私钥
             echo "   尝试使用替代方法删除私钥..."
             gpg --batch --yes --delete-secret-key "$FINGERPRINT!" 2> "$ERROR_LOG"
-            set -l SECRET_KEY_DELETED $status
+            set SECRET_KEY_DELETED $status
 
             if test $SECRET_KEY_DELETED -ne 0
                 echo "   错误: 替代方法也失败了"
@@ -152,7 +156,7 @@ if test $PUBLIC_KEY_DELETED -ne 0; and test $SECRET_KEY_EXISTS -eq 1
         if test $SECRET_KEY_DELETED -eq 0; and test $PUBLIC_KEY_EXISTS -eq 1
             echo "   再次尝试删除公钥..."
             gpg --batch --yes --delete-keys "$FINGERPRINT" 2> "$ERROR_LOG"
-            set -l PUBLIC_KEY_DELETED $status
+            set PUBLIC_KEY_DELETED $status
 
             if test $PUBLIC_KEY_DELETED -ne 0
                 echo "   错误: 公钥删除失败"
@@ -168,11 +172,11 @@ else if test $SECRET_KEY_EXISTS -eq 1
 
     if test -z "$FINGERPRINT"
         echo "   错误: 无法获取密钥指纹，无法删除私钥"
-        set -l SECRET_KEY_DELETED 1
+        set SECRET_KEY_DELETED 1
     else
         echo "   使用指纹: $FINGERPRINT"
         gpg --batch --yes --delete-secret-keys "$FINGERPRINT" 2> "$ERROR_LOG"
-        set -l SECRET_KEY_DELETED $status
+        set SECRET_KEY_DELETED $status
 
         if test $SECRET_KEY_DELETED -ne 0
             echo "   错误: 私钥删除失败"
@@ -181,7 +185,7 @@ else if test $SECRET_KEY_EXISTS -eq 1
             # 尝试使用另一种方式删除私钥
             echo "   尝试使用替代方法删除私钥..."
             gpg --batch --yes --delete-secret-key "$FINGERPRINT!" 2> "$ERROR_LOG"
-            set -l SECRET_KEY_DELETED $status
+            set SECRET_KEY_DELETED $status
 
             if test $SECRET_KEY_DELETED -ne 0
                 echo "   错误: 替代方法也失败了"
@@ -203,15 +207,15 @@ set -l PUBLIC_SUCCESS 0
 set -l SECRET_SUCCESS 0
 
 if test $PUBLIC_KEY_EXISTS -eq 1; and test $PUBLIC_KEY_DELETED -eq 0
-    set -l PUBLIC_SUCCESS 1
+    set PUBLIC_SUCCESS 1
 else if test $PUBLIC_KEY_EXISTS -eq 0; and test $PUBLIC_KEY_DELETED -eq 0
-    set -l PUBLIC_SUCCESS 1
+    set PUBLIC_SUCCESS 1
 end
 
 if test $SECRET_KEY_EXISTS -eq 1; and test $SECRET_KEY_DELETED -eq 0
-    set -l SECRET_SUCCESS 1
+    set SECRET_SUCCESS 1
 else if test $SECRET_KEY_EXISTS -eq 0; and test $SECRET_KEY_DELETED -eq 0
-    set -l SECRET_SUCCESS 1
+    set SECRET_SUCCESS 1
 end
 
 if test $PUBLIC_SUCCESS -eq 1; and test $SECRET_SUCCESS -eq 1

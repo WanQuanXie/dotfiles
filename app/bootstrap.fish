@@ -31,9 +31,9 @@ function handle_error
     end
 
     # 非 CI 环境下询问是否继续
-    read -p "是否继续安装其他应用? (y/n) " -n 1 -r
+    read -l -P "是否继续安装其他应用? (y/n) " -n 1 reply
     echo
-    if not string match -rq '^[Yy]$' $REPLY
+    if not string match -rq '^[Yy]$' $reply
         show_error "安装中止"
         exit 1
     end
@@ -84,14 +84,11 @@ function process_app
     # 检查应用特定依赖
     switch "$app"
         case 'nvim'
-            check_dependency "node" "node" || return 1
-            ;;
+            check_dependency "node" "node"; or return 1
         case 'ruby'
-            check_dependency "brew" "homebrew" || return 1
-            ;;
+            check_dependency "brew" "homebrew"; or return 1
         case 'rust'
-            check_dependency "curl" "curl" || return 1
-            ;;
+            check_dependency "curl" "curl"; or return 1
     end
 
     if test -f "$PROJECT_ROOT/app/$app/init.fish"
@@ -175,12 +172,15 @@ function backup_configs
 end
 
 # 主执行流程
-function control_c
+function __bootstrap_on_interrupt --on-signal INT
     show_error "安装中断"
     exit 1
 end
 
-trap control_c INT TERM
+function __bootstrap_on_terminate --on-signal TERM
+    show_error "安装中断"
+    exit 1
+end
 
 # 备份现有配置
 backup_configs
@@ -194,7 +194,7 @@ process_group group2 "语言环境"
 process_group group3 "开发工具"
 
 # CI 模式下，如果有任何应用失败，退出码为 1
-if test "$CI" = "true" -a $FAILED_APPS -gt 0
+if test "$CI" = "true"; and test $FAILED_APPS -gt 0
     show_error "有 $FAILED_APPS 个应用配置失败"
     exit 1
 end

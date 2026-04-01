@@ -405,7 +405,7 @@ function safe_symlink
     end
 
     # 如果目标已存在，先备份
-    if test -e "$target" -o -L "$target"
+    if test -e "$target"; or test -L "$target"
         if test "$backup" = "true"
             backup_file "$target"
         end
@@ -462,6 +462,53 @@ function clear_app_configured
     if test -f "$marker_file"
         command rm -f "$marker_file"
         write_log "应用配置标记已清除: $app" "APP_CONFIG"
+    end
+end
+
+# ============================================================================
+# 依赖与命令执行
+# ============================================================================
+
+# 检查并安装依赖
+function check_and_install_dependency
+    if test (count $argv) -lt 2
+        return 1
+    end
+    set -l cmd "$argv[1]"
+    set -l package "$argv[2]"
+
+    if not command -sq $cmd
+        show_info "安装依赖: $package..."
+        if brew install $package
+            show_success "$package 安装成功"
+        else
+            show_error "$package 安装失败" 0
+            return 1
+        end
+    else
+        show_info "$cmd 已安装"
+    end
+    return 0
+end
+
+# 带日志输出的命令运行
+function run_with_log
+    if test (count $argv) -lt 1
+        return 1
+    end
+    set -l cmd "$argv[1]"
+    set -l description "$argv[2]"
+    if test -z "$description"
+        set description "$cmd"
+    end
+
+    show_info "执行: $description"
+    if eval $cmd
+        show_success "$description 完成"
+        return 0
+    else
+        show_error "$description 失败" 0
+        return 1
     end
 end
 

@@ -8,7 +8,7 @@
 
 # 获取项目根目录
 set -l SCRIPT_DIR (cd (dirname (status -f)); and pwd)
-set -l PROJECT_ROOT (dirname "$SCRIPT_DIR")
+set -l PROJECT_ROOT (dirname (dirname "$SCRIPT_DIR"))
 
 # 加载共享库 (使用绝对路径)
 source "$PROJECT_ROOT/lib/init.fish"
@@ -69,7 +69,7 @@ chmod 700 "$HOME/.gnupg"
 set -l GPG_AGENT_CONF "$HOME/.gnupg/gpg-agent.conf"
 
 # 如果文件不存在或不含 pinentry-mac，则添加配置
-if not test -f "$GPG_AGENT_CONF"; or ! grep -q "pinentry-mac" "$GPG_AGENT_CONF" 2>/dev/null
+if not test -f "$GPG_AGENT_CONF"; or not grep -q "pinentry-mac" "$GPG_AGENT_CONF" 2>/dev/null
     backup_file "$GPG_AGENT_CONF"
     # 使用 printf 代替 heredoc
     printf '\n# pinentry-mac 配置 (解决 macOS GPG 签名失败问题)\npinentry-program /opt/homebrew/bin/pinentry-mac\n' >> "$GPG_AGENT_CONF"
@@ -88,7 +88,7 @@ set -l FISH_CONFIG "$HOME/.config/fish/config.fish"
 # 确保 fish 配置目录存在
 ensure_directory "$HOME/.config/fish"
 
-if not test -f "$FISH_CONFIG"; or ! grep -q "GPG_TTY" "$FISH_CONFIG" 2>/dev/null
+if not test -f "$FISH_CONFIG"; or not grep -q "GPG_TTY" "$FISH_CONFIG" 2>/dev/null
     backup_file "$FISH_CONFIG"
     # 使用 printf 代替 heredoc
     printf '\n# GPG TTY 配置 (解决签名时无法输入密码的问题)\nset -gx GPG_TTY (tty)\n' >> "$FISH_CONFIG"
@@ -103,7 +103,7 @@ if test "$IS_CI" = "true"
 else
     set -g GPG_TTY (tty 2>/dev/null; or echo "")
 end
-export GPG_TTY
+set -gx GPG_TTY $GPG_TTY
 
 # ============================================
 # 5. 生成/验证 GPG 密钥
@@ -135,16 +135,17 @@ else
 end
 
 # 获取密钥 ID（优先使用预设密钥）
+set -l KEY_ID ""
 if test -n "$GPG_SIGNING_KEY"
-    set -l KEY_ID "$GPG_SIGNING_KEY"
+    set KEY_ID "$GPG_SIGNING_KEY"
 else
-    set -l KEY_ID (gpg --list-secret-keys --keyid-format=long 2>/dev/null | grep -E "^sec" | head -n 1 | sed -E 's/.*\//([A-F0-9]+) .*/\1/')
+    set KEY_ID (gpg --list-secret-keys --keyid-format=long 2>/dev/null | grep -E "^sec" | head -n 1 | sed -E 's/.*\//([A-F0-9]+) .*/\1/')
 end
 
 if test -z "$KEY_ID"
     if test "$IS_CI" = "true"
         show_warning "无法提取 GPG 密钥 ID（CI 环境，跳过 Git GPG 签名配置）"
-        set -l KEY_ID ""
+        set KEY_ID ""
     else
         show_error "无法提取 GPG 密钥 ID"
         exit 1
@@ -178,8 +179,8 @@ git config --global commit.gpgsign true 2>/dev/null; or true
 git config --global tag.gpgSign true 2>/dev/null; or true
 
 # 配置 GPG 程序路径
-if command -v gpg > /dev/null 2>&1
-    set -l GPG_PATH (command -v gpg 2>/dev/null; or which gpg 2>/dev/null; or echo "gpg")
+if command -sq gpg
+    set -l GPG_PATH (command -v gpg 2>/dev/null; or echo "gpg")
     git config --global gpg.program "$GPG_PATH" 2>/dev/null; or true
 end
 
@@ -194,7 +195,7 @@ echo "  GPG 程序: "(git config --global gpg.program; or echo '默认')
 # ============================================
 show_progress "重启 gpg-agent"
 
-if ! gpgconf --kill gpg-agent 2>/dev/null
+if not gpgconf --kill gpg-agent 2>/dev/null
     if test "$IS_CI" = "true"
         show_warning "gpg-agent 重启失败，可能已在 CI 环境中运行"
     else

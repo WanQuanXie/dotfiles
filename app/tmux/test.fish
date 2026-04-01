@@ -145,7 +145,7 @@ show_test "macOS 剪贴板集成测试"
 
 if command -v pbcopy >/dev/null 2>&1; and command -v pbpaste >/dev/null 2>&1
     # 检查配置文件中是否有剪贴板配置
-    if test -f ~/.tmux.conf; and grep -q "pbcopy\|pbpaste" ~/.tmux.conf
+    if test -f ~/.tmux.conf; and grep -qE "pbcopy|pbpaste" ~/.tmux.conf
         show_success "配置文件包含 macOS 剪贴板集成"
     else
         show_warning "配置文件中未找到 macOS 剪贴板集成配置"

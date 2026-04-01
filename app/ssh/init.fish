@@ -21,7 +21,7 @@ else
 end
 
 # 确保 ssh-agent 正在运行
-eval (ssh-agent -s)
+eval (ssh-agent -c)
 
 # 添加密钥到 ssh-agent 并存储密码到钥匙串
 ssh-add --apple-use-keychain ~/.ssh/id_ed25519

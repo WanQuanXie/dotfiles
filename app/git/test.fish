@@ -129,8 +129,8 @@ end
 # Homebrew 安装检查
 show_test "Homebrew 安装检查"
 
-set -l GIT_PATH (which git)
-if test "$GIT_PATH" = *"/opt/homebrew/"*
+set -l GIT_PATH (command -v git)
+if string match -q "*/opt/homebrew/*" "$GIT_PATH"
     show_success "使用 Homebrew 安装的 Git"
 else
     show_warning "可能使用系统自带的 Git"

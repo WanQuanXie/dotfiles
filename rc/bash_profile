@@ -1,31 +1,14 @@
 #!/usr/bin/env bash
-# bash_profile - bash 配置文件
-# Kiro CLI pre block. Keep at the top of this file.
-[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/bash_profile.pre.bash" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/bash_profile.pre.bash"
+# bash_profile - bash 登录壳入口
+# macOS 的 bash 登录壳优先读取 ~/.bash_profile，不会自动读取 ~/.profile。
+# 这里显式串起公共环境与交互配置，避免 login / non-login 行为不一致。
 
-export CLICOLOR=1
-export LSCOLORS=gxfxaxdxcxegedabagacad
+export __BASH_PROFILE_LOADED=1
 
-gitPS1() {
-    local gitps1
-    gitps1=$(git branch 2>/dev/null | grep '\*')
-    gitps1="${gitps1:+ (${gitps1/#\* /})}"
-    echo "$gitps1"
-}
+if [[ -f "$HOME/.profile" ]]; then
+  source "$HOME/.profile"
+fi
 
-# 设置 PS1 提示符，使用 \[ \] 包围转义序列以防止换行问题
-PS1="\[\033[1;34m\]\w\$(gitPS1) $ \[\033[0m\]"
-export PS1
-
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init - bash)"
-
-. "/Users/xiewq/.cargo/bin/env"
-
-# Kiro CLI post block. Keep at the bottom of this file.
-[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/bash_profile.post.bash" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/bash_profile.post.bash"
+if [[ -f "$HOME/.bashrc" ]]; then
+  source "$HOME/.bashrc"
+fi

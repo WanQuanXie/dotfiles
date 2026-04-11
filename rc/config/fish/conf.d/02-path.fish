@@ -1,9 +1,4 @@
-# Homebrew (兼容 Intel / Apple Silicon)
-if test -d /opt/homebrew
-    fish_add_path /opt/homebrew/bin /opt/homebrew/sbin
-else if test -d /usr/local/Homebrew
-    fish_add_path /usr/local/bin
-end
+# Homebrew 的 PATH / INFOPATH / HOMEBREW_* 由 00-homebrew.fish 统一初始化
 
 # Python (动态检测)
 if test -d /opt/homebrew/opt/python@3.13/libexec/bin
@@ -56,7 +51,12 @@ fish_add_path $HOME/Workspace/tools/flutter/bin
 fish_add_path $HOME/.antigravity/antigravity/bin
 
 # gcloud
-fish_add_path /opt/homebrew/share/google-cloud-sdk/bin
+fish_add_path $GCLOUD
 
 # 用户本地路径
 fish_add_path $HOME/bin $HOME/.local/bin
+
+# Added by Toolbox App
+if test -d "$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
+    fish_add_path "$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
+end

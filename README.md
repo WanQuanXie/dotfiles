@@ -45,8 +45,10 @@ $ ./bootstrap
 - [x] Install [Homebrew](https://brew.sh)
 - [x] Setup Hostname `sudo scutil --set HostName david-macbook`
 - [x] Install softwares and fonts from [Brewfile](https://github.com/crispgm/dotfiles/blob/master/Brewfile) with `brew bundle`. HINT: Login to AppStore at first. Some of the applications from Mac App Store may need purchase.
-- [x] Install `fish`, [Fisher](https://github.com/jorgebucaran/fisher) and setup fish config
+- [x] Install `fish`, [Fisher](https://github.com/jorgebucaran/fisher) and setup modular fish config (`config.fish` + `conf.d/` + `functions/`)
+- [x] Load Homebrew environment in fish via `brew shellenv fish`
 - [x] Setup [SDKMAN](https://sdkman.io/) with [sdkman-for-fish](https://github.com/reitzig/sdkman-for-fish) plugin
+- [x] Keep bash on a shared loading chain: `.bash_profile` -> `.profile` + `.bashrc`
 - [x] Setup tmux
 - [x] Setup Neovim
 - [x] Install `macism` for Neovim IME switching on macOS
@@ -114,5 +116,5 @@ $ ./bootstrap
 
 ### bash
 
-- [x] Setup shell login promtp with `motd`: ASCII art is generated with <http://patorjk.com/software/taag/>
-- [x] Setup `.bash_profile` `.bashrc`
+- [x] Setup `.bash_profile`, `.profile`, `.bashrc`
+- [x] Keep SDKMAN initialization guarded for Bash 4+ only on macOS

@@ -1,0 +1,28 @@
+# 常用缩写
+alias hf='history | fzf'
+alias bc='bc -q -l'
+alias nvimconf='nvim ~/.config/nvim/init.lua'
+
+# 常用命令
+alias ls='eza --time-style "+%Y-%m-%d %H:%M:%S"'
+if command -v claude >/dev/null 2>&1; then
+  alias cc='ENABLE_LSP_TOOL=1 claude --dangerously-skip-permissions --teammate-mode tmux'
+fi
+
+# 代理
+alias proxy='export https_proxy=http://127.0.0.1:7890 http_proxy=http://127.0.0.1:7890 all_proxy=socks5://127.0.0.1:7890'
+alias unproxy='unset https_proxy; unset http_proxy; unset all_proxy'
+
+# 调试
+alias chromeDebug='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 --user-data-dir=dev-debug-profile'
+
+# 与 fish 保持一致：存在 pyenv 时，调用 brew 前去掉 shims。
+brew() {
+  local clean_path="$PATH"
+  if command -v pyenv >/dev/null 2>&1; then
+    local shims_path
+    shims_path="$(pyenv root)/shims:"
+    clean_path="${PATH//$shims_path/}"
+  fi
+  env PATH="$clean_path" command brew "$@"
+}

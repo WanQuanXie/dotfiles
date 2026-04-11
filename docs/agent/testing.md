@@ -7,7 +7,7 @@
 使用 `shellcheck -x` 检查所有脚本语法：
 - 入口脚本：bootstrap, test, check, app/bootstrap
 - 应用脚本：app/*/init, app/*/test, app/*/cleanup
-- RC 文件：rc/bash_profile
+- RC 文件：rc/bash_profile, rc/profile, rc/bashrc, rc/bash_aliases, rc/config/fish/**
 - 系统脚本：macOS/settings
 
 输出统计：总脚本数、通过数、失败数。

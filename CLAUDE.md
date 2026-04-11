@@ -43,6 +43,11 @@ bash ./app/<app>/test
 - 每个 app 目录结构：`init`（安装）、`test`（验证）、`cleanup`（可选清理）
 - 幂等设计：使用 `~/.dotfiles_configured_<app>` 标记文件跳过已配置的应用
 - 使用 `shellcheck -x` 做静态检查，CI 分为 lint 和 macos-test 两个 job
+- shell 约定：
+  - fish 采用模块化布局：`config.fish` 只保留极少量全局逻辑，主要配置放在 `conf.d/` 和 `functions/`
+  - Homebrew 环境在 fish 中通过 `brew shellenv fish` 注入，在 bash 中通过共享 `rc/profile` 注入
+  - bash 采用共享加载链：`~/.bash_profile` 负责串起 `~/.profile` 与 `~/.bashrc`
+  - SDKMAN 在 fish 中统一走 `sdkman-for-fish`，不要再引入 `bass`
 
 ## 详细文档
 

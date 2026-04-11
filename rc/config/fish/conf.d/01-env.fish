@@ -7,6 +7,9 @@ set -gx EDITOR nvim
 # bat 主题
 set -gx BAT_THEME Nord
 
+# gcloud
+set -gx GCLOUD /opt/homebrew/share/google-cloud-sdk/bin
+
 # GPG
 set -gx GPG_TTY (tty)
 

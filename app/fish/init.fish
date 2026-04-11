@@ -42,12 +42,4 @@ else
     run_with_log "fish -c 'fisher install jhillyerd/plugin-git'" "安装 plugin-git"
 end
 
-# 安装 bass (bash 兼容桥接，用于 SDKMAN 等)
-if fish -c 'fisher list 2>/dev/null | grep -q edc/bass'
-    show_warning "bass 已安装，跳过"
-else
-    show_info "安装 bass 插件..."
-    run_with_log "fish -c 'fisher install edc/bass'" "安装 bass"
-end
-
 show_success "Fish Shell 设置完成"

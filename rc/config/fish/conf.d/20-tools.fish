@@ -20,14 +20,4 @@ if status is-interactive
     if test -f $HOME/.bun/_bun.fish
         source $HOME/.bun/_bun.fish
     end
-
-    # kiro-cli 补全
-    if command -q kiro-cli
-        kiro-cli completion fish | source
-    end
-
-    # SDKMAN (通过 bass 桥接，因为 SDKMAN 是纯 bash 脚本)
-    if test -s $HOME/.sdkman/bin/sdkman-init.sh
-        bass source $HOME/.sdkman/bin/sdkman-init.sh
-    end
 end

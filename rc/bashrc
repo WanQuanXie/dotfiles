@@ -1,16 +1,19 @@
-# Kiro CLI pre block. Keep at the top of this file.
-[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/bashrc.pre.bash" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/bashrc.pre.bash"
-export EDITOR="nvim"
+# 非 login 的交互 bash 也需要补齐公共环境。
+if [[ -z "${__BASH_PROFILE_LOADED:-}" ]] && [[ -f "$HOME/.profile" ]]; then
+  source "$HOME/.profile"
+fi
 
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init - bash)"
+if [[ $- == *i* ]]; then
+  # 提示符与目录跳转工具
+  command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"
+  command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init bash)"
 
-. "/Users/xiewq/.cargo/bin/env"
+  # fnm
+  command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --corepack-enabled --resolve-engines --shell bash)"
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+  # OpenClaw completion
+  [[ -f "$HOME/.openclaw/completions/openclaw.bash" ]] && source "$HOME/.openclaw/completions/openclaw.bash"
 
-# Kiro CLI post block. Keep at the bottom of this file.
-[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/bashrc.post.bash" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/bashrc.post.bash"
+  # 交互别名（可选文件，不存在时跳过）
+  [[ -f "$HOME/.bash_aliases" ]] && source "$HOME/.bash_aliases"
+fi

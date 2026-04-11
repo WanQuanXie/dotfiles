@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# profile - bash 公共环境
+# 供 ~/.bash_profile 与非 login 的 ~/.bashrc 共同加载。
+
+# Homebrew environment
+if [[ -x /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# 通用环境变量
+export LANG=en_US.UTF-8
+export EDITOR=nvim
+export BAT_THEME=Nord
+export GCLOUD=/opt/homebrew/share/google-cloud-sdk/bin
+export GPG_TTY=$(tty)
+
+# 通用 PATH
+export PATH="$HOME/bin:$HOME/.local/bin:$GCLOUD:$PATH"
+
+# Added by Toolbox App
+# 仅在脚本目录存在时注入 PATH，避免把机器特定路径硬编码到所有环境。
+if [[ -d "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" ]]; then
+  export PATH="$PATH:$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
+fi
+
+# Cargo
+. "$HOME/.cargo/env"
+
+# SDKMAN!
+# macOS 自带 bash 3.2 无法兼容新版 SDKMAN! 的部分 bash 语法。
+# 仅在 bash 4+ 中加载；fish 侧由 sdkman-for-fish 负责初始化。
+if [[ -n "${BASH_VERSINFO:-}" && "${BASH_VERSINFO[0]}" -ge 4 ]]; then
+  export SDKMAN_DIR="$HOME/.sdkman"
+  [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+fi

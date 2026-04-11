@@ -74,10 +74,22 @@ return require('lazy').setup({
     { 'tpope/vim-abolish' },                -- 文本变换工具（crs→snake_case, crm→MixedCase）
     {
         'crispgm/nvim-auto-ime', -- macOS 输入法自动切换（离开 Insert 模式切回英文）
+        enabled = vim.fn.executable('macism') == 1,
         -- dev = true,
         config = function()
+            local ime_default = 'com.apple.keylayout.ABC'
+            local ime_fallback = 'com.apple.inputmethod.SCIM.ITABC'
+            local current_ime = vim.trim(vim.fn.system('macism'))
+            local ime_source = ime_fallback
+
+            -- 如果启动时正在使用非英文输入法，则自动将其作为备用输入法
+            if vim.v.shell_error == 0 and current_ime ~= '' and current_ime ~= ime_default then
+                ime_source = current_ime
+            end
+
             require('auto-ime').setup({
-                ime_source = 'com.apple.inputmethod.SCIM.ITABC',
+                ime_default = ime_default,
+                ime_source = ime_source,
             })
         end,
     },
@@ -114,23 +126,29 @@ return require('lazy').setup({
         'williamboman/mason-lspconfig.nvim', -- mason 与 lspconfig 桥接，自动安装 LSP 服务器
         dependencies = { 'williamboman/mason.nvim', 'neovim/nvim-lspconfig' },
         config = function()
+            local ensure_installed = {
+                'bashls',        -- Bash
+                'cssls',         -- CSS
+                'gopls',         -- Go
+                'html',          -- HTML
+                'jsonls',        -- JSON
+                'lua_ls',        -- Lua
+                'pyright',       -- Python
+                'rust_analyzer', -- Rust
+                'sqlls',         -- SQL
+                'ts_ls',         -- TypeScript/JavaScript
+                'vimls',         -- Vim
+                'vuels',         -- Vue
+                'yamlls',        -- YAML
+            }
+
+            local ruby_version = vim.trim(vim.fn.system([[ruby -e 'print RUBY_VERSION']]))
+            if vim.v.shell_error == 0 and vim.version.ge(vim.version.parse(ruby_version), { 2, 7, 0 }) then
+                table.insert(ensure_installed, 'ruby_lsp') -- Ruby
+            end
+
             require('mason-lspconfig').setup({
-                ensure_installed = {
-                    'bashls',        -- Bash
-                    'cssls',         -- CSS
-                    'gopls',         -- Go
-                    'html',          -- HTML
-                    'jsonls',        -- JSON
-                    'lua_ls',        -- Lua
-                    'pyright',       -- Python
-                    'rust_analyzer', -- Rust
-                    'ruby_lsp',      -- Ruby
-                    'sqlls',         -- SQL
-                    'ts_ls',         -- TypeScript/JavaScript
-                    'vimls',         -- Vim
-                    'vuels',         -- Vue
-                    'yamlls',        -- YAML
-                },
+                ensure_installed = ensure_installed,
                 automatic_enable = true, -- 自动对已安装的服务器调用 vim.lsp.enable()
             })
         end,

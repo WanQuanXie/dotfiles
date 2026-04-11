@@ -73,6 +73,9 @@ else
   # brew 'pandoc'
   # 密码管理工具命令行
   brew 'bitwarden-cli'
+  # macOS 输入法切换命令行工具，供 Neovim 的 nvim-auto-ime 使用
+  tap 'laishulu/homebrew'
+  brew 'laishulu/homebrew/macism'
   # Continuation of Clash Verge - A Clash Meta GUI based on Tauri
   # cask "clash-verge-rev"
   # Open-source BitTorrent client

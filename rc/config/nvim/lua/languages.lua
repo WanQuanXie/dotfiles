@@ -6,7 +6,7 @@ local navic = require('nvim-navic')
 vim.api.nvim_create_autocmd('LspAttach', {
     callback = function(args)
         local client = vim.lsp.get_client_by_id(args.data.client_id)
-        if client and client.server_capabilities.documentSymbolProvider then
+        if client and client:supports_method('textDocument/documentSymbol', { bufnr = args.buf }) then
             navic.attach(client, args.buf)
         end
     end,
@@ -18,7 +18,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
 -- ━━ HTML/Emmet ━━
 vim.g.user_emmet_install_global = 0        -- 不全局安装 emmet
 vim.g.user_emmet_leader_key = '<c-y>'      -- Emmet 快捷键前缀
-vim.api.nvim_command('autocmd FileType html,css EmmetInstall') -- 仅 HTML/CSS 启用
+vim.api.nvim_create_autocmd('FileType', {
+    pattern = { 'html', 'css' },
+    command = 'EmmetInstall',
+}) -- 仅 HTML/CSS 启用
 
 -- ━━ Rust ━━
 vim.g.rustfmt_autosave = 1 -- 保存 Rust 文件时自动运行 rustfmt

@@ -19,8 +19,8 @@ if test -d "$LAZY_PATH"
     show_warning "Lazy.nvim 已安装，跳过插件安装"
 else
     show_info "安装 Neovim 插件..."
-    # 运行 nvim 触发插件安装
-    run_with_log "nvim --headless '+Lazy! sync' +qa" "安装 Neovim 插件"
+    # 首次同步插件后，统一更新 Treesitter 解析器
+    run_with_log "nvim --headless '+Lazy! sync' '+TSUpdate' +qa" "安装 Neovim 插件"
 end
 
 show_info "安装格式化工具..."

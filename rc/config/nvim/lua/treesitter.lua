@@ -3,49 +3,9 @@
 -- 注意: playground 已移除，使用 Neovim 内建 :InspectTree 替代
 -- 注意: main 分支已移除 nvim-treesitter.configs 模块，改用新 API
 
--- 确保安装所需的语言解析器（异步安装，仅下载缺失的解析器）
-require('nvim-treesitter').install({
-    'bash',        -- Shell 脚本
-    'beancount',   -- 记账文件
-    'c',           -- C 语言
-    'cmake',       -- CMake 构建系统
-    'comment',     -- 注释（TODO/FIXME 等高亮）
-    'cpp',         -- C++
-    'css',         -- CSS 样式
-    'dockerfile',  -- Dockerfile
-    'dot',         -- Graphviz DOT
-    'go',          -- Go 语言
-    'gomod',       -- Go modules
-    'gowork',      -- Go workspace
-    'graphql',     -- GraphQL 查询
-    'haskell',     -- Haskell
-    'hcl',         -- HashiCorp HCL (Terraform)
-    'html',        -- HTML
-    'http',        -- HTTP 请求
-    'javascript',  -- JavaScript
-    'jsdoc',       -- JSDoc 注释
-    'json',        -- JSON 数据
-    'json5',       -- JSON5
-    'jsonc',       -- JSON with Comments
-    'lua',         -- Lua 语言
-    'make',        -- Makefile
-    'markdown',    -- Markdown 文档
-    'php',         -- PHP
-    'pug',         -- Pug 模板
-    'python',      -- Python
-    'regex',       -- 正则表达式
-    'rst',         -- reStructuredText
-    'ruby',        -- Ruby
-    'rust',        -- Rust
-    'scss',        -- SCSS 样式
-    'toml',        -- TOML 配置
-    'tsx',         -- TypeScript JSX
-    'typescript',  -- TypeScript
-    'vim',         -- Vim 脚本
-    'vimdoc',      -- Vim 帮助文档
-    'vue',         -- Vue SFC
-    'yaml',        -- YAML 配置
-})
+-- 解析器安装改由 lazy build/手动 :TSUpdate 管理，避免每次启动都触发下载编译
+-- jsonc 复用 json parser，避免请求当前不受支持的独立 jsonc 语言
+vim.treesitter.language.register('json', 'jsonc')
 
 -- 启用 Treesitter 语法高亮（由 Neovim 内建 vim.treesitter 提供）
 vim.api.nvim_create_autocmd('FileType', {

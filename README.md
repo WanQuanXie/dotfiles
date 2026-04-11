@@ -29,6 +29,8 @@ $ cd dotfiles
 $ ./bootstrap
 ```
 
+`./bootstrap` 会执行 `brew bundle` 安装 `Brewfile` 中的软件；Neovim 的 `nvim-auto-ime` 依赖 `macism`，现已包含在该流程中。
+
 ## Project Layout
 
 - `bootstrap`: entry point of dotfiles bootstrapping.
@@ -47,6 +49,7 @@ $ ./bootstrap
 - [x] Setup [SDKMAN](https://sdkman.io/) with [sdkman-for-fish](https://github.com/reitzig/sdkman-for-fish) plugin
 - [x] Setup tmux
 - [x] Setup Neovim
+- [x] Install `macism` for Neovim IME switching on macOS
 
 ### Git
 

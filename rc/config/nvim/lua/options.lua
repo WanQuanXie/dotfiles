@@ -54,13 +54,8 @@ opt.shortmess:append('c')                   -- 精简状态消息
 opt.laststatus = 3                          -- 全局状态栏
 
 -- ━━ 终端颜色 ━━
-if not has('gui_running') then
-    opt.t_Co = 256
-end
 opt.background = 'dark'
 if has('termguicolors') then
-    cmd('let &t_8f = "\\<Esc>[38;2;%lu;%lu;%lum"')
-    cmd('let &t_8b = "\\<Esc>[48;2;%lu;%lu;%lum"')
     opt.termguicolors = true     -- 启用 24-bit 真彩色
 end
 
